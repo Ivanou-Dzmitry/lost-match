@@ -1,0 +1,11 @@
+﻿.vs
+UserSettings
+Temp
+ProjectSettings
+Packages
+obj
+build
+Library
+Logs
+lostmatch
+*.meta

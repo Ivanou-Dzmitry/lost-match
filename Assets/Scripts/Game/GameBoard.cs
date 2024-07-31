@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public enum GameState
@@ -42,6 +43,12 @@ public class TileType
     public TileKind tileKind;
 }
 
+[System.Serializable]
+public class GameBoardBack
+{
+    public Sprite gameBoardBackSprite;
+}
+
 public class GameBoard : MonoBehaviour
 {
     [Header("Scriptable Objects")]
@@ -61,6 +68,10 @@ public class GameBoard : MonoBehaviour
     public TileType[] boardLayout;
     public TileType[] preloadBoardLayout;
     public GameObject gameArea;
+
+    [Header("Art")]
+    public GameObject elementsBackGO;
+    public GameBoardBack gameBoardBack;
 
     //classes
     private GameData gameDataClass;
@@ -104,6 +115,8 @@ public class GameBoard : MonoBehaviour
 
         level = gameDataClass.saveData.levelToLoad; //load level number
 
+        Debug.Log("level: " + level);
+
         if (worldClass != null)
         {
             if (level < worldClass.levels.Length)
@@ -116,6 +129,8 @@ public class GameBoard : MonoBehaviour
                     elements = worldClass.levels[level].element;
 
                     scoreGoals = worldClass.levels[level].scoreGoals;
+
+                    gameBoardBack = worldClass.levels[level].elementsBack; //back
 
                     boardLayout = worldClass.levels[level].boardLayout;
                     preloadBoardLayout = worldClass.levels[level].preloadBoardLayout;
@@ -151,6 +166,9 @@ public class GameBoard : MonoBehaviour
         //set resoluton
         Screen.SetResolution(1920, 1080, true);
         Screen.SetResolution((int)Screen.width, (int)Screen.height, true);
+
+        //load back sprite
+        elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
     }
 
 

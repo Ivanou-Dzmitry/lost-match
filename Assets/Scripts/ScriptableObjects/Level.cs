@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "World", menuName = "Level")]
 
@@ -13,6 +12,9 @@ public class Level : ScriptableObject
 
     [Header("Layout")]
     public TileType[] boardLayout;
+
+    [Header("Art")]
+    public GameBoardBack elementsBack;
 
     [Header("Preload Layout")]
     public TileType[] preloadBoardLayout;

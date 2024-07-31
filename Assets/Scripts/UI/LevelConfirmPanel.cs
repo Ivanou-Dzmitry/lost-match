@@ -28,6 +28,8 @@ public class LevelConfirmPanel : MonoBehaviour
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
+        levelToLoad = level - 1;
+
         LoadData(); //from file
     }
 
@@ -38,7 +40,7 @@ public class LevelConfirmPanel : MonoBehaviour
         {
             activeStars = gameDataClass.saveData.stars[level - 1];
             highScore = gameDataClass.saveData.highScore[level - 1];
-            levelToLoad = gameDataClass.saveData.levelToLoad - 1;
+            gameDataClass.saveData.levelToLoad = levelToLoad;
         }
 
         //load game immediatly

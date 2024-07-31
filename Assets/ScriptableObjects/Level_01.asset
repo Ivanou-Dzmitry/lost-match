@@ -15,6 +15,8 @@ MonoBehaviour:
   columns: 5
   rows: 5
   boardLayout: []
+  elementsBack:
+    gameBoardBackSprite: {fileID: 21300000, guid: 04c148394f3b4464589e3068dc2a0a9b, type: 3}
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}

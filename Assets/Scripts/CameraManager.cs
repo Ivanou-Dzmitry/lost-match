@@ -14,6 +14,7 @@ public class CameraManager : MonoBehaviour
     public float yOffset = 1;
 
     public GameObject backImage;
+    public GameObject elementBack;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +37,6 @@ public class CameraManager : MonoBehaviour
 
         //background
         backImage.transform.position = new Vector3(temPos.x, temPos.y, 0);
-
-        //Debug.Log(temPos);
+        elementBack.transform.position = new Vector3(temPos.x, temPos.y - yOffset, 0);
     }
 }

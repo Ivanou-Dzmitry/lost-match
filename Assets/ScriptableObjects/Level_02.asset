@@ -12,13 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_02
   m_EditorClassIdentifier: 
-  columns: 5
-  rows: 5
+  columns: 6
+  rows: 6
   boardLayout: []
+  elementsBack:
+    gameBoardBackSprite: {fileID: 21300000, guid: 728ae31357d49aa4fb36c52a06590138, type: 3}
   preloadBoardLayout: []
-  element: []
+  element:
+  - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
+  - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
+  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
+  - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   scoreGoals: 
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 0
-  levelGoals: []
+    counterValue: 15
+  levelGoals:
+  - numberGoalsNeeded: 15
+    numberCollectedGoals: 15
+    goalSprite: {fileID: 21300000, guid: aa09e65ac224ca84ca59ecec7bafe832, type: 3}
+    matchValue: element_01

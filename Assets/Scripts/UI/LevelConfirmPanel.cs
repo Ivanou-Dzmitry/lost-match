@@ -40,7 +40,6 @@ public class LevelConfirmPanel : MonoBehaviour
         {
             activeStars = gameDataClass.saveData.stars[level - 1];
             highScore = gameDataClass.saveData.highScore[level - 1];
-            gameDataClass.saveData.levelToLoad = levelToLoad;
         }
 
         //load game immediatly
@@ -60,7 +59,10 @@ public class LevelConfirmPanel : MonoBehaviour
 
     }
     public void Play()
-    {        
+    {
+        gameDataClass.saveData.levelToLoad = levelToLoad;
+        gameDataClass.SaveToFile();
+
         SceneManager.LoadScene(sceneToLoadName);
     }
 }

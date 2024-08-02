@@ -87,4 +87,10 @@ public class SoundManager : MonoBehaviour
         effectsSource.PlayOneShot(clip);
     }
 
+
+    public void ButtonClick()
+    {
+        aClip = (AudioClip)Resources.Load("button_click_01");
+        effectsSource.PlayOneShot(aClip);
+    }
 }

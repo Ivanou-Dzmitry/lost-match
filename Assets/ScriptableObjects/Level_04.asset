@@ -10,24 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
-  m_Name: Level_02
+  m_Name: Level_04
   m_EditorClassIdentifier: 
-  columns: 6
-  rows: 8
-  boardLayout: []
+  columns: 8
+  rows: 7
+  boardLayout:
+  - columnX: 6
+    rowY: 0
+    tileKind: 5
+  - columnX: 6
+    rowY: 1
+    tileKind: 5
+  - columnX: 6
+    rowY: 2
+    tileKind: 5
+  - columnX: 6
+    rowY: 3
+    tileKind: 5
+  - columnX: 6
+    rowY: 4
+    tileKind: 5
+  - columnX: 6
+    rowY: 5
+    tileKind: 5
+  - columnX: 6
+    rowY: 6
+    tileKind: 5
   elementsBack:
-    gameBoardBackSprite: {fileID: 21300000, guid: 728ae31357d49aa4fb36c52a06590138, type: 3}
+    gameBoardBackSprite: {fileID: 21300000, guid: 1eba05605e62f6140aa782c473ca0bb0, type: 3}
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
-  scoreGoals: 3c0000005a00000078000000
+  - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
+  scoreGoals: c80000009001000058020000
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 1500
+    counterValue: 22
   levelGoals:
-  - numberGoalsNeeded: 1500
-    numberCollectedGoals: 93
+  - numberGoalsNeeded: 24
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: aa09e65ac224ca84ca59ecec7bafe832, type: 3}
     matchValue: element_01

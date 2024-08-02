@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MatchFinder : MonoBehaviour
@@ -33,7 +34,7 @@ public class MatchFinder : MonoBehaviour
         //mark as matched
         element.GetComponent<ElementController>().isMatched = true;
 
-        element.GetComponent<SpriteRenderer>().color = new Color(0, 1f, 0, 0.75f); //for debug
+        element.GetComponent<SpriteRenderer>().color = element.GetComponent<ElementController>().elementColor; //tint for debug
 
         // Remove all null elements
         currentMatch.RemoveAll(item => item == null);
@@ -63,7 +64,10 @@ public class MatchFinder : MonoBehaviour
 
                 if (currentElement != null)
                 {
-                      //horizontal
+
+                    ElementController curElemGet = currentElement.GetComponent<ElementController>(); //get first dot
+
+                    //horizontal
                     if (i > 0 && i < gameBoardClass.column - 1)
                     {
                         //get neiborhood
@@ -72,10 +76,23 @@ public class MatchFinder : MonoBehaviour
 
                         if (leftElement != null && rightElement != null)
                         {
+                            //get neiborhood elements
+                            ElementController leftElemGet = leftElement.GetComponent<ElementController>(); //get 2nd dot
+                            ElementController rightElemGet = rightElement.GetComponent<ElementController>(); //get 3rd dot
+
                             if (leftElement != null && rightElement != null)
                             {
                                 if (leftElement.tag == currentElement.tag && rightElement.tag == currentElement.tag) //compare tags form lr dots
                                 {
+                                    //row bomb
+                                    currentMatch.AddRange(IsRowBomb(leftElemGet, curElemGet, rightElemGet));
+
+                                    //column bomb
+                                    currentMatch.AddRange(IsColumnBomb(leftElemGet, curElemGet, rightElemGet));
+
+                                    //wrap bomb
+                                    currentMatch.AddRange(IsWrapBomb(leftElemGet, curElemGet, rightElemGet));
+
                                     GetNearbyPieces(leftElement, currentElement, rightElement);
                                 }
                             }
@@ -90,10 +107,23 @@ public class MatchFinder : MonoBehaviour
 
                         if (upElement != null && downElement != null)
                         {
+
+                            ElementController upElemGet = upElement.GetComponent<ElementController>(); //optimize
+                            ElementController downElemGet = downElement.GetComponent<ElementController>(); //optimize
+
                             if (upElement != null && downElement != null)
                             {
                                 if (upElement.tag == currentElement.tag && downElement.tag == currentElement.tag)
                                 {
+                                    //column bobm
+                                    currentMatch.AddRange(IsColumnBomb(upElemGet, curElemGet, downElemGet));
+
+                                    //row bomb
+                                    currentMatch.AddRange(IsRowBomb(upElemGet, curElemGet, downElemGet));
+
+                                    //wrap bomb
+                                    currentMatch.AddRange(IsWrapBomb(upElemGet, curElemGet, downElemGet));
+
                                     GetNearbyPieces(upElement, currentElement, downElement);
                                 }
                             }
@@ -104,6 +134,231 @@ public class MatchFinder : MonoBehaviour
         }
     }
 
+    //bomb gen part 4
+    public void LineBombCheck(MatchType matchType)
+    {
+        //move or not move?
+        if (gameBoardClass.currentElement != null)
+        {
+
+            if (gameBoardClass.currentElement.isMatched && gameBoardClass.currentElement.tag == matchType.color)
+            {
+                //unmatch
+                gameBoardClass.currentElement.isMatched = false;
+
+                float angle1 = 0;
+
+                angle1 = gameBoardClass.currentElement.swipeAngle;
+
+                //for swipe
+                if ((angle1 > -45 && angle1 <= 45) || (angle1 < -135 || angle1 >= 135))
+                {
+                    gameBoardClass.currentElement.GenerateRowBomb();
+                }
+                else
+                {
+                    gameBoardClass.currentElement.GenerateColumnBomb();
+                }
+
+            }
+            else if (gameBoardClass.currentElement.otherElement != null)
+            {
+                ElementController otherDot = gameBoardClass.currentElement.otherElement.GetComponent<ElementController>();
+
+                //if other dots matched
+                if (otherDot.isMatched && otherDot.tag == matchType.color)
+                {
+                    otherDot.isMatched = false;
+
+                    float angle2 = 0;
+
+                    angle2 = gameBoardClass.currentElement.swipeAngle;
+
+                    //for swipe
+                    if ((angle2 > -45 && angle2 <= 45) || (angle2 < -135 || angle2 >= 135))
+                    {
+                        otherDot.GenerateRowBomb();
+                    }
+                    else
+                    {
+                        otherDot.GenerateColumnBomb();
+                    }
+                }
+            }
+        }
+    }
+
+    //for row bobm part 1
+    List<GameObject> GetRowPieces(int row)
+    {
+        List<GameObject> elements = new List<GameObject>();
+
+        for (int i = 0; i < gameBoardClass.column; i++)
+        {
+            if (gameBoardClass.allElements[i, row] != null)
+            {
+
+                ElementController localElement = gameBoardClass.allElements[i, row].GetComponent<ElementController>();
+
+                if (localElement.isColumnBomb)
+                {
+                    elements.Union(GetColumnPieces(i)).ToList();
+                }
+
+                elements.Add(gameBoardClass.allElements[i, row]);
+
+                localElement.isMatched = true; //match here
+            }
+        }
+
+        return elements;
+    }
+
+    //row bomb list part 2
+    private List<GameObject> IsRowBomb(ElementController element01, ElementController element02, ElementController element03)
+    {
+        List<GameObject> currentElements = new List<GameObject>();
+
+        if (element01.isRowBomb)
+        {
+            currentMatch.AddRange(GetRowPieces(element01.row));
+            gameBoardClass.BombRow(element01.row);
+        }
+
+        if (element02.isRowBomb)
+        {
+            currentMatch.AddRange(GetRowPieces(element02.row));
+            gameBoardClass.BombRow(element02.row);
+        }
+
+        if (element03.isRowBomb)
+        {
+            currentMatch.AddRange(GetRowPieces(element03.row));
+            gameBoardClass.BombRow(element03.row);
+        }
+
+        return currentElements;
+    }
+
+    //for column bomb part 1
+    List<GameObject> GetColumnPieces(int column)
+    {
+        List<GameObject> elements = new List<GameObject>();
+
+        for (int i = 0; i < gameBoardClass.row; i++)
+        {
+            if (gameBoardClass.allElements[column, i] != null)
+            {
+
+                ElementController localElement = gameBoardClass.allElements[column, i].GetComponent<ElementController>();
+
+                if (localElement.isRowBomb)
+                {
+                    elements.Union(GetRowPieces(i)).ToList();
+                }
+
+                elements.Add(gameBoardClass.allElements[column, i]);
+
+                localElement.isMatched = true; //match here
+            }
+        }
+
+        return elements;
+    }
+
+    //column bomb list part 2
+    private List<GameObject> IsColumnBomb(ElementController element01, ElementController element02, ElementController element03)
+    {
+        List<GameObject> currentElements = new List<GameObject>();
 
 
+        if (element01.isColumnBomb)
+        {
+            currentMatch.AddRange(GetColumnPieces(element01.column));
+            gameBoardClass.BombColumn(element01.column);
+        }
+
+        if (element02.isColumnBomb)
+        {
+            currentMatch.AddRange(GetColumnPieces(element02.column));
+            gameBoardClass.BombColumn(element02.column);
+        }
+
+        if (element03.isColumnBomb)
+        {
+            currentMatch.AddRange(GetColumnPieces(element03.column));
+            gameBoardClass.BombColumn(element03.column);
+        }
+
+        return currentElements;
+    }
+
+    //list for wrap part 1
+    private List<GameObject> IsWrapBomb(ElementController element01, ElementController element02, ElementController element03)
+    {
+        List<GameObject> currentElement = new List<GameObject>();
+
+
+        if (element01.isWrapBomb)
+        {
+            currentMatch.AddRange(GetWrapPieces(element01.column, element01.row));
+        }
+
+        if (element02.isWrapBomb)
+        {
+            currentMatch.AddRange(GetWrapPieces(element02.column, element02.row));
+        }
+
+        if (element03.isWrapBomb)
+        {
+            currentMatch.AddRange(GetWrapPieces(element03.column, element03.row));
+        }
+
+        return currentElement;
+    }
+
+    //wpap bomb part 2
+    List<GameObject> GetWrapPieces(int column, int row)
+    {
+        List<GameObject> elements = new List<GameObject>();
+
+        //only around
+        for (int i = column - 1; i <= column+1; i++)
+        {
+            for (int j = row - 1; j <= row+1 ; j++)
+            {
+                //for border
+                if(i >= 0 && i < gameBoardClass.column && j>= 0 && j < gameBoardClass.row)
+                {
+                    //fix bug
+                    if (gameBoardClass.allElements[i,j] != null)
+                    {
+                        elements.Add(gameBoardClass.allElements[i, j]);
+                        gameBoardClass.allElements[i, j].GetComponent<ElementController>().isMatched = true;
+                    }
+                }
+            }
+        }
+
+        return elements;
+    }
+
+    //color bobmb part 2
+    public void MatchColorPieces(string color)
+    {
+        for (int i = 0; i < gameBoardClass.column; i++)
+        {
+            for (int j = 0; j < gameBoardClass.row; j++)
+            {
+                if (gameBoardClass.allElements[i, j] != null)
+                {
+                    if (gameBoardClass.allElements[i, j].tag == color)
+                    {
+                        gameBoardClass.allElements[i, j].GetComponent<ElementController>().isMatched = true;
+                    }
+                }
+            }
+        }
+
+    }
 }

@@ -6,8 +6,12 @@ using UnityEngine.UI;
 
 public class SettingsManager : MonoBehaviour
 {
+    //classes
     private GameData gameDataClass;
-    private SoundManager soundManagerClass;
+    private SoundManager soundManagerClass;    
+    private GameBoard gameBoardClass;
+
+    public GameObject settingsScreen;
 
     public bool paused = false;
 
@@ -27,16 +31,24 @@ public class SettingsManager : MonoBehaviour
 
     private void Start()
     {
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();       
-        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+        Scene currentScene = SceneManager.GetActiveScene();
+        sceneName = currentScene.name;
 
+        //classes
+        if (sceneName == "GameBoard")
+        {
+            gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
+        }
+        
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();       
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();        
+        
         if (gameDataClass != null)
         {
             LoadData();            
         }
 
-        Scene currentScene = SceneManager.GetActiveScene();
-        sceneName = currentScene.name;
+
 
     }
 
@@ -44,6 +56,24 @@ public class SettingsManager : MonoBehaviour
     {
         Scene currentScene = SceneManager.GetActiveScene();
         paused = !paused;
+    }
+
+    private void Update()
+    {
+        if (sceneName == "GameBoard")
+        {
+            if (paused && !settingsScreen.activeInHierarchy)
+            {
+                settingsScreen.SetActive(true);
+                gameBoardClass.currentState = GameState.pause;
+            }
+
+            if (!paused && settingsScreen.activeInHierarchy)
+            {
+                settingsScreen.SetActive(false);
+                gameBoardClass.currentState = GameState.move;
+            }
+        }
     }
 
     private void LoadData()

@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
+
 
 public enum GameState
 {
@@ -22,7 +20,7 @@ public enum TileKind
     element_03,
     element_04,
     element_05,
-    empty,
+    Empty,
     locked
 }
 
@@ -93,29 +91,42 @@ public class GameBoard : MonoBehaviour
     public int streakValue = 1;
     public int[] scoreGoals;
 
-/*    [Header("Prefabs")]
-    public GameObject elementPrefab;
-    public GameObject break01Prefab;
-    public GameObject break02Prefab;
-    public GameObject blocker01Prefab;
-    public GameObject blocker02Prefab;
-    public GameObject expand01Prefab;
-    public GameObject locker01Prefab;*/
-
     //for blank
-    private bool[,] emptyCells;
+    private bool[,] emptyElement;
+
+    /*    [Header("Prefabs")]
+        public GameObject elementPrefab;
+        public GameObject break01Prefab;
+        public GameObject break02Prefab;
+        public GameObject blocker01Prefab;
+        public GameObject blocker02Prefab;
+        public GameObject expand01Prefab;
+        public GameObject locker01Prefab;*/
+
     //for lock
     public ElementController[,] lockedCells;
 
     private AudioClip audioClip;
 
+    //bombs values    
+    private int minMatchCount = 3;
+    public int minMatchForBomb = 4;
+
+    private int matchForLineBomb = 4;
+    private int matchForWrapBomb = 2;
+    private int matchForColorBomb = 3;
+
+    public bool autoBombGen=false;
+
     private void Awake()
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
-        level = gameDataClass.saveData.levelToLoad; //load level number
-
-        Debug.Log("level: " + level);
+        if (gameDataClass != null)
+        {
+            gameDataClass.LoadFromFile();
+            level = gameDataClass.saveData.levelToLoad; //load level number
+        }
 
         if (worldClass != null)
         {
@@ -124,6 +135,7 @@ public class GameBoard : MonoBehaviour
                 if (worldClass.levels[level] != null)
                 {
                     column = worldClass.levels[level].columns;
+
                     row = worldClass.levels[level].rows;
 
                     elements = worldClass.levels[level].element;
@@ -133,6 +145,7 @@ public class GameBoard : MonoBehaviour
                     gameBoardBack = worldClass.levels[level].elementsBack; //back
 
                     boardLayout = worldClass.levels[level].boardLayout;
+
                     preloadBoardLayout = worldClass.levels[level].preloadBoardLayout;
                 }
             }
@@ -149,13 +162,13 @@ public class GameBoard : MonoBehaviour
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
 
-        //init type of objects
-        emptyCells = new bool[column, row];
-
         //all dots on board
         allElements = new GameObject[column, row];
 
         lockedCells = new ElementController[column, row];
+
+        //init type of objects
+        emptyElement = new bool[column, row];
 
         //setup board
         SetUpBoard();
@@ -169,11 +182,24 @@ public class GameBoard : MonoBehaviour
 
         //load back sprite
         elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
+
+    }
+
+    public void GenerateEmptyElements()
+    {        
+        for (int i = 0; i < boardLayout.Length; i++)
+        {           
+            if (boardLayout[i].tileKind == TileKind.Empty)
+            {
+                emptyElement[boardLayout[i].columnX, boardLayout[i].rowY] = true;                
+            }
+        }
     }
 
 
     private void SetUpBoard()
     {
+        GenerateEmptyElements();
 
         //for naming
         int namingCounter = 0;
@@ -183,40 +209,43 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                //temp position and offset
-                Vector2 elementPosition = new Vector2(i, j);
-
-                //add elements
-                int elementNumber = UnityEngine.Random.Range(0, elements.Length);
-
-                int maxItertion = 0;
-
-                //board without match
-                while (MatchingCheck(i, j, elements[elementNumber]) && maxItertion < 100)
+                if (!emptyElement[i, j])
                 {
-                    elementNumber = UnityEngine.Random.Range(0, elements.Length);
-                    maxItertion++;
+                    //temp position and offset
+                    Vector2 elementPosition = new Vector2(i, j);
+
+                    //add elements
+                    int elementNumber = UnityEngine.Random.Range(0, elements.Length);
+
+                    int maxItertion = 0;
+
+                    //board without match
+                    while (MatchingCheck(i, j, elements[elementNumber]) && maxItertion < 100)
+                    {
+                        elementNumber = UnityEngine.Random.Range(0, elements.Length);
+                        maxItertion++;
+                    }
+
+                    maxItertion = 0;
+
+                    //instance element
+                    GameObject element = Instantiate(elements[elementNumber], elementPosition, Quaternion.identity);
+
+                    //set position
+                    element.GetComponent<ElementController>().column = i;
+                    element.GetComponent<ElementController>().row = j;
+
+                    //set properties
+                    element.transform.parent = gameArea.transform;
+
+                    namingCounter++;
+
+                    //dots naming
+                    element.name = element.tag + "-" + namingCounter + "-" + i + "-" + j;
+
+                    //add elements to array
+                    allElements[i, j] = element;
                 }
-
-                maxItertion = 0;
-
-                //instance element
-                GameObject element = Instantiate(elements[elementNumber], elementPosition, Quaternion.identity);
-
-                //set position
-                element.GetComponent<ElementController>().column = i;
-                element.GetComponent<ElementController>().row = j;
-
-                //set properties
-                element.transform.parent = gameArea.transform;
-
-                namingCounter++;
-
-                //dots naming
-                element.name = element.tag + "-" + namingCounter + "-" + i + "-" + j;
-
-                //add elements to array
-                allElements[i, j] = element;
             }
         }
     }
@@ -254,6 +283,13 @@ public class GameBoard : MonoBehaviour
 
     public void DestroyMatches()
     {
+        //bomb gen part 1
+        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
+        {
+            autoBombGen = false;
+            CheckToGenerateBombs();
+        }
+
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
@@ -277,7 +313,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null)
+                if (allElements[i, j] == null && !emptyElement[i, j])
                 {
                     for (int k = j + 1; k < row; k++)
                     {
@@ -321,9 +357,21 @@ public class GameBoard : MonoBehaviour
 
 
             //goal for dots
+            //goal for dots
             if (goalManagerClass != null)
             {
-                goalManagerClass.CompareGoal(allElements[column, row].tag.ToString());
+                if (currentElement.isRowBomb || currentElement.isColumnBomb)
+                {
+                    goalManagerClass.CompareGoal("LineBomb"); //for line bombs
+                }
+                else if (currentElement.isWrapBomb)
+                {
+                    goalManagerClass.CompareGoal("WrapBomb"); //for Wrap bombs                    
+                }
+                else
+                {
+                    goalManagerClass.CompareGoal(allElements[column, row].tag.ToString()); //for usual dots
+                }
 
                 goalManagerClass.UpdateGoals();
             }
@@ -360,7 +408,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null)
+                if (allElements[i, j] == null && !emptyElement[i, j])
                 {
                     Vector2 tempPosition = new Vector2(i, j);
                     int refilledElementNumber = UnityEngine.Random.Range(0, elements.Length);
@@ -390,7 +438,7 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        matchFinderClass.FindAllMatches();
+        matchFinderClass.FindAllMatches(); //find match 2
     }
 
     private bool MatchesOnBoard()
@@ -403,6 +451,16 @@ public class GameBoard : MonoBehaviour
                 {
                     if (allElements[i, j].GetComponent<ElementController>().isMatched)
                     {
+                        
+/*                        //bomb gen part 1-2 MY ADD
+                        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
+                        {
+                            autoBombGen = true;
+                            CheckToGenerateBombs(); //my addd
+                        }
+
+                        autoBombGen = false;*/
+
                         return true;
                     }
                 }
@@ -418,12 +476,19 @@ public class GameBoard : MonoBehaviour
        
         RefillBoard();
 
+        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
+        {
+            autoBombGen = true;
+            CheckToGenerateBombs(); //my addd
+        }
+
+
         yield return new WaitForSeconds(refillDelay);
 
         while (MatchesOnBoard())
         {
             streakValue++; //for score            
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1f);            
             DestroyMatches();
             yield break;
         }
@@ -432,6 +497,177 @@ public class GameBoard : MonoBehaviour
 
         if (currentState != GameState.pause)
             currentState = GameState.move;
+    }
+
+    //gen bombs part 3
+    private MatchType ColumnOrRow()
+    {
+        // Copy of the current match
+        List<GameObject> matchCopy = new List<GameObject>(matchFinderClass.currentMatch);
+
+        matchTypeClass.type = 0;
+        matchTypeClass.color = "";
+
+        // Iterate through each dot in the match
+        foreach (GameObject matchObject in matchCopy)
+        {
+            if (matchObject != null)
+            {
+                ElementController thisElement = matchObject.GetComponent<ElementController>();
+
+
+                string color = matchObject.tag;  // Get the color from the tag
+
+                int column = thisElement.column;
+                int row = thisElement.row;
+
+                int columnMatch = 0;
+                int rowMatch = 0;
+
+                // Compare with other dots in the match
+                foreach (GameObject otherMatchObject in matchCopy)
+                {
+                    if (otherMatchObject != null)
+                    {
+                        if (otherMatchObject == matchObject)
+                        {
+                            continue;
+                        }
+
+                        ElementController nextDot = otherMatchObject.GetComponent<ElementController>();
+
+                        if (nextDot.column == column && nextDot.CompareTag(color))
+                        {
+                            columnMatch++;
+                        }
+
+                        if (nextDot.row == row && nextDot.CompareTag(color))
+                        {
+                            rowMatch++;
+                        }
+                    }
+                }
+
+                // Check for the type of match
+                if (columnMatch == matchForLineBomb || rowMatch == matchForLineBomb)
+                {
+                    matchTypeClass.type = 1;
+                    matchTypeClass.color = color;
+                    return matchTypeClass;
+                }
+                else if (columnMatch == matchForWrapBomb && rowMatch == matchForWrapBomb)
+                {
+                    matchTypeClass.type = 2;
+                    matchTypeClass.color = color;
+                    return matchTypeClass;
+                }
+                else if (columnMatch == matchForColorBomb || rowMatch == matchForColorBomb)
+                {
+                    matchTypeClass.type = 3;
+                    matchTypeClass.color = color;
+                    return matchTypeClass;
+                }
+
+            }
+        }
+
+        // If no match type found, return default
+        matchTypeClass.type = 0;
+        matchTypeClass.color = "";
+        return matchTypeClass;
+    }
+
+    //gen bomb part 2
+    public void CheckToGenerateBombs()
+    {
+        if (matchFinderClass.currentMatch.Count > minMatchCount)
+        {
+            // Determine match type
+            MatchType typeOfMatch = ColumnOrRow();
+
+            //for refill               
+            if (currentElement == null && typeOfMatch.type != 0 && autoBombGen == true)
+            {
+                currentElement = matchFinderClass.currentMatch[0].GetComponent<ElementController>();
+
+                switch (typeOfMatch.type)
+                {
+                    case 1:
+                        currentElement.GenerateColorBomb();
+                        currentElement.isMatched = false;
+                        Debug.Log("Auto Color");
+                        break;
+                    case 2:
+                        currentElement.GenerateWrapBomb();
+                        currentElement.isMatched = false;
+                        Debug.Log("Auto Wrap");
+                        break;
+                    case 3:
+                        currentElement.GenerateColumnBomb();
+                        currentElement.isMatched = false;
+                        Debug.Log("Auto Column");
+                        break;
+                    default:
+                        break;
+                }
+            }  
+
+            //for move
+            if (currentElement != null && autoBombGen == false)
+            {
+                bool curElemMatched = currentElement.isMatched && currentElement.tag == typeOfMatch.color;
+                ElementController otherElem = currentElement.otherElement != null ? currentElement.otherElement.GetComponent<ElementController>() : null;
+                bool otherElemMatched = otherElem != null && otherElem.isMatched && otherElem.tag == typeOfMatch.color;
+
+                switch (typeOfMatch.type)
+                {
+                    case 1:
+                        // Color bomb
+                        if (curElemMatched)
+                        {
+                            currentElement.isMatched = false;
+                            currentElement.GenerateColorBomb();                            
+                        }
+                        else if (otherElemMatched)
+                        {
+                            otherElem.isMatched = false;
+                            otherElem.GenerateColorBomb();
+                        }
+                        break;
+                    case 2:
+                        // Wrap bomb
+                        if (curElemMatched)
+                        {
+                            currentElement.isMatched = false;
+                            currentElement.GenerateWrapBomb();
+                        }
+                        else if (otherElemMatched)
+                        {
+                            otherElem.isMatched = false;
+                            otherElem.GenerateWrapBomb();
+                        }
+                        break;
+                    case 3:
+                            matchFinderClass.LineBombCheck(typeOfMatch);                        
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    //for bomb and blockers
+    public void BombRow(int row)
+    {
+
+
+    }
+    
+    //for bomb and blockers
+    public void BombColumn(int column)
+    {
+
     }
 
 }

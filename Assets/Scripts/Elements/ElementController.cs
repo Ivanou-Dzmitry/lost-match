@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class ElementController : MonoBehaviour
@@ -37,6 +38,13 @@ public class ElementController : MonoBehaviour
 
     [Header("Color")]
     public Color elementColor; //for colorize wrap
+
+    [Header("Bombs Stuff")]
+    public Sprite lineBombSprite;
+    public Sprite wrapBombSprite;
+    public Sprite colorBombSprite;
+    public SpriteRenderer bombLayer;
+
 
     [Header("Sound")]
     public AudioClip elementSound;
@@ -77,7 +85,7 @@ public class ElementController : MonoBehaviour
         {
             swipeAngle = Mathf.Atan2(finalTouchPos.y - firstTouchPos.y, finalTouchPos.x - firstTouchPos.x) * 180 / Mathf.PI;
 
-            MoveElement();
+            MoveElement(); // work with element part 1
 
             gameBoardClass.currentElement = this;
         }
@@ -92,7 +100,7 @@ public class ElementController : MonoBehaviour
     {
         if (swipeAngle > -45 && swipeAngle <= 45 && column < gameBoardClass.column - 1)
         {            
-            MoveElementMechanics(Vector2.right); //right swipe
+            MoveElementMechanics(Vector2.right); //right swipe work with element part 2
         }
         else if (swipeAngle > 45 && swipeAngle <= 135 && row < gameBoardClass.row - 1)
         {            
@@ -112,6 +120,7 @@ public class ElementController : MonoBehaviour
         }
     }
 
+    // work with element part 3
     void MoveElementMechanics(Vector2 direction)
     {
         //set other based on direction
@@ -129,7 +138,7 @@ public class ElementController : MonoBehaviour
             column += (int)direction.x;
             row += (int)direction.y;
 
-            StartCoroutine(CheckMoveCo());
+            StartCoroutine(CheckMoveCo()); // work with element part 4
         }
         else
         {
@@ -139,6 +148,18 @@ public class ElementController : MonoBehaviour
 
     public IEnumerator CheckMoveCo()
     {
+        //for color bobmb 1
+        if (isColorBomb)
+        {
+            matchFinderClass.MatchColorPieces(otherElement.tag);
+            isMatched = true;
+        }
+        else if (otherElement.GetComponent<ElementController>().isColorBomb)
+        {
+            matchFinderClass.MatchColorPieces(this.gameObject.tag);
+            otherElement.GetComponent<ElementController>().isMatched = true;
+        }
+
         yield return new WaitForSeconds(.1f);
 
         if (otherElement != null)
@@ -166,10 +187,8 @@ public class ElementController : MonoBehaviour
                     {
                         endGameManagerClass.DecreaseCounterVal();
                     }
-                }
-
-                matchFinderClass.FindAllMatches();
-                gameBoardClass.DestroyMatches();                
+                }                
+                gameBoardClass.DestroyMatches();  //destroy 2              
             }
 
         }
@@ -197,7 +216,56 @@ public class ElementController : MonoBehaviour
         if (gameBoardClass.allElements[column, row] != this.gameObject)
         {
             gameBoardClass.allElements[column, row] = this.gameObject;
-            matchFinderClass.FindAllMatches();
+
+            matchFinderClass.FindAllMatches(); //find match 1
         }
+    }
+
+    public void GenerateRowBomb()
+    {
+        if (!isColumnBomb && !isColorBomb && !isWrapBomb)
+        {
+            isRowBomb = true;
+            //Debug.Log("row");
+            
+            //add sprite
+            bombLayer.sprite = lineBombSprite;
+        }            
+    }
+
+    public void GenerateColumnBomb()
+    {
+        if (!isRowBomb && !isColorBomb && !isWrapBomb)
+        {
+            isColumnBomb = true;
+            //Debug.Log("column");
+
+            //add sprite
+            bombLayer.sprite = lineBombSprite;
+            bombLayer.transform.eulerAngles = new Vector3 (0, 0, 90);
+        }            
+    }
+
+
+    public void GenerateColorBomb()
+    {
+        if (!isColumnBomb && !isRowBomb && !isWrapBomb)
+        {
+            isColorBomb = true;
+
+            //add sprite
+            bombLayer.sprite = colorBombSprite;
+        }            
+    }
+
+    public void GenerateWrapBomb()
+    {
+        if (!isColumnBomb && !isRowBomb && !isColorBomb)
+        {
+            isWrapBomb = true;
+
+            //add sprite
+            bombLayer.sprite = wrapBombSprite;
+        }            
     }
 }

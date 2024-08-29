@@ -12,6 +12,8 @@ public class SaveData
     public bool[] isActive;
     public int[] highScore;
     public int[] stars;
+    public int[] bonuses;
+    public int credits;
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;
@@ -68,11 +70,23 @@ public class GameData : MonoBehaviour
     {
         saveData = new SaveData();
 
+        //game data
         saveData.levelToLoad = 1;
-        saveData.isActive = new bool[2];
-        saveData.stars = new int[2];
-        saveData.highScore = new int[2];
-        saveData.isActive[0] = true;
+        saveData.isActive = new bool[11];
+        saveData.stars = new int[11];
+        saveData.highScore = new int[11];
+        saveData.isActive[0] = true; //turn on 1st level
+        
+        saveData.bonuses = new int[5];
+
+        for (int i = 0; i < saveData.bonuses.Length; i++)
+        {
+            saveData.bonuses[i] = 0;
+        }
+
+        saveData.credits = 0;
+
+        //settings
         saveData.soundToggle = true;
         saveData.musicToggle = true;
         saveData.soundVolume = 1.0f;

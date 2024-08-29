@@ -33,15 +33,21 @@ MonoBehaviour:
   - columnX: 6
     rowY: 4
     tileKind: 5
+  - columnX: 2
+    rowY: 5
+    tileKind: 8
+  - columnX: 4
+    rowY: 5
+    tileKind: 9
   elementsBack:
     gameBoardBackSprite: {fileID: 21300000, guid: d875033e17e65ad49a779b385239949d, type: 3}
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
-  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
+  - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 3c0000005a00000078000000
+  scoreGoals: c80000009001000058020000
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 22

@@ -155,6 +155,8 @@ MonoBehaviour:
   bombLayer: {fileID: 7573785460138873089}
   elementSound: {fileID: 8300000, guid: 66b14494306c6074ca7c72ed0257ac90, type: 3}
   destroyParticle: {fileID: 7008526993925193625, guid: f9321d6d8d601ad41a5e322d1312b756, type: 3}
+  lineBombParticle: {fileID: 3413543184670853712, guid: 95e48f46ebe23174b8d7f6bd43edf594, type: 3}
+  wrapBombParticle: {fileID: 3413543184670853712, guid: ee26daa44d7a3db49bc6d756faf29cd1, type: 3}
 --- !u!1 &6578874789619207938
 GameObject:
   m_ObjectHideFlags: 0

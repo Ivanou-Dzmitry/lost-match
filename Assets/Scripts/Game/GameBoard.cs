@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Unity.VisualScripting;
+using System.Xml.Linq;
 
 
 public enum GameState
@@ -21,7 +24,14 @@ public enum TileKind
     element_04,
     element_05,
     Empty,
-    locked
+    Blocker01,
+    Blocker02,
+    ColumnBomb,
+    RowBomb,
+    WrapBomb,
+    ColorBomb,
+    Breakable01,
+    Breakable02
 }
 
 //type of matches
@@ -30,6 +40,25 @@ public class MatchType
 {
     public int type;
     public string color;
+    public GameObject curElem;
+
+    public override bool Equals(object obj)
+    {
+        if (obj is MatchType other)
+        {
+            return type == other.type && color == other.color && curElem == other.curElem;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        int hashCode = 17;
+        hashCode = hashCode * 23 + type.GetHashCode();
+        hashCode = hashCode * 23 + (color?.GetHashCode() ?? 0);
+        hashCode = hashCode * 23 + (curElem?.GetHashCode() ?? 0);
+        return hashCode;
+    }
 }
 
 //type of tiles
@@ -46,6 +75,7 @@ public class GameBoardBack
 {
     public Sprite gameBoardBackSprite;
 }
+
 
 public class GameBoard : MonoBehaviour
 {
@@ -83,8 +113,9 @@ public class GameBoard : MonoBehaviour
     public GameObject[,] allElements;
 
     [Header("Match Suff")]
-    public MatchType matchTypeClass;
     public ElementController currentElement;
+
+    public MatchType matchTypeClass = new MatchType();
 
     //for score
     public int baseValue = 1;
@@ -94,17 +125,28 @@ public class GameBoard : MonoBehaviour
     //for blank
     private bool[,] emptyElement;
 
-    /*    [Header("Prefabs")]
-        public GameObject elementPrefab;
-        public GameObject break01Prefab;
-        public GameObject break02Prefab;
-        public GameObject blocker01Prefab;
-        public GameObject blocker02Prefab;
-        public GameObject expand01Prefab;
-        public GameObject locker01Prefab;*/
+    [Header("Prefabs")]
+    public GameObject elementPrefab;
+    public GameObject break01Prefab;
+    public GameObject break02Prefab;
+    public GameObject blocker01Prefab;
+    public GameObject blocker02Prefab;
+    public GameObject expand01Prefab;
+    public GameObject locker01Prefab;
 
     //for lock
-    public ElementController[,] lockedCells;
+    public SpecilalElements[,] lockedCells;
+
+    //for blockers
+    public SpecilalElements[,] blockerCells;
+
+    //for breakables
+    public SpecilalElements[,] breakableCells;
+
+
+    //for bombs
+    public ElementController[,] bombsCells;
+
 
     private AudioClip audioClip;
 
@@ -116,7 +158,10 @@ public class GameBoard : MonoBehaviour
     private int matchForWrapBomb = 2;
     private int matchForColorBomb = 3;
 
-    public bool autoBombGen=false;
+    //dict
+    private Dictionary<TileKind, int> preloadDict;
+    private Dictionary<TileKind, GameObject> breacableDict;
+    private Dictionary<TileKind, GameObject> blockersDict;
 
     private void Awake()
     {
@@ -128,6 +173,7 @@ public class GameBoard : MonoBehaviour
             level = gameDataClass.saveData.levelToLoad; //load level number
         }
 
+        //setup world class
         if (worldClass != null)
         {
             if (level < worldClass.levels.Length)
@@ -151,6 +197,30 @@ public class GameBoard : MonoBehaviour
             }
         }
 
+        //for blockers
+        blockersDict = new Dictionary<TileKind, GameObject>
+        {
+            { TileKind.Blocker01, blocker01Prefab },
+            { TileKind.Blocker02, blocker02Prefab }
+        };
+
+        // Initialize the dictionary for preload elements
+        preloadDict = new Dictionary<TileKind, int>
+        {
+            { TileKind.element_01, 0 },
+            { TileKind.element_02, 1 },
+            { TileKind.element_03, 2 },
+            { TileKind.element_04, 3 },
+            { TileKind.element_05, 4 }
+        };
+
+        //for break
+        breacableDict = new Dictionary<TileKind, GameObject>
+        {
+            { TileKind.Breakable01, break01Prefab },
+            { TileKind.Breakable02, break02Prefab }
+        };
+
     }
 
     // Start is called before the first frame update
@@ -165,7 +235,13 @@ public class GameBoard : MonoBehaviour
         //all dots on board
         allElements = new GameObject[column, row];
 
-        lockedCells = new ElementController[column, row];
+        //init type of objects
+        blockerCells = new SpecilalElements[column, row];
+        lockedCells = new SpecilalElements[column, row];
+        breakableCells = new SpecilalElements[column, row];
+
+        //boms
+        bombsCells = new ElementController[column, row];
 
         //init type of objects
         emptyElement = new bool[column, row];
@@ -182,16 +258,84 @@ public class GameBoard : MonoBehaviour
 
         //load back sprite
         elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
-
     }
 
+    //empty cells
     public void GenerateEmptyElements()
-    {        
+    {
         for (int i = 0; i < boardLayout.Length; i++)
-        {           
+        {
             if (boardLayout[i].tileKind == TileKind.Empty)
             {
-                emptyElement[boardLayout[i].columnX, boardLayout[i].rowY] = true;                
+                emptyElement[boardLayout[i].columnX, boardLayout[i].rowY] = true;
+            }
+        }
+    }
+
+    //bubble gum
+    private void GenerateBlockers()
+    {
+        int namingCounter = 0;
+
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            TileKind kind = boardLayout[i].tileKind;
+
+            if (blockersDict.ContainsKey(kind))
+            {
+                Vector2 tempPos = new Vector2(boardLayout[i].columnX, boardLayout[i].rowY);
+
+                GameObject blockerPrefab = blockersDict[kind];
+
+                GameObject blockerElement = Instantiate(blockerPrefab, tempPos, Quaternion.identity);
+
+                blockerCells[boardLayout[i].columnX, boardLayout[i].rowY] = blockerElement.GetComponent<SpecilalElements>();
+
+                namingCounter++;
+
+                //naming
+                string elementName = blockerPrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
+                blockerElement.name = elementName;
+
+                //set properties
+                blockerElement.transform.parent = gameArea.transform;
+
+                // Add to all
+                //allTypeDotsCoord[boardLayout[i].x, boardLayout[i].y] = tempPos;
+            }
+        }
+    }
+
+    public void GenerateBreakable()
+    {
+        int namingCounter = 0;
+
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            TileKind kind = boardLayout[i].tileKind;
+
+            if (breacableDict.ContainsKey(kind))
+            {
+                Vector2 tempPos = new Vector2(boardLayout[i].columnX, boardLayout[i].rowY);
+
+                GameObject breakablePrefab = breacableDict[kind];
+
+                GameObject breakableElement = Instantiate(breakablePrefab, tempPos, Quaternion.identity);
+
+                breakableCells[boardLayout[i].columnX, boardLayout[i].rowY] = breakableElement.GetComponent<SpecilalElements>();
+
+                namingCounter++;
+
+                string elementName = breakablePrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
+
+                breakableElement.name = elementName;
+
+                //set properties parent
+                breakableElement.transform.parent = gameArea.transform;
+
+
+                // Add to all
+                //allTypeDotsCoord[boardLayout[i].x, boardLayout[i].y] = tempPos;
             }
         }
     }
@@ -200,6 +344,8 @@ public class GameBoard : MonoBehaviour
     private void SetUpBoard()
     {
         GenerateEmptyElements();
+        GenerateBlockers();
+        GenerateBreakable();
 
         //for naming
         int namingCounter = 0;
@@ -209,7 +355,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (!emptyElement[i, j])
+                if (!emptyElement[i, j] && !blockerCells[i, j])
                 {
                     //temp position and offset
                     Vector2 elementPosition = new Vector2(i, j);
@@ -226,27 +372,36 @@ public class GameBoard : MonoBehaviour
                         maxItertion++;
                     }
 
-                    maxItertion = 0;
-
                     //instance element
                     GameObject element = Instantiate(elements[elementNumber], elementPosition, Quaternion.identity);
 
-                    //set position
-                    element.GetComponent<ElementController>().column = i;
-                    element.GetComponent<ElementController>().row = j;
+                    ElementController elementController = element.GetComponent<ElementController>();
 
+                    //set position
+                    elementController.column = i;
+                    elementController.row = j;
+                    
                     //set properties
                     element.transform.parent = gameArea.transform;
 
                     namingCounter++;
 
-                    //dots naming
-                    element.name = element.tag + "-" + namingCounter + "-" + i + "-" + j;
-
+                    //elements naming
+                    element.name = element.tag + "_c" + i + "_r" + j + "_" + namingCounter;
+                                        
                     //add elements to array
                     allElements[i, j] = element;
                 }
             }
+        }
+
+        //bonus cells bombs and etc.
+        GenBonusCells();
+
+        //if not null gen preload cells
+        if (preloadBoardLayout != null)
+        {
+            GenPreloadLayout();
         }
     }
 
@@ -281,13 +436,14 @@ public class GameBoard : MonoBehaviour
     }
 
 
+
+    //step 9     
     public void DestroyMatches()
     {
-        //bomb gen part 1
+        //bomb gen - part 1 based on slide
         if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
         {
-            autoBombGen = false;
-            CheckToGenerateBombs();
+            CheckToGenerateBombs();            
         }
 
         for (int i = 0; i < column; i++)
@@ -313,7 +469,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null && !emptyElement[i, j])
+                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j])
                 {
                     for (int k = j + 1; k < row; k++)
                     {
@@ -349,14 +505,102 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private void DestroyMatchesAt(int column, int row)
+    private void RunParticles(ElementController element, int thisCol, int thisRow)
     {
-        if (allElements[column, row].GetComponent<ElementController>().isMatched)
+        if (element.isColumnBomb)
         {
-            ElementController currentElement = allElements[column, row].GetComponent<ElementController>();
+            GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                // Access the main module of the particle system
+                var mainModule = particleSystem.main;
+                // Set the startColor property to the desired color
+                mainModule.startColor = element.elementColor;
+            }
+            Destroy(elementParticle, .9f);
+
+        }
+
+        if (element.isWrapBomb)
+        {
+            GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                // Access the main module of the particle system
+                var mainModule = particleSystem.main;
+                // Set the startColor property to the desired color
+                mainModule.startColor = element.elementColor;
+            }
+
+            Destroy(elementParticle, .9f);
+        }
+
+        if (element.isRowBomb)
+        {
+            // Set rotation to 90 degrees around the Z axis
+            Quaternion rotation = Quaternion.Euler(0, 0, 90);
+            GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
+            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                // Access the main module of the particle system
+                var mainModule = particleSystem.main;
+                // Set the startColor property to the desired color
+                mainModule.startColor = element.elementColor;
+            }
+            Destroy(elementParticle, .9f);
+        }
+
+            if (element.destroyParticle != null)
+        {
+            GameObject elementParticle = Instantiate(element.destroyParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+
+            Destroy(elementParticle, .9f);
+        }
+
+    }
+
+    public IEnumerator MyDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+    }
+
+    // step 10  
+    private void DestroyMatchesAt(int thisColumn, int thisRow)
+    {        
+
+        if (allElements[thisColumn, thisRow].GetComponent<ElementController>().isMatched)
+        {
+            ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();
+
+            SpecilalElements currentBreak = breakableCells[thisColumn, thisRow];
+
+            //breakable tiles
+            if (breakableCells[thisColumn, thisRow] != null)
+            {
+                breakableCells[thisColumn, thisRow].TakeDamage(1);
+
+                if (breakableCells[thisColumn, thisRow].hitPoints <= 0)
+                {                    
+                    //sound
+                    if (currentBreak.elementSound != null)
+                    {
+                        PlaySound(currentBreak.elementSound);
+                    }
+
+                    //RunParticles(currentBreak, thisColumn, thisRow);
+
+                    //particles for break
+                    //GameObject break01Part = Instantiate(currentBreak.destroyParticle, allElements[thisColumn, thisRow].transform.position, Quaternion.identity);
+                    //Destroy(break01Part, 0.9f);
+
+                    breakableCells[thisColumn, thisRow] = null;
+                }
+            }
 
 
-            //goal for dots
             //goal for dots
             if (goalManagerClass != null)
             {
@@ -370,11 +614,14 @@ public class GameBoard : MonoBehaviour
                 }
                 else
                 {
-                    goalManagerClass.CompareGoal(allElements[column, row].tag.ToString()); //for usual dots
+                    goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString()); //for usual dots
                 }
 
                 goalManagerClass.UpdateGoals();
             }
+
+            //for blockers
+            DamageBlockers(thisColumn, thisRow);
 
             //sound
             if (currentElement.elementSound != null)
@@ -383,16 +630,22 @@ public class GameBoard : MonoBehaviour
             }
 
             //particles
-            if (currentElement.destroyParticle != null)
+            if (currentElement != null)
             {
-                GameObject elementParticle = Instantiate(currentElement.destroyParticle, allElements[column, row].transform.position, Quaternion.identity);
-                Destroy(elementParticle, .9f);
+                RunParticles(currentElement, thisColumn, thisRow);
             }
 
             scoreManagerClass.IncreaseScore(baseValue); //score
 
-            Destroy(allElements[column, row]);
-            allElements[column, row] = null;
+            //remove bombs
+            if (bombsCells[thisColumn, thisRow] != null)
+            {
+                bombsCells[thisColumn, thisRow] = null;
+            }
+
+            //main destroy
+            Destroy(allElements[thisColumn, thisRow]);
+            allElements[thisColumn, thisRow] = null;
 
             //clear match list
             matchFinderClass.currentMatch.Clear();
@@ -408,7 +661,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null && !emptyElement[i, j])
+                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j])
                 {
                     Vector2 tempPosition = new Vector2(i, j);
                     int refilledElementNumber = UnityEngine.Random.Range(0, elements.Length);
@@ -433,7 +686,8 @@ public class GameBoard : MonoBehaviour
 
                     counter++;
 
-                    element.name = $"{element.tag}_{currentTime}_{counter}";
+                    //element.name = $"{element.tag}_{currentTime}_{counter}";
+                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime;
                 }
             }
         }
@@ -450,17 +704,7 @@ public class GameBoard : MonoBehaviour
                 if (allElements[i, j] != null)
                 {
                     if (allElements[i, j].GetComponent<ElementController>().isMatched)
-                    {
-                        
-/*                        //bomb gen part 1-2 MY ADD
-                        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
-                        {
-                            autoBombGen = true;
-                            CheckToGenerateBombs(); //my addd
-                        }
-
-                        autoBombGen = false;*/
-
+                    {                        
                         return true;
                     }
                 }
@@ -474,30 +718,28 @@ public class GameBoard : MonoBehaviour
     private IEnumerator FillBoardCo()
     {
        
-        RefillBoard();
-
-        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
-        {
-            autoBombGen = true;
-            CheckToGenerateBombs(); //my addd
-        }
-
+        RefillBoard(); //refil board
 
         yield return new WaitForSeconds(refillDelay);
 
         while (MatchesOnBoard())
         {
-            streakValue++; //for score            
-            yield return new WaitForSeconds(1f);            
+            streakValue++; //for score                                 
             DestroyMatches();
             yield break;
         }
 
         currentElement = null;
 
+        if (IsDeadLock())
+        {
+            ShuffleBoard();
+        }
+
         if (currentState != GameState.pause)
             currentState = GameState.move;
     }
+
 
     //gen bombs part 3
     private MatchType ColumnOrRow()
@@ -507,19 +749,20 @@ public class GameBoard : MonoBehaviour
 
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
+        matchTypeClass.curElem = null;
 
         // Iterate through each dot in the match
         foreach (GameObject matchObject in matchCopy)
         {
             if (matchObject != null)
             {
-                ElementController thisElement = matchObject.GetComponent<ElementController>();
+                ElementController thisDot = matchObject.GetComponent<ElementController>();
 
 
                 string color = matchObject.tag;  // Get the color from the tag
 
-                int column = thisElement.column;
-                int row = thisElement.row;
+                int column = thisDot.column;
+                int row = thisDot.row;
 
                 int columnMatch = 0;
                 int rowMatch = 0;
@@ -529,12 +772,12 @@ public class GameBoard : MonoBehaviour
                 {
                     if (otherMatchObject != null)
                     {
+                        ElementController nextDot = otherMatchObject.GetComponent<ElementController>();
+
                         if (otherMatchObject == matchObject)
                         {
                             continue;
                         }
-
-                        ElementController nextDot = otherMatchObject.GetComponent<ElementController>();
 
                         if (nextDot.column == column && nextDot.CompareTag(color))
                         {
@@ -553,29 +796,34 @@ public class GameBoard : MonoBehaviour
                 {
                     matchTypeClass.type = 1;
                     matchTypeClass.color = color;
+                    matchTypeClass.curElem = matchObject;
                     return matchTypeClass;
                 }
                 else if (columnMatch == matchForWrapBomb && rowMatch == matchForWrapBomb)
                 {
                     matchTypeClass.type = 2;
                     matchTypeClass.color = color;
+                    matchTypeClass.curElem = matchObject;
                     return matchTypeClass;
                 }
                 else if (columnMatch == matchForColorBomb || rowMatch == matchForColorBomb)
                 {
                     matchTypeClass.type = 3;
                     matchTypeClass.color = color;
+                    matchTypeClass.curElem = matchObject;
                     return matchTypeClass;
                 }
-
             }
         }
 
         // If no match type found, return default
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
+        matchTypeClass.curElem = null;
         return matchTypeClass;
     }
+
+
 
     //gen bomb part 2
     public void CheckToGenerateBombs()
@@ -585,70 +833,50 @@ public class GameBoard : MonoBehaviour
             // Determine match type
             MatchType typeOfMatch = ColumnOrRow();
 
-            //for refill               
-            if (currentElement == null && typeOfMatch.type != 0 && autoBombGen == true)
+            //for auto
+            if (currentElement == null && typeOfMatch.type != 0)
             {
-                currentElement = matchFinderClass.currentMatch[0].GetComponent<ElementController>();
+                currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
+                currentElement.otherElement = null;
+            }
 
-                switch (typeOfMatch.type)
-                {
-                    case 1:
-                        currentElement.GenerateColorBomb();
-                        currentElement.isMatched = false;
-                        Debug.Log("Auto Color");
-                        break;
-                    case 2:
-                        currentElement.GenerateWrapBomb();
-                        currentElement.isMatched = false;
-                        Debug.Log("Auto Wrap");
-                        break;
-                    case 3:
-                        currentElement.GenerateColumnBomb();
-                        currentElement.isMatched = false;
-                        Debug.Log("Auto Column");
-                        break;
-                    default:
-                        break;
-                }
-            }  
-
-            //for move
-            if (currentElement != null && autoBombGen == false)
+            if (currentElement != null)
             {
-                bool curElemMatched = currentElement.isMatched && currentElement.tag == typeOfMatch.color;
-                ElementController otherElem = currentElement.otherElement != null ? currentElement.otherElement.GetComponent<ElementController>() : null;
-                bool otherElemMatched = otherElem != null && otherElem.isMatched && otherElem.tag == typeOfMatch.color;
+                bool currentDotMatched = currentElement.isMatched && currentElement.tag == typeOfMatch.color;
+                ElementController otherDot = currentElement.otherElement != null ? currentElement.otherElement.GetComponent<ElementController>() : null;
+                bool otherDotMatched = otherDot != null && otherDot.isMatched && otherDot.tag == typeOfMatch.color;
 
                 switch (typeOfMatch.type)
                 {
                     case 1:
                         // Color bomb
-                        if (curElemMatched)
+                        if (currentDotMatched)
                         {
                             currentElement.isMatched = false;
-                            currentElement.GenerateColorBomb();                            
+                            currentElement.GenerateColorBomb();
                         }
-                        else if (otherElemMatched)
+                        else if (otherDotMatched)
                         {
-                            otherElem.isMatched = false;
-                            otherElem.GenerateColorBomb();
+                            otherDot.isMatched = false;
+                            otherDot.GenerateColorBomb();
                         }
                         break;
                     case 2:
                         // Wrap bomb
-                        if (curElemMatched)
+                        if (currentDotMatched)
                         {
                             currentElement.isMatched = false;
                             currentElement.GenerateWrapBomb();
                         }
-                        else if (otherElemMatched)
+                        else if (otherDotMatched)
                         {
-                            otherElem.isMatched = false;
-                            otherElem.GenerateWrapBomb();
+                            otherDot.isMatched = false;
+                            otherDot.GenerateWrapBomb();
                         }
                         break;
                     case 3:
-                            matchFinderClass.LineBombCheck(typeOfMatch);                        
+                        // Column/Row bomb
+                        matchFinderClass.LineBombCheck(typeOfMatch);
                         break;
                     default:
                         break;
@@ -657,16 +885,321 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    //blockers
+    private void DamageBlockers(int column, int row)
+    {
+        DamageBlockerAt(column - 1, row);
+        DamageBlockerAt(column + 1, row);
+        DamageBlockerAt(column, row - 1);
+        DamageBlockerAt(column, row + 1);
+    }
+
+    //blockers
+    private void DamageBlockerAt(int thisColumn, int thisRow)
+    {
+        // Check if the position is within bounds
+        if (thisColumn >= 0 && thisColumn < column && thisRow >= 0 && thisRow < row)
+        {
+            // Check if there is a blocker at the position
+            if (blockerCells[thisColumn, thisRow])
+            {
+                // Apply damage
+                blockerCells[thisColumn, thisRow].TakeDamage(1);
+
+                // Log the current blocker
+                SpecilalElements currentBlocker = blockerCells[thisColumn, thisRow];
+
+                if (currentBlocker.elementSound != null)
+                {
+                    PlaySound(currentBlocker.elementSound);
+                }
+
+                //particles for break
+                if (currentBlocker.destroyParticle != null)
+                {
+                    GameObject blocker01Part = Instantiate(currentBlocker.destroyParticle, blockerCells[thisColumn, thisRow].transform.position, Quaternion.identity);
+                    Destroy(blocker01Part, 0.9f);
+                }
+
+                // Remove the blocker if its hit points are 0 or less
+                if (blockerCells[thisColumn, thisRow].hitPoints <= 0)
+                {
+                    blockerCells[thisColumn, thisRow] = null;
+                }
+            }
+        }
+    }
+
     //for bomb and blockers
     public void BombRow(int row)
     {
+        for (int i = 0; i < column; i++)
+        {
+            if (blockerCells[i, row])
+            {
+                blockerCells[i, row].TakeDamage(1);
 
+                if (blockerCells[i, row].hitPoints <= 0)
+                {
+                    blockerCells[i, row] = null;
+                }
+            }
+        }
 
     }
     
     //for bomb and blockers
     public void BombColumn(int column)
     {
+        for (int i = 0; i < row; i++)
+        {
+            if (blockerCells[column, i])
+            {
+                blockerCells[column, i].TakeDamage(1);
+
+                if (blockerCells[column, i].hitPoints <= 0)
+                {
+                    blockerCells[column, i] = null;
+                }
+            }
+        }
+    }
+
+    //bobms and etc
+    private void GenBonusCells()
+    {
+        foreach (var layout in boardLayout)
+        {
+            int column = layout.columnX;
+            int row = layout.rowY;
+
+            // Get current dot
+            GameObject currentDot = allElements[column, row];
+
+            if (currentDot != null)
+            {
+                // Get dot component
+                ElementController curDotGet = currentDot.GetComponent<ElementController>();
+
+                if (curDotGet != null)
+                {
+                    switch (layout.tileKind)
+                    {
+                        case TileKind.ColorBomb:
+                            curDotGet.GenerateColorBomb();
+                            curDotGet.isColorBomb = true;
+                            curDotGet.name = "ClmnB_" + curDotGet.name;
+                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
+                            break;
+
+                        case TileKind.WrapBomb:
+                            curDotGet.GenerateWrapBomb();
+                            curDotGet.isWrapBomb = true;
+                            curDotGet.name = "WrapB_" + curDotGet.name;
+                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
+                            break;
+
+                        case TileKind.RowBomb:
+                            curDotGet.GenerateRowBomb();
+                            curDotGet.isRowBomb = true;
+                            curDotGet.name = "RowB_" + curDotGet.name;
+                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
+                            break;
+
+                        case TileKind.ColumnBomb:
+                            curDotGet.GenerateColumnBomb();
+                            curDotGet.isColumnBomb = true;
+                            curDotGet.name = "ColrB_" + curDotGet.name;
+                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void GenPreloadLayout()
+    {
+        for (int i = 0; i < preloadBoardLayout.Length; i++)
+        {
+            TileKind kind = preloadBoardLayout[i].tileKind;
+
+            if (preloadDict.ContainsKey(kind))
+            {
+                Vector2 tempPos = new Vector2(preloadBoardLayout[i].columnX, preloadBoardLayout[i].rowY);
+                int valueX = preloadBoardLayout[i].columnX;
+                int valueY = preloadBoardLayout[i].rowY;
+
+                // Delete old random elements
+                Destroy(allElements[valueX, valueY].gameObject);
+
+                // Create preload
+                GameObject preloadElements = Instantiate(elements[preloadDict[kind]], tempPos, Quaternion.identity);
+                
+                //set properties
+                preloadElements.transform.parent = gameArea.transform;
+
+                // Set position
+                ElementController elemnt = preloadElements.GetComponent<ElementController>();
+                elemnt.column = valueX;
+                elemnt.row = valueY;
+
+                //preload dots naming
+                preloadElements.name = preloadElements.tag + "_c" + valueX + "_r" + valueY + "_" + "_pre" + i;
+
+                // Add to dots
+                allElements[valueX, valueY] = preloadElements;
+            }
+        }
+    }
+
+    private bool CheckForMatches()
+    {
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (allElements[i, j] != null)
+                {
+                    if (i < column - 2)
+                    {
+                        if (allElements[i + 1, j] != null && allElements[i + 2, j] != null)
+                        {
+                            if (allElements[i + 1, j].tag == allElements[i, j].tag && allElements[i + 2, j].tag == allElements[i, j].tag)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+
+                    if (j < row - 2)
+                    {
+                        if (allElements[i, j + 1] != null && allElements[i, j + 2] != null)
+                        {
+                            if (allElements[i, j + 1].tag == allElements[i, j].tag && allElements[i, j + 2].tag == allElements[i, j].tag)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void SwitchPieces(int column, int row, Vector2 direction)
+    {
+        if (allElements[column + (int)direction.x, row + (int)direction.y] != null)
+        {
+            GameObject holder = allElements[column + (int)direction.x, row + (int)direction.y] as GameObject;
+
+            allElements[column + (int)direction.x, row + (int)direction.y] = allElements[column, row];
+
+            allElements[column, row] = holder;
+        }
+    }
+
+    public bool SwithAndCheck(int column, int row, Vector2 direction)
+    {
+        SwitchPieces(column, row, direction);
+
+        if (CheckForMatches())
+        {
+            SwitchPieces(column, row, direction);
+            return true;
+        }
+
+        SwitchPieces(column, row, direction);
+        return false;
+    }
+
+    private bool IsDeadLock()
+    {
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (allElements[i, j] != null)
+                {
+                    if (i < column - 1)
+                    {
+                        if (SwithAndCheck(i, j, Vector2.right))
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (j < row - 1)
+                    {
+                        if (SwithAndCheck(i, j, Vector2.up))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public void ShuffleBoard()
+    {
+        //for game obj
+        List<GameObject> newBoard = new List<GameObject>();
+
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (allElements[i, j] != null && !bombsCells[i, j])
+                {
+                    newBoard.Add(allElements[i, j]);
+                }
+            }
+        }
+
+
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (!emptyElement[i, j] && !blockerCells[i, j] && !bombsCells[i, j]) //list of not
+                {
+                    int cellToUse = UnityEngine.Random.Range(0, newBoard.Count);
+
+                    int maxItertion = 0;
+
+                    //board without match
+                    while (MatchingCheck(i, j, newBoard[cellToUse]) && maxItertion < 100)
+                    {
+                        cellToUse = UnityEngine.Random.Range(0, newBoard.Count);
+                        maxItertion++;
+                    }
+
+                    //container
+                    ElementController element = newBoard[cellToUse].GetComponent<ElementController>();
+
+                    //assign col
+                    element.column = i;
+
+                    //assig row
+                    element.row = j;
+
+                    allElements[i, j] = newBoard[cellToUse];
+
+                    newBoard.Remove(newBoard[cellToUse]);
+
+                }
+            }
+        }
+
+        if (IsDeadLock())
+        {
+            ShuffleBoard();
+        }
 
     }
 

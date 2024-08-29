@@ -15,6 +15,7 @@ public class LevelButton : MonoBehaviour
     public GameObject starsPanel;
     public TMP_Text levelText;
     public int level;
+    private int highScore;
     public GameObject confirmPanel;
     
 
@@ -33,6 +34,7 @@ public class LevelButton : MonoBehaviour
 
         LoadData();
         ChooseSprite();
+        ActivateStars();
     }
 
 
@@ -86,10 +88,20 @@ public class LevelButton : MonoBehaviour
         }
     }
 
+    void ActivateStars()
+    {
+        //show stars
+        for (int i = 0; i < activeStars; i++)
+        {
+            stars[i].sprite = starOnSprite;
+        }
+    }
+
     public void ShowConfirmPanel(int level)
     {
         confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
-        confirmPanel.SetActive(true);
+        
+        confirmPanel.SetActive(true);            
     }
 
 }

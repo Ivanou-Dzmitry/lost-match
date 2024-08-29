@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class ElementController : MonoBehaviour
 {
@@ -48,7 +47,11 @@ public class ElementController : MonoBehaviour
 
     [Header("Sound")]
     public AudioClip elementSound;
+
+    [Header("Particles")]
     public GameObject destroyParticle;
+    public GameObject lineBombParticle;
+    public GameObject wrapBombParticle;
 
 
     // Start is called before the first frame update
@@ -60,7 +63,7 @@ public class ElementController : MonoBehaviour
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
     }
 
-
+    //step 1
     private void OnMouseDown()
     {
         if (gameBoardClass.currentState == GameState.move)
@@ -69,15 +72,17 @@ public class ElementController : MonoBehaviour
         }
     }
 
+    //step 2
     private void OnMouseUp()
     {
         if (gameBoardClass.currentState == GameState.move)
         {
             finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            CalculateAngle();
+            CalculateAngle(); //step 3
         }
     }
 
+    //step 4
     private void CalculateAngle()
     {
         //work with swipe only
@@ -87,7 +92,7 @@ public class ElementController : MonoBehaviour
 
             MoveElement(); // work with element part 1
 
-            gameBoardClass.currentElement = this;
+            gameBoardClass.currentElement = this;  // current 1
         }
         else
         {
@@ -95,12 +100,12 @@ public class ElementController : MonoBehaviour
         }
     }
 
-    //direction based on angle
+    //step 5. Direction based on angle
     void MoveElement()
     {
         if (swipeAngle > -45 && swipeAngle <= 45 && column < gameBoardClass.column - 1)
         {            
-            MoveElementMechanics(Vector2.right); //right swipe work with element part 2
+            MoveElementMechanics(Vector2.right); //right swipe
         }
         else if (swipeAngle > 45 && swipeAngle <= 135 && row < gameBoardClass.row - 1)
         {            
@@ -120,10 +125,10 @@ public class ElementController : MonoBehaviour
         }
     }
 
-    // work with element part 3
+    // step 6
     void MoveElementMechanics(Vector2 direction)
     {
-        //set other based on direction
+        //set otherElement based on direction - !!!        
         otherElement = gameBoardClass.allElements[column + (int)direction.x, row + (int)direction.y];
 
         //set rows
@@ -146,6 +151,7 @@ public class ElementController : MonoBehaviour
         }
     }
 
+    //setp 7
     public IEnumerator CheckMoveCo()
     {
         //for color bobmb 1
@@ -162,6 +168,7 @@ public class ElementController : MonoBehaviour
 
         yield return new WaitForSeconds(.1f);
 
+        //for all elements
         if (otherElement != null)
         {
             if (!isMatched && !otherElement.GetComponent<ElementController>().isMatched)
@@ -175,7 +182,7 @@ public class ElementController : MonoBehaviour
 
                 yield return new WaitForSeconds(.1f);
 
-                gameBoardClass.currentElement = null;
+                gameBoardClass.currentElement = null; // current 2
                 gameBoardClass.currentState = GameState.move;
             }
             else
@@ -188,7 +195,7 @@ public class ElementController : MonoBehaviour
                         endGameManagerClass.DecreaseCounterVal();
                     }
                 }                
-                gameBoardClass.DestroyMatches();  //destroy 2              
+                gameBoardClass.DestroyMatches();  //destroy 2  -- step 8            
             }
 
         }
@@ -226,7 +233,6 @@ public class ElementController : MonoBehaviour
         if (!isColumnBomb && !isColorBomb && !isWrapBomb)
         {
             isRowBomb = true;
-            //Debug.Log("row");
             
             //add sprite
             bombLayer.sprite = lineBombSprite;
@@ -238,7 +244,6 @@ public class ElementController : MonoBehaviour
         if (!isRowBomb && !isColorBomb && !isWrapBomb)
         {
             isColumnBomb = true;
-            //Debug.Log("column");
 
             //add sprite
             bombLayer.sprite = lineBombSprite;
@@ -252,6 +257,8 @@ public class ElementController : MonoBehaviour
         if (!isColumnBomb && !isRowBomb && !isWrapBomb)
         {
             isColorBomb = true;
+
+            this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite
             bombLayer.sprite = colorBombSprite;

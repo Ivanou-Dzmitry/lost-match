@@ -36,20 +36,94 @@ MonoBehaviour:
   - columnX: 6
     rowY: 6
     tileKind: 5
+  - columnX: 7
+    rowY: 6
+    tileKind: 11
+  - columnX: 1
+    rowY: 0
+    tileKind: 6
+  - columnX: 3
+    rowY: 0
+    tileKind: 6
+  - columnX: 0
+    rowY: 1
+    tileKind: 6
+  - columnX: 2
+    rowY: 1
+    tileKind: 6
+  - columnX: 4
+    rowY: 1
+    tileKind: 6
+  - columnX: 1
+    rowY: 2
+    tileKind: 6
+  - columnX: 3
+    rowY: 2
+    tileKind: 6
+  - columnX: 5
+    rowY: 0
+    tileKind: 6
+  - columnX: 5
+    rowY: 2
+    tileKind: 6
+  - columnX: 0
+    rowY: 6
+    tileKind: 6
+  - columnX: 1
+    rowY: 6
+    tileKind: 6
+  - columnX: 2
+    rowY: 6
+    tileKind: 6
+  - columnX: 3
+    rowY: 6
+    tileKind: 6
+  - columnX: 4
+    rowY: 6
+    tileKind: 6
+  - columnX: 5
+    rowY: 6
+    tileKind: 6
+  - columnX: 0
+    rowY: 3
+    tileKind: 6
+  - columnX: 2
+    rowY: 3
+    tileKind: 6
+  - columnX: 4
+    rowY: 3
+    tileKind: 6
+  - columnX: 1
+    rowY: 4
+    tileKind: 6
+  - columnX: 3
+    rowY: 4
+    tileKind: 6
+  - columnX: 5
+    rowY: 4
+    tileKind: 6
+  - columnX: 7
+    rowY: 0
+    tileKind: 6
+  - columnX: 7
+    rowY: 2
+    tileKind: 6
+  - columnX: 7
+    rowY: 4
+    tileKind: 6
   elementsBack:
     gameBoardBackSprite: {fileID: 21300000, guid: 1eba05605e62f6140aa782c473ca0bb0, type: 3}
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
-  - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
-  - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
-  scoreGoals: c80000009001000058020000
+  - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
+  scoreGoals: 3c0000005a00000078000000
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 22
+    counterValue: 30
   levelGoals:
   - numberGoalsNeeded: 24
     numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: aa09e65ac224ca84ca59ecec7bafe832, type: 3}
-    matchValue: element_01
+    goalSprite: {fileID: 21300000, guid: f5d7abee0f1daa24c8c8ee29a82b41dc, type: 3}
+    matchValue: blocker_01

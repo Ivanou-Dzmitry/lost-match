@@ -47,9 +47,6 @@ public class SettingsManager : MonoBehaviour
         {
             LoadData();            
         }
-
-
-
     }
 
     public void PauseGame()
@@ -176,4 +173,13 @@ public class SettingsManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
+
+    public void WinConfirm()
+    {
+        if (gameDataClass != null)
+        {
+            gameDataClass.saveData.isActive[gameBoardClass.level + 1] = true;
+            gameDataClass.SaveToFile();
+        }
+    }
 }

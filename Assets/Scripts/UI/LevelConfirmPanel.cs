@@ -22,15 +22,23 @@ public class LevelConfirmPanel : MonoBehaviour
     public Sprite starOnSprite;
 
     private GameData gameDataClass;
+    [Header("GUI")]
+    public GameObject confirmPanel;
+
+
+    void OnEnable()
+    {
+        confirmPanel.SetActive(false);
+
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
+
+        LoadData(); //from file
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
-        levelToLoad = level - 1;
-
-        LoadData(); //from file
     }
 
     void LoadData()
@@ -42,12 +50,15 @@ public class LevelConfirmPanel : MonoBehaviour
             highScore = gameDataClass.saveData.highScore[level - 1];
         }
 
+        levelToLoad = level - 1;
+
         //load game immediatly
         if (highScore == 0)
         {
             Play();
         } else
         {
+            confirmPanel.SetActive(true);
             highScoreText.text = "Items collected: " + highScore;
             headerText.text = "Level " + level + " Records";
 

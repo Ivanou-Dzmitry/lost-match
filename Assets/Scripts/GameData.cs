@@ -14,6 +14,7 @@ public class SaveData
     public int[] stars;
     public int[] bonuses;
     public int credits;
+    public int lives;
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;
@@ -85,6 +86,7 @@ public class GameData : MonoBehaviour
         }
 
         saveData.credits = 0;
+        saveData.lives = 3;
 
         //settings
         saveData.soundToggle = true;

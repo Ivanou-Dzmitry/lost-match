@@ -24,7 +24,8 @@ public class BonusButton : MonoBehaviour
 
         if (bonusCount == 0)
         {
-            this.GetComponent<Button>().interactable = false;
+            this.GetComponentInChildren<Button>().interactable = false;
+            bonusCountText.color = new Color(0.25f, 0.25f, 0.25f, 1f);
         }
     }
 

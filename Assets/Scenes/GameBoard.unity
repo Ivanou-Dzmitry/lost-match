@@ -427,6 +427,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 80860281}
   m_CullTransparentMesh: 1
+--- !u!1 &89270688 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3059157766219364375, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+  m_PrefabInstance: {fileID: 571316508}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &89915643
 GameObject:
   m_ObjectHideFlags: 0
@@ -1718,10 +1723,10 @@ RectTransform:
   - {fileID: 244931725}
   - {fileID: 1919526111}
   - {fileID: 681632336}
-  - {fileID: 1800767265}
-  - {fileID: 198098214}
   - {fileID: 1456369471}
   - {fileID: 651529509}
+  - {fileID: 1800767265}
+  - {fileID: 198098214}
   m_Father: {fileID: 1181253247}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1801,6 +1806,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 420869354}
     m_Modifications:
+    - target: {fileID: 3577304821293141799, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1881,6 +1890,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5045871607971262849, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
@@ -1889,9 +1902,17 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1988277910, guid: 62162503d7994c3469bf51f75b145b27, type: 3}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusNumber
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Name
       value: BonusButton (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_TagString
+      value: BonusButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1943,6 +1964,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentMatch: []
+--- !u!1 &454105547 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3059157766219364375, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+  m_PrefabInstance: {fileID: 1990194546}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &504661338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1951,6 +1977,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 420869354}
     m_Modifications:
+    - target: {fileID: 3577304821293141799, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2031,6 +2061,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5045871607971262849, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
@@ -2039,9 +2073,17 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1550347517, guid: fb613db391c8fc64794566b79360b97f, type: 3}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusNumber
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Name
       value: BonusButton (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_TagString
+      value: BonusButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2274,6 +2316,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 420869354}
     m_Modifications:
+    - target: {fileID: 3577304821293141799, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2354,13 +2400,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5045871607971262849, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
       objectReference: {fileID: 1435084868, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusButtonScreen
+      value: 
+      objectReference: {fileID: 89270688}
     - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Name
       value: BonusButton (0)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_TagString
+      value: BonusButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2838,6 +2896,60 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716317205}
   m_CullTransparentMesh: 1
+--- !u!1 &720297239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 720297241}
+  - component: {fileID: 720297240}
+  m_Layer: 0
+  m_Name: BonusShop
+  m_TagString: BonusShop
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &720297240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720297239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3357ba4858bceb3479b9eac30e674c6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shopState: 1
+  bonusPrice: 
+  tempBonuses: 
+  tempCreditsCount: 0
+  creditsCountPanelText: {fileID: 0}
+  creditsCountShopText: {fileID: 0}
+  creditsCountSlider: {fileID: 0}
+  livesCountPanelText: {fileID: 0}
+  infoText: {fileID: 0}
+  fadeDuration: 6
+--- !u!4 &720297241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720297239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &722123593
 GameObject:
   m_ObjectHideFlags: 0
@@ -3682,6 +3794,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 420869354}
     m_Modifications:
+    - target: {fileID: 3577304821293141799, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3762,6 +3878,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5045871607971262849, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
@@ -3770,9 +3890,17 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 945174935, guid: c8ff082c12b2aa64d8522ea5179a9fc4, type: 3}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusNumber
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Name
       value: BonusButton (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_TagString
+      value: BonusButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6566,6 +6694,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 420869354}
     m_Modifications:
+    - target: {fileID: 3577304821293141799, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6646,6 +6778,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5045871607971262849, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
@@ -6654,9 +6790,21 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -253071172, guid: b718cb8252f4b36498ef9d1f4a6e1f9c, type: 3}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusNumber
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: bonusButtonScreen
+      value: 
+      objectReference: {fileID: 454105547}
     - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Name
       value: BonusButton (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9110627975477412412, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_TagString
+      value: BonusButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6849,6 +6997,7 @@ MonoBehaviour:
     highScore: 
     stars: 
     bonuses: 
+    bonusesPrice: 
     credits: 0
     lives: 0
     soundToggle: 0
@@ -6960,3 +7109,4 @@ SceneRoots:
   - {fileID: 913946745}
   - {fileID: 174649020}
   - {fileID: 982941248}
+  - {fileID: 720297241}

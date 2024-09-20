@@ -13,6 +13,7 @@ public class SaveData
     public int[] highScore;
     public int[] stars;
     public int[] bonuses;
+    public int[] bonusesPrice;
     public int credits;
     public int lives;
     public bool soundToggle;
@@ -85,6 +86,18 @@ public class GameData : MonoBehaviour
             saveData.bonuses[i] = 0;
         }
 
+        saveData.bonusesPrice = new int[5];
+        for (int i = 0; i < saveData.bonusesPrice.Length; i++)
+        {
+            saveData.bonusesPrice[i] = 0;
+        }
+
+/*        saveData.bonusesPrice[0] = 5;
+        saveData.bonusesPrice[1] = 10;
+        saveData.bonusesPrice[2] = 15;
+        saveData.bonusesPrice[3] = 20;
+        saveData.bonusesPrice[4] = 25;*/
+
         saveData.credits = 0;
         saveData.lives = 3;
 
@@ -94,7 +107,6 @@ public class GameData : MonoBehaviour
         saveData.soundVolume = 1.0f;
         saveData.musicVolume = 0.5f;
     }
-
 
     private void OnDisable()
     {

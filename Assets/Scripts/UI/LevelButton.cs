@@ -24,19 +24,20 @@ public class LevelButton : MonoBehaviour
     public Sprite starOnSprite;
 
     private GameData gameDataClass;
+    private LevelGoals levelGoalsClass;
 
     // Start is called before the first frame update
     void Start()
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
-        
+        levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
+
         myButton = GetComponent<Button>();
 
         LoadData();
         ChooseSprite();
-        ActivateStars();
+        ActivateStars();        
     }
-
 
     void LoadData()
     {
@@ -97,11 +98,20 @@ public class LevelButton : MonoBehaviour
         }
     }
 
+
     public void ShowConfirmPanel(int level)
     {
-        confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
-        
-        confirmPanel.SetActive(true);            
+        //chesk lives
+        int lives = gameDataClass.saveData.lives;
+
+        if (lives > 0)
+        {
+            confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
+
+            levelGoalsClass.GetGoals(level - 1);
+
+            confirmPanel.SetActive(true);
+        }
     }
 
 }

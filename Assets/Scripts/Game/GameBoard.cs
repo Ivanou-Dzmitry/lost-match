@@ -135,13 +135,13 @@ public class GameBoard : MonoBehaviour
     public GameObject locker01Prefab;
 
     //for lock
-    public SpecilalElements[,] lockedCells;
+    public SpecialElements[,] lockedCells;
 
     //for blockers
-    public SpecilalElements[,] blockerCells;
+    public SpecialElements[,] blockerCells;
 
     //for breakables
-    public SpecilalElements[,] breakableCells;
+    public SpecialElements[,] breakableCells;
 
 
     //for bombs
@@ -236,9 +236,9 @@ public class GameBoard : MonoBehaviour
         allElements = new GameObject[column, row];
 
         //init type of objects
-        blockerCells = new SpecilalElements[column, row];
-        lockedCells = new SpecilalElements[column, row];
-        breakableCells = new SpecilalElements[column, row];
+        blockerCells = new SpecialElements[column, row];
+        lockedCells = new SpecialElements[column, row];
+        breakableCells = new SpecialElements[column, row];
 
         //boms
         bombsCells = new ElementController[column, row];
@@ -289,7 +289,7 @@ public class GameBoard : MonoBehaviour
 
                 GameObject blockerElement = Instantiate(blockerPrefab, tempPos, Quaternion.identity);
 
-                blockerCells[boardLayout[i].columnX, boardLayout[i].rowY] = blockerElement.GetComponent<SpecilalElements>();
+                blockerCells[boardLayout[i].columnX, boardLayout[i].rowY] = blockerElement.GetComponent<SpecialElements>();
 
                 namingCounter++;
 
@@ -322,7 +322,7 @@ public class GameBoard : MonoBehaviour
 
                 GameObject breakableElement = Instantiate(breakablePrefab, tempPos, Quaternion.identity);
 
-                breakableCells[boardLayout[i].columnX, boardLayout[i].rowY] = breakableElement.GetComponent<SpecilalElements>();
+                breakableCells[boardLayout[i].columnX, boardLayout[i].rowY] = breakableElement.GetComponent<SpecialElements>();
 
                 namingCounter++;
 
@@ -505,19 +505,28 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    private void RunSpecParticles(GameObject element, int thisCol, int thisRow)
+    {
+        GameObject elementParticle = Instantiate(element, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+        ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+
+
+        Destroy(elementParticle, .9f);
+    }
+
+
     private void RunParticles(ElementController element, int thisCol, int thisRow)
     {
         if (element.isColumnBomb)
         {
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
+            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem ps in particleSystems)
             {
-                // Access the main module of the particle system
-                var mainModule = particleSystem.main;
-                // Set the startColor property to the desired color
-                mainModule.startColor = element.elementColor;
+                var mainModule = ps.main;
+                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
             }
+
             Destroy(elementParticle, .9f);
 
         }
@@ -525,13 +534,11 @@ public class GameBoard : MonoBehaviour
         if (element.isWrapBomb)
         {
             GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
+            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem ps in particleSystems)
             {
-                // Access the main module of the particle system
-                var mainModule = particleSystem.main;
-                // Set the startColor property to the desired color
-                mainModule.startColor = element.elementColor;
+                var mainModule = ps.main;
+                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
             }
 
             Destroy(elementParticle, .9f);
@@ -542,13 +549,11 @@ public class GameBoard : MonoBehaviour
             // Set rotation to 90 degrees around the Z axis
             Quaternion rotation = Quaternion.Euler(0, 0, 90);
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
-            ParticleSystem particleSystem = elementParticle.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
+            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem ps in particleSystems)
             {
-                // Access the main module of the particle system
-                var mainModule = particleSystem.main;
-                // Set the startColor property to the desired color
-                mainModule.startColor = element.elementColor;
+                var mainModule = ps.main;
+                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
             }
             Destroy(elementParticle, .9f);
         }
@@ -575,7 +580,7 @@ public class GameBoard : MonoBehaviour
         {
             ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();
 
-            SpecilalElements currentBreak = breakableCells[thisColumn, thisRow];
+            SpecialElements currentBreak = breakableCells[thisColumn, thisRow];
 
             //breakable tiles
             if (breakableCells[thisColumn, thisRow] != null)
@@ -590,7 +595,7 @@ public class GameBoard : MonoBehaviour
                         PlaySound(currentBreak.elementSound);
                     }
 
-                    //RunParticles(currentBreak, thisColumn, thisRow);
+                    RunSpecParticles(currentBreak.destroyParticle, thisColumn, thisRow);
 
                     //particles for break
                     //GameObject break01Part = Instantiate(currentBreak.destroyParticle, allElements[thisColumn, thisRow].transform.position, Quaternion.identity);
@@ -907,7 +912,7 @@ public class GameBoard : MonoBehaviour
                 blockerCells[thisColumn, thisRow].TakeDamage(1);
 
                 // Log the current blocker
-                SpecilalElements currentBlocker = blockerCells[thisColumn, thisRow];
+                SpecialElements currentBlocker = blockerCells[thisColumn, thisRow];
 
                 if (currentBlocker.elementSound != null)
                 {

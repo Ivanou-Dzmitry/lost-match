@@ -232,7 +232,7 @@ MonoBehaviour:
   isRowBomb: 0
   isColorBomb: 0
   isWrapBomb: 0
-  elementColor: {r: 1, g: 0.42352942, b: 0.7921569, a: 1}
+  elementColor: {r: 1, g: 0.42352942, b: 0.7921569, a: 0.5019608}
   lineBombSprite: {fileID: 21300000, guid: f4cc84259d0295d42aa50c55e45af611, type: 3}
   wrapBombSprite: {fileID: 21300000, guid: d8590046b5f4d8543b2024a39fa4f1fd, type: 3}
   colorBombSprite: {fileID: 21300000, guid: ff5e60c7f9360f141942b10b066bc93f, type: 3}

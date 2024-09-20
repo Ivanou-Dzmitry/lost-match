@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitPoints: 2
   elementSound: {fileID: 8300000, guid: 74378eb767c1be642a3512a17b078e43, type: 3}
-  destroyParticle: {fileID: 0}
+  destroyParticle: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
   objLayer02: {fileID: 6818687712055374015}
   objLayer03: {fileID: 0}
 --- !u!1 &6818687712055374015

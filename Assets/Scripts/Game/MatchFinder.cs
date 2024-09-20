@@ -37,7 +37,7 @@ public class MatchFinder : MonoBehaviour
         element.GetComponent<ElementController>().isMatched = true;
 
         //element.GetComponent<SpriteRenderer>().color = element.GetComponent<ElementController>().elementColor; //tint for debug
-        element.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1f); //tint for debug
+        //element.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1f); //tint for debug
 
         // Remove all null elements
         currentMatch.RemoveAll(item => item == null);

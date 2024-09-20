@@ -23,6 +23,7 @@ public class EndGameManager : MonoBehaviour
 
     //class
     private GameBoard gameBoardClass;
+    private GameData gameDataClass;
 
     //panels
     public GameObject winPanel;
@@ -35,6 +36,7 @@ public class EndGameManager : MonoBehaviour
     void Start()
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
         SetGameType();
         SetupGame();
@@ -87,6 +89,11 @@ public class EndGameManager : MonoBehaviour
 
     public void LoseGame()
     {
+        //lives
+        int currentLives = gameDataClass.saveData.lives;
+        currentLives = currentLives - 1;
+        gameDataClass.saveData.lives = currentLives;
+
         tryPanel.SetActive(true);
 
         gameBoardClass.currentState = GameState.lose;

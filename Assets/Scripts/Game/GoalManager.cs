@@ -10,6 +10,15 @@ public class BlankGoalClass
     public int numberCollectedGoals;
     public Sprite goalSprite;
     public string matchValue;
+
+    // Method to clear the class
+    public void Clear()
+    {
+        numberGoalsNeeded = 0;
+        numberCollectedGoals = 0;
+        goalSprite = null; // Set reference types to null
+        matchValue = null; // Or you can set to an empty string "" if you prefer
+    }
 }
 
 public class GoalManager : MonoBehaviour

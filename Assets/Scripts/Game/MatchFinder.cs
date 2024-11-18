@@ -117,7 +117,7 @@ public class MatchFinder : MonoBehaviour
                         {
                             //get neiborhood elements Controllers
                             ElementController upElemGet = upElement.GetComponent<ElementController>();
-                            ElementController downElemGet = downElement.GetComponent<ElementController>(); 
+                            ElementController downElemGet = downElement.GetComponent<ElementController>();
 
                             //compare elements
                             if (upElement != null && downElement != null)
@@ -137,6 +137,11 @@ public class MatchFinder : MonoBehaviour
                                     GetNearbyPieces(upElement, currentElement, downElement);
                                 }
                             }
+
+
+
+
+
                         }
                     }
                 }
@@ -167,7 +172,7 @@ public class MatchFinder : MonoBehaviour
                 //for swipe
                 if ((angle1 > -45 && angle1 <= 45) || (angle1 < -135 || angle1 >= 135))
                 {
-                    gameBoardClass.currentElement.GenerateRowBomb();
+                    gameBoardClass.currentElement.GenerateRowBomb();                    
                 }
                 else
                 {
@@ -222,6 +227,22 @@ public class MatchFinder : MonoBehaviour
         }
     }
 
+    //simple bomb logic
+    public void MatchRowPieces(int row)
+    {
+        currentMatch.AddRange(GetRowPieces(row));
+    }
+
+    public void MatchColPieces(int col)
+    {
+        currentMatch.AddRange(GetColumnPieces(col));
+    }
+
+    public void MatchWrapPieces(int col, int row)
+    {
+        currentMatch.AddRange(GetWrapPieces(col, row));
+    }
+
     //for row bobm - step 3
     List<GameObject> GetRowPieces(int row)
     {
@@ -242,6 +263,12 @@ public class MatchFinder : MonoBehaviour
                 elements.Add(gameBoardClass.allElements[i, row]);
 
                 localElement.isMatched = true; //match here
+            }
+
+            //add for blockers
+            if (gameBoardClass.blockerCells[i, row] != null)
+            {
+                gameBoardClass.DamageBlockerAt(i, row);
             }
         }
 
@@ -286,6 +313,7 @@ public class MatchFinder : MonoBehaviour
 
                 ElementController localElement = gameBoardClass.allElements[column, i].GetComponent<ElementController>();
 
+
                 if (localElement.isRowBomb)
                 {
                     elements.Union(GetRowPieces(i)).ToList();
@@ -294,6 +322,13 @@ public class MatchFinder : MonoBehaviour
                 elements.Add(gameBoardClass.allElements[column, i]);
 
                 localElement.isMatched = true; //match here
+
+            }
+
+            //add for blockers
+            if (gameBoardClass.blockerCells[column, i] != null)
+            {               
+                gameBoardClass.DamageBlockerAt(column, i);
             }
         }
 
@@ -369,6 +404,12 @@ public class MatchFinder : MonoBehaviour
                     {
                         elements.Add(gameBoardClass.allElements[i, j]);
                         gameBoardClass.allElements[i, j].GetComponent<ElementController>().isMatched = true;
+                    }
+
+                    //add for blockers
+                    if (gameBoardClass.blockerCells[i, j] != null)
+                    {
+                        gameBoardClass.DamageBlockerAt(i, j);
                     }
                 }
             }

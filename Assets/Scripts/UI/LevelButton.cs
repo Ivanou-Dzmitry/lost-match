@@ -102,7 +102,7 @@ public class LevelButton : MonoBehaviour
     public void ShowConfirmPanel(int level)
     {
         //chesk lives
-        int lives = gameDataClass.saveData.lives;
+        int lives = gameDataClass.saveData.bonuses[5];
 
         if (lives > 0)
         {

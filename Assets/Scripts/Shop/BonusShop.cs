@@ -1,11 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR;
-
+using System.Linq;
 
 
 public class BonusShop : MonoBehaviour
@@ -29,19 +26,24 @@ public class BonusShop : MonoBehaviour
     public int tempCreditsCount;
 
     private int creditsCount;
-    private int livesCount;
+    //private int livesCount;
+    public int[] ordersCount;
+
     public TMP_Text creditsCountPanelText;
     public TMP_Text creditsCountShopText;
     public Slider creditsCountSlider;
-
-    public TMP_Text livesCountPanelText;
+    public Button buyButton;
 
     public TMP_Text infoText;
     public float fadeDuration = 6.0f; // Duration of the fade
 
+    int bonusCount = 6;
+
+    public ParticleSystem buyParticles01;
+
     private void Awake()
     {
-        tempBonuses = new int[5];
+        tempBonuses = new int[bonusCount];
         ZeroBonus();
     }
 
@@ -61,7 +63,7 @@ public class BonusShop : MonoBehaviour
     {
         //get data from save
         creditsCount = gameDataClass.saveData.credits;
-        livesCount = gameDataClass.saveData.lives;
+        //gameDataClass.saveData.bonuses[5] = gameDataClass.saveData.lives; //
 
         //add prices
         gameDataClass.saveData.bonusesPrice = bonusPrice;
@@ -70,10 +72,9 @@ public class BonusShop : MonoBehaviour
         tempCreditsCount = creditsCount;
 
         //show data
-        if(creditsCountPanelText != null && livesCountPanelText != null)
+        if(creditsCountPanelText != null)
         {
             creditsCountPanelText.text = "" + creditsCount;
-            livesCountPanelText.text = "" + livesCount;
         }
 
         //in shop
@@ -85,7 +86,7 @@ public class BonusShop : MonoBehaviour
             creditsCountSlider.minValue = 0;
             creditsCountSlider.value = tempCreditsCount;
         }
-            
+        
 
     }
 
@@ -94,6 +95,11 @@ public class BonusShop : MonoBehaviour
         for (int i = 0; i < tempBonuses.Length; i++)
         {
             tempBonuses[i] = 0;
+        }
+
+        for (int i = 0; i < ordersCount.Length; i++)
+        {
+            ordersCount[i] = 0;
         }
     }
 
@@ -112,17 +118,40 @@ public class BonusShop : MonoBehaviour
             gameDataClass.saveData.bonuses[i] = gameDataClass.saveData.bonuses[i] + tempBonuses[i];
         }
 
+        //lives
+        //gameDataClass.saveData.lives += tempBonuses[5]; 
+
         //set credits
         gameDataClass.saveData.credits = tempCreditsCount;
 
         //update text on panel
         creditsCountPanelText.text = "" + gameDataClass.saveData.credits;
-        livesCountPanelText.text = "" + gameDataClass.saveData.lives;
+        //livesCountPanelText.text = "" + gameDataClass.saveData.lives;
+
+        ZeroBonus();
+
     }
 
-    public void ShowInfo(int price)
+    public void BuyEffects()
     {
-        infoText.text = "Not enough credits to purchase! This bonus costs " + price + " credits";
+        buyParticles01.Play();
+    }
+
+    public void ShowInfo(int value, string type)
+    {
+        switch (type)
+        {
+            case "NoFounds":
+                infoText.text = "Not enough credits to purchase! This bonus costs " + value + " credits";
+                break;
+            case "MaxCount":
+                infoText.text = "Maximum quantity purchased: " + value + " pcs.";
+                break;
+            default:
+                infoText.text = "";
+                break;
+        }
+        
         StartCoroutine(FadeOutText());
     }
 
@@ -143,10 +172,28 @@ public class BonusShop : MonoBehaviour
         //textToFade.gameObject.SetActive(false);
     }
 
+    void BuyButtonLogic()
+    {
+        int sum = ordersCount.Sum();
+
+        if (sum == 0)
+        {
+            buyButton.interactable = false;
+            buyButton.GetComponent<Animator>().enabled = false;
+        }
+        else
+        {
+            buyButton.interactable = true;
+            buyButton.GetComponent<Animator>().enabled = true;
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-                
+        if (buyButton != null)
+        {
+            BuyButtonLogic();
+        }
     }
 }

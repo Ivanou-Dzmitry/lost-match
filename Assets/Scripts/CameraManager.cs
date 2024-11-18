@@ -33,7 +33,7 @@ public class CameraManager : MonoBehaviour
 
         transform.position = temPos;
 
-        Camera.main.orthographicSize = 8.57f;
+        Camera.main.orthographicSize = 8.88f;
 
         //background
         backImage.transform.position = new Vector3(temPos.x, temPos.y, 0);

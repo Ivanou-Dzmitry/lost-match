@@ -234,10 +234,13 @@ MonoBehaviour:
   isWrapBomb: 0
   elementColor: {r: 0.99607843, g: 0.8156863, b: 0.28235295, a: 1}
   lineBombSprite: {fileID: 21300000, guid: f4cc84259d0295d42aa50c55e45af611, type: 3}
+  columnBombSprite: {fileID: 21300000, guid: 9af7c63bb10c32f498682fcd001edcd6, type: 3}
   wrapBombSprite: {fileID: 21300000, guid: d8590046b5f4d8543b2024a39fa4f1fd, type: 3}
   colorBombSprite: {fileID: 21300000, guid: ff5e60c7f9360f141942b10b066bc93f, type: 3}
   bombLayer: {fileID: 6054868890756337285}
   elementSound: {fileID: 8300000, guid: b7b8d5be7290805439f25bfe106be26b, type: 3}
+  lineBombSound: {fileID: 8300000, guid: b414f7c7e7ef5e94a8cf2f41e4c5af12, type: 3}
+  wrapBombSound: {fileID: 8300000, guid: 796619093e199a1468114cca7b605a8f, type: 3}
   destroyParticle: {fileID: 7008526993925193625, guid: f9321d6d8d601ad41a5e322d1312b756, type: 3}
   lineBombParticle: {fileID: 3413543184670853712, guid: 95e48f46ebe23174b8d7f6bd43edf594, type: 3}
   wrapBombParticle: {fileID: 3413543184670853712, guid: ee26daa44d7a3db49bc6d756faf29cd1, type: 3}

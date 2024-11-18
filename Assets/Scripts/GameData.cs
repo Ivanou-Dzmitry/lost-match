@@ -13,13 +13,14 @@ public class SaveData
     public int[] highScore;
     public int[] stars;
     public int[] bonuses;
+    public int[] maxBonusCount;
     public int[] bonusesPrice;
     public int credits;
-    public int lives;
+    //public int lives;
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;
-    public float musicVolume;
+    public float musicVolume;    
 }
 
 public class GameData : MonoBehaviour
@@ -27,6 +28,8 @@ public class GameData : MonoBehaviour
     public static GameData gameData;
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
+
+    public int bonusCount = 6;
 
 
     private void Awake()
@@ -79,27 +82,47 @@ public class GameData : MonoBehaviour
         saveData.highScore = new int[11];
         saveData.isActive[0] = true; //turn on 1st level
         
-        saveData.bonuses = new int[5];
+        saveData.bonuses = new int[bonusCount];
 
         for (int i = 0; i < saveData.bonuses.Length; i++)
         {
             saveData.bonuses[i] = 0;
         }
 
-        saveData.bonusesPrice = new int[5];
+        saveData.bonusesPrice = new int[bonusCount];
         for (int i = 0; i < saveData.bonusesPrice.Length; i++)
         {
             saveData.bonusesPrice[i] = 0;
         }
 
-/*        saveData.bonusesPrice[0] = 5;
-        saveData.bonusesPrice[1] = 10;
-        saveData.bonusesPrice[2] = 15;
-        saveData.bonusesPrice[3] = 20;
-        saveData.bonusesPrice[4] = 25;*/
+        saveData.maxBonusCount = new int[bonusCount];
+        for (int i = 0; i < saveData.maxBonusCount.Length; i++)
+        {
+            saveData.maxBonusCount[i] = 0;
+        }
 
-        saveData.credits = 0;
-        saveData.lives = 3;
+        //set prices
+        saveData.bonusesPrice[0] = 15; //refresh
+        saveData.bonusesPrice[1] = 50; //color
+        saveData.bonusesPrice[2] = 35; //wrap
+        saveData.bonusesPrice[3] = 25; //line
+        saveData.bonusesPrice[4] = 25; //line
+        saveData.bonusesPrice[5] = 100; //energy
+
+        //set max count
+        saveData.maxBonusCount[0] = 3;
+        saveData.maxBonusCount[1] = 5;
+        saveData.maxBonusCount[2] = 5;
+        saveData.maxBonusCount[3] = 10;
+        saveData.maxBonusCount[4] = 10;
+        saveData.maxBonusCount[5] = 3;
+
+
+        //debug
+        saveData.credits = 6000;
+
+        //saveData.lives = 3;
+        saveData.bonuses[5] = 3; //set lives bonus #5
 
         //settings
         saveData.soundToggle = true;

@@ -140,46 +140,46 @@ MonoBehaviour:
     tileKind: 6
   - columnX: 3
     rowY: 0
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 0
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 1
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 1
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 2
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 2
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 3
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 3
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 4
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 4
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 5
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 5
-    tileKind: 56
+    tileKind: 7
   - columnX: 3
     rowY: 6
-    tileKind: 56
+    tileKind: 7
   - columnX: 4
     rowY: 6
-    tileKind: 56
+    tileKind: 7
   - columnX: 1
     rowY: 6
     tileKind: 9

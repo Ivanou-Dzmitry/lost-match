@@ -521,11 +521,6 @@ public class GameBoard : MonoBehaviour
         {
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
             ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-            foreach (ParticleSystem ps in particleSystems)
-            {
-                var mainModule = ps.main;
-                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
-            }
 
             Destroy(elementParticle, .9f);
 
@@ -535,11 +530,6 @@ public class GameBoard : MonoBehaviour
         {
             GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
             ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-            foreach (ParticleSystem ps in particleSystems)
-            {
-                var mainModule = ps.main;
-                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
-            }
 
             Destroy(elementParticle, .9f);
         }
@@ -550,11 +540,7 @@ public class GameBoard : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(0, 0, 90);
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
             ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-            foreach (ParticleSystem ps in particleSystems)
-            {
-                var mainModule = ps.main;
-                mainModule.startColor = element.elementColor; // Replace Color.red with the desired color
-            }
+     
             Destroy(elementParticle, .9f);
         }
 
@@ -871,7 +857,7 @@ public class GameBoard : MonoBehaviour
                         if (currentDotMatched)
                         {
                             currentElement.isMatched = false;
-                            currentElement.GenerateWrapBomb();
+                            currentElement.GenerateWrapBomb();                            
                         }
                         else if (otherDotMatched)
                         {
@@ -900,7 +886,7 @@ public class GameBoard : MonoBehaviour
     }
 
     //blockers
-    private void DamageBlockerAt(int thisColumn, int thisRow)
+    public void DamageBlockerAt(int thisColumn, int thisRow)
     {
         // Check if the position is within bounds
         if (thisColumn >= 0 && thisColumn < column && thisRow >= 0 && thisRow < row)
@@ -993,13 +979,14 @@ public class GameBoard : MonoBehaviour
                         case TileKind.ColorBomb:
                             curDotGet.GenerateColorBomb();
                             curDotGet.isColorBomb = true;
-                            curDotGet.name = "ClmnB_" + curDotGet.name;
-                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
+                            curDotGet.name = "ColrB_" + curDotGet.name;
+                            bombsCells[curDotGet.column, curDotGet.row] = curDotGet;                            
                             break;
 
                         case TileKind.WrapBomb:
                             curDotGet.GenerateWrapBomb();
                             curDotGet.isWrapBomb = true;
+                            curDotGet.tag = "no_tag"; //not tag
                             curDotGet.name = "WrapB_" + curDotGet.name;
                             bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
                             break;
@@ -1007,6 +994,7 @@ public class GameBoard : MonoBehaviour
                         case TileKind.RowBomb:
                             curDotGet.GenerateRowBomb();
                             curDotGet.isRowBomb = true;
+                            curDotGet.tag = "no_tag"; //not tag
                             curDotGet.name = "RowB_" + curDotGet.name;
                             bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
                             break;
@@ -1014,7 +1002,8 @@ public class GameBoard : MonoBehaviour
                         case TileKind.ColumnBomb:
                             curDotGet.GenerateColumnBomb();
                             curDotGet.isColumnBomb = true;
-                            curDotGet.name = "ColrB_" + curDotGet.name;
+                            curDotGet.tag = "no_tag"; //not tag
+                            curDotGet.name = "ColmB_" + curDotGet.name;
                             bombsCells[curDotGet.column, curDotGet.row] = curDotGet;
                             break;
                     }

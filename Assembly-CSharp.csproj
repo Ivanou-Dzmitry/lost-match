@@ -59,18 +59,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\UI\LevelButton.cs" />
+    <Compile Include="Assets\Scripts\Elements\SpecialElements.cs" />
     <Compile Include="Assets\Scripts\GameData.cs" />
     <Compile Include="Assets\Scripts\Shop\BonusShop.cs" />
     <Compile Include="Assets\Scripts\UI\LevelConfirmPanel.cs" />
     <Compile Include="Assets\Scripts\Game\MatchFinder.cs" />
     <Compile Include="Assets\Scripts\Elements\Element.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\Level.cs" />
+    <Compile Include="Assets\Scripts\UI\LevelGoals.cs" />
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\Game\GameBoard.cs" />
     <Compile Include="Assets\Scripts\SoundManager.cs" />
     <Compile Include="Assets\Scripts\Elements\ElementController.cs" />
     <Compile Include="Assets\Scripts\UI\GoalPanel.cs" />
-    <Compile Include="Assets\Scripts\Elements\SpecilalElements.cs" />
     <Compile Include="Assets\Scripts\UI\BonusButton.cs" />
     <Compile Include="Assets\Scripts\Game\EndGameManager.cs" />
     <Compile Include="Assets\Scripts\Game\ScoreManager.cs" />

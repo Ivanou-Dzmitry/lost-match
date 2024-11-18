@@ -198,6 +198,9 @@ MonoBehaviour:
   - columnX: 7
     rowY: 4
     tileKind: 1
+  - columnX: 5
+    rowY: 6
+    tileKind: 0
   element:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
@@ -209,10 +212,10 @@ MonoBehaviour:
     counterValue: 28
   levelGoals:
   - numberGoalsNeeded: 34
-    numberCollectedGoals: 0
+    numberCollectedGoals: 34
     goalSprite: {fileID: 21300000, guid: f5d7abee0f1daa24c8c8ee29a82b41dc, type: 3}
     matchValue: blocker_01
   - numberGoalsNeeded: 6
-    numberCollectedGoals: 0
+    numberCollectedGoals: 6
     goalSprite: {fileID: 21300000, guid: e356b17f335b22547a69e50bc85ad612, type: 3}
     matchValue: WrapBomb

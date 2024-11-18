@@ -40,6 +40,7 @@ public class ElementController : MonoBehaviour
 
     [Header("Bombs Stuff")]
     public Sprite lineBombSprite;
+    public Sprite columnBombSprite;
     public Sprite wrapBombSprite;
     public Sprite colorBombSprite;
     public SpriteRenderer bombLayer;
@@ -47,6 +48,9 @@ public class ElementController : MonoBehaviour
 
     [Header("Sound")]
     public AudioClip elementSound;
+    public AudioClip lineBombSound;
+    //public AudioClip colorBombSound;
+    public AudioClip wrapBombSound;
 
     [Header("Particles")]
     public GameObject destroyParticle;
@@ -166,6 +170,26 @@ public class ElementController : MonoBehaviour
             otherElement.GetComponent<ElementController>().isMatched = true;
         }
 
+        //new simple logic
+        if(isRowBomb)
+        {
+            matchFinderClass.MatchRowPieces(row);
+            isMatched = true;
+        }
+
+        if (isColumnBomb)
+        {
+            matchFinderClass.MatchColPieces(column);
+            isMatched = true;
+        }
+
+        if (isWrapBomb)
+        {
+            matchFinderClass.MatchWrapPieces(column, row);
+            isMatched = true;
+        }
+
+
         yield return new WaitForSeconds(.1f);
 
         //for all elements
@@ -233,9 +257,15 @@ public class ElementController : MonoBehaviour
         if (!isColumnBomb && !isColorBomb && !isWrapBomb)
         {
             isRowBomb = true;
-            
+            tag = "no_tag";
+            elementSound = lineBombSound;
+
+            this.GetComponent<SpriteRenderer>().sprite = null;
+
             //add sprite
             bombLayer.sprite = lineBombSprite;
+
+
         }            
     }
 
@@ -244,10 +274,13 @@ public class ElementController : MonoBehaviour
         if (!isRowBomb && !isColorBomb && !isWrapBomb)
         {
             isColumnBomb = true;
+            tag = "no_tag";
+            elementSound = lineBombSound;
+
+            this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite
-            bombLayer.sprite = lineBombSprite;
-            bombLayer.transform.eulerAngles = new Vector3 (0, 0, 90);
+            bombLayer.sprite = columnBombSprite;           
         }            
     }
 
@@ -270,6 +303,10 @@ public class ElementController : MonoBehaviour
         if (!isColumnBomb && !isRowBomb && !isColorBomb)
         {
             isWrapBomb = true;
+            tag = "no_tag";
+            elementSound = wrapBombSound;
+
+            this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite
             bombLayer.sprite = wrapBombSprite;

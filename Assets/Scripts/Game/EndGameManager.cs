@@ -90,9 +90,9 @@ public class EndGameManager : MonoBehaviour
     public void LoseGame()
     {
         //lives
-        int currentLives = gameDataClass.saveData.lives;
+        int currentLives = gameDataClass.saveData.bonuses[5];
         currentLives = currentLives - 1;
-        gameDataClass.saveData.lives = currentLives;
+        gameDataClass.saveData.bonuses[5] = currentLives;
 
         tryPanel.SetActive(true);
 

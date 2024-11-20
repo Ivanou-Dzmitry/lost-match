@@ -19,6 +19,8 @@ public class ScoreManager : MonoBehaviour
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
 
+    private bool update;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,6 +46,9 @@ public class ScoreManager : MonoBehaviour
             levelStars[i].sprite = levelStarsSpite[1];
 
         }
+
+        if(scoreText.text != null)
+            scoreText.text = "" + gameDataClass.saveData.credits;
     }
 
     private void GetScoreData()
@@ -63,7 +68,7 @@ public class ScoreManager : MonoBehaviour
         score += amountToIncrease; //score
 
         gameDataClass.saveData.credits += amountToIncrease;
-
+       
         //for stars
         for (int i = 0; i < gameBoardClass.scoreGoals.Length; i++)
         {
@@ -101,6 +106,7 @@ public class ScoreManager : MonoBehaviour
 
         UpdateBar();
 
+        update = true;
     }
 
     private void OnApplicationPause()
@@ -123,7 +129,12 @@ public class ScoreManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        scoreText.text = "Score: " + score.ToString(); //show score
+    {        
+        if (update)
+        {
+            scoreText.text = "" + gameDataClass.saveData.credits; //show score
+            update = false;
+        }
+        
     }
 }

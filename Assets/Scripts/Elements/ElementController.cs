@@ -25,6 +25,7 @@ public class ElementController : MonoBehaviour
     private GameBoard gameBoardClass;
     private MatchFinder matchFinderClass;
     private EndGameManager endGameManagerClass;
+    private BonusShop bonusShopClass;
 
     private float movementSpeed = 20.0f;
 
@@ -65,6 +66,7 @@ public class ElementController : MonoBehaviour
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
     }
 
     //step 1
@@ -74,6 +76,53 @@ public class ElementController : MonoBehaviour
         {
             firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
+
+        if(bonusShopClass.bonusSelected != -1)
+        {
+            Debug.Log("Click on Element: " + bonusShopClass.bonusSelected + "/name: " + this.name);            
+            /*            saveData.bonusesPrice[0] = 15; //refresh
+                        saveData.bonusesPrice[1] = 50; //color
+                        saveData.bonusesPrice[2] = 35; //wrap
+                        saveData.bonusesPrice[3] = 25; //line
+                        saveData.bonusesPrice[4] = 25; //line
+                        saveData.bonusesPrice[5] = 100; //energy*/
+            switch (bonusShopClass.bonusSelected)
+            {
+                case 0:
+                    gameBoardClass.ShuffleBoard();
+                    break;
+
+                case 1:
+                    this.isColorBomb = true;
+                    GenerateColorBomb();
+                    break;
+
+                case 2:
+                    this.isWrapBomb = true;
+                    GenerateWrapBomb();
+                    break;
+
+                case 3:
+                    this.isRowBomb = true;
+                    GenerateRowBomb();
+                    break;
+
+                case 4:
+                    this.isColumnBomb = true;
+                    GenerateColumnBomb();
+                    break;
+
+                default:
+                    Debug.LogWarning("Invalid bonus selected.");
+                    break;
+            }
+
+
+            bonusShopClass.bonusSelected = -1;
+            bonusShopClass.bonusDescPanel.SetActive(false);
+        }
+        
+        
     }
 
     //step 2

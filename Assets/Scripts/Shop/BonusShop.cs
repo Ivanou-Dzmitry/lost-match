@@ -18,9 +18,6 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
 
-    [Header("Bonus Price")]
-    public int[] bonusPrice;
-
     //temp data
     public int[] tempBonuses;
     public int tempCreditsCount;
@@ -31,15 +28,22 @@ public class BonusShop : MonoBehaviour
 
     public TMP_Text creditsCountPanelText;
     public TMP_Text creditsCountShopText;
-    public Slider creditsCountSlider;
+    public Slider creditsCountSlider; //slider
     public Button buyButton;
 
-    public TMP_Text infoText;
-    public float fadeDuration = 6.0f; // Duration of the fade
+    public TMP_Text infoText;    
+    public float fadeDuration = 2.0f; // Duration of the fade
+    private Coroutine fadeOutCoroutine;
 
     int bonusCount = 6;
 
     public ParticleSystem buyParticles01;
+
+    [Header("Description Panel")]
+    public int bonusSelected;
+    public GameObject bonusDescPanel;
+    public TMP_Text bonusName;
+    public TMP_Text bonusDescription;
 
     private void Awake()
     {
@@ -66,7 +70,7 @@ public class BonusShop : MonoBehaviour
         //gameDataClass.saveData.bonuses[5] = gameDataClass.saveData.lives; //
 
         //add prices
-        gameDataClass.saveData.bonusesPrice = bonusPrice;
+        //gameDataClass.saveData.bonusesPrice = bonusPrice;
 
         //temp credits
         tempCreditsCount = creditsCount;
@@ -101,6 +105,8 @@ public class BonusShop : MonoBehaviour
         {
             ordersCount[i] = 0;
         }
+
+        bonusSelected = -1;
     }
 
 
@@ -127,7 +133,7 @@ public class BonusShop : MonoBehaviour
         //update text on panel
         creditsCountPanelText.text = "" + gameDataClass.saveData.credits;
         //livesCountPanelText.text = "" + gameDataClass.saveData.lives;
-
+       
         ZeroBonus();
 
     }
@@ -151,8 +157,15 @@ public class BonusShop : MonoBehaviour
                 infoText.text = "";
                 break;
         }
-        
-        StartCoroutine(FadeOutText());
+
+        // Stop the previous coroutine if it's running
+        if (fadeOutCoroutine != null)
+        {
+            StopCoroutine(fadeOutCoroutine);
+        }
+
+        // Start the new coroutine
+        fadeOutCoroutine = StartCoroutine(FadeOutText());
     }
 
     IEnumerator FadeOutText()
@@ -188,6 +201,25 @@ public class BonusShop : MonoBehaviour
         }
     }
 
+    public void UpdateCredits(int credits)
+    {
+        // Update the slider value
+        //creditsCountSlider.value = credits;
+
+        // Get the Image component of the fillRect
+        if(creditsCountSlider != null)
+        {
+            Image fillImage = creditsCountSlider.fillRect.GetComponent<Image>();
+
+            // Hide the fillRect image if credits are 0, otherwise show it
+            if (fillImage != null)
+            {
+                fillImage.enabled = credits > 0;
+            }
+        }
+            
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -195,5 +227,8 @@ public class BonusShop : MonoBehaviour
         {
             BuyButtonLogic();
         }
+
+        UpdateCredits(tempCreditsCount);
+
     }
 }

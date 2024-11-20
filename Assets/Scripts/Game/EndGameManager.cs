@@ -101,9 +101,5 @@ public class EndGameManager : MonoBehaviour
         counter.text = "" + curCounterVal;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }

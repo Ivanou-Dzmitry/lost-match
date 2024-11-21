@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 5601757450022709980}
   m_Layer: 0
   m_Name: BonusBtn
-  m_TagString: Untagged
+  m_TagString: BonusButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -644,7 +644,7 @@ GameObject:
   - component: {fileID: 1614601464881606917}
   m_Layer: 0
   m_Name: BonusBtPrefGame
-  m_TagString: Untagged
+  m_TagString: BonusButtonPrefabGame
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -694,6 +694,7 @@ MonoBehaviour:
   minusButton: {fileID: 0}
   buttonClick: {fileID: 8300000, guid: 464fddd76c621574f8431566b5487635, type: 3}
   buySound01: {fileID: 0}
+  maxSign: {fileID: 0}
 --- !u!222 &4389239180841709035
 CanvasRenderer:
   m_ObjectHideFlags: 0

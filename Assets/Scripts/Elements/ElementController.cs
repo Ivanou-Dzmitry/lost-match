@@ -77,53 +77,56 @@ public class ElementController : MonoBehaviour
             firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
 
-        if(bonusShopClass.bonusSelected != -1)
+        if(bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
         {
-            Debug.Log("Click on Element: " + bonusShopClass.bonusSelected + "/name: " + this.name);            
-            /*            saveData.bonusesPrice[0] = 15; //refresh
-                        saveData.bonusesPrice[1] = 50; //color
-                        saveData.bonusesPrice[2] = 35; //wrap
-                        saveData.bonusesPrice[3] = 25; //line
-                        saveData.bonusesPrice[4] = 25; //line
-                        saveData.bonusesPrice[5] = 100; //energy*/
-            switch (bonusShopClass.bonusSelected)
-            {
-                case 0:
-                    gameBoardClass.ShuffleBoard();
-                    break;
-
-                case 1:
-                    this.isColorBomb = true;
-                    GenerateColorBomb();
-                    break;
-
-                case 2:
-                    this.isWrapBomb = true;
-                    GenerateWrapBomb();
-                    break;
-
-                case 3:
-                    this.isRowBomb = true;
-                    GenerateRowBomb();
-                    break;
-
-                case 4:
-                    this.isColumnBomb = true;
-                    GenerateColumnBomb();
-                    break;
-
-                default:
-                    Debug.LogWarning("Invalid bonus selected.");
-                    break;
-            }
-
-
-            bonusShopClass.bonusSelected = -1;
-            bonusShopClass.bonusDescPanel.SetActive(false);
-        }
-        
-        
+            UseBonus();
+        }                
     }
+
+
+    private void UseBonus()
+    {
+
+        //Debug.Log("Click on Element: " + bonusShopClass.bonusSelected + "/name: " + this.name);
+        //Debug.Log(bonusShopClass.bonusSelected);
+
+        switch (bonusShopClass.bonusSelected)
+        {
+            case 0:
+                gameBoardClass.ShuffleBoard();
+                break;
+
+            case 1:
+                this.isColorBomb = true;
+                GenerateColorBomb();
+                break;
+
+            case 2:
+                this.isWrapBomb = true;
+                GenerateWrapBomb();
+                break;
+
+            case 3:
+                this.isRowBomb = true;
+                GenerateRowBomb();
+                break;
+
+            case 4:
+                this.isColumnBomb = true;
+                GenerateColumnBomb();
+                break;
+
+            default:
+                Debug.LogWarning("Invalid bonus selected.");
+                break;
+        }
+
+        bonusShopClass.bonusSelected = -1;
+        bonusShopClass.bonusDescPanel.SetActive(false);
+
+        bonusShopClass.shopState = BonusShop.ShopState.Game;
+    }
+
 
     //step 2
     private void OnMouseUp()

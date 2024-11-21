@@ -10,7 +10,8 @@ public class BonusShop : MonoBehaviour
     public enum ShopState
     {
         Levels,
-        Game
+        Game,
+        SetBonus
     }
 
     public ShopState shopState;
@@ -25,6 +26,8 @@ public class BonusShop : MonoBehaviour
     private int creditsCount;
     //private int livesCount;
     public int[] ordersCount;
+
+    
 
     public TMP_Text creditsCountPanelText;
     public TMP_Text creditsCountShopText;
@@ -44,6 +47,12 @@ public class BonusShop : MonoBehaviour
     public GameObject bonusDescPanel;
     public TMP_Text bonusName;
     public TMP_Text bonusDescription;
+    public Image bonusImage;
+
+    [Header("Bonus Description")]
+    public Sprite[] bonusPicture;
+    public string[] bonusNameString;
+    public string[] bonusDescString;
 
     private void Awake()
     {

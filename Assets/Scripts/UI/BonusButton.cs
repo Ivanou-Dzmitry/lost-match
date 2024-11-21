@@ -1,9 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.XR;
+
 
 public class BonusButton : MonoBehaviour
 {
@@ -146,7 +145,8 @@ public class BonusButton : MonoBehaviour
         }
         else
         {
-            this.bonusButtonShop.GetComponent<Button>().interactable = true;
+            if (bonusShopClass.shopState != BonusShop.ShopState.SetBonus)
+                this.bonusButtonShop.GetComponent<Button>().interactable = true;
         }
 
     }
@@ -280,7 +280,25 @@ public class BonusButton : MonoBehaviour
 
     public void BonusButtonClick()
     {
-        if (bonusShopClass.shopState == BonusShop.ShopState.Game)
+        //Debug.Log(bonusShopClass.bonusSelected);
+
+        if (bonusShopClass.shopState == BonusShop.ShopState.SetBonus)
+        {
+            int selectedBonus = this.bonusNumber;
+            int bonusCount = gameDataClass.saveData.bonuses[selectedBonus];
+            gameDataClass.saveData.bonuses[selectedBonus] = bonusCount + 1;
+
+            bonusShopClass.bonusDescPanel.SetActive(false);
+
+            updInfo = true;
+
+            //Debug.Log("Return " + selectedBonus);
+
+            bonusShopClass.shopState = BonusShop.ShopState.Game;
+            bonusShopClass.bonusSelected = -1;
+        }
+
+            else if (bonusShopClass.shopState == BonusShop.ShopState.Game)
         {
             bonusShopClass.bonusSelected = -1;
             
@@ -293,15 +311,34 @@ public class BonusButton : MonoBehaviour
 
             gameDataClass.saveData.bonuses[selectedBonus] = bonusCount - 1;
 
-            Debug.Log("Click on Bonus: " + this.name + "/ " + this.bonusNumber +"/count: "+ bonusCount);
+            //Debug.Log("Click on Bonus: " + this.name + "/ " + this.bonusNumber +"/count: "+ bonusCount);
            
             updInfo = true;
 
             bonusShopClass.bonusDescPanel.SetActive(true);
+            bonusShopClass.bonusImage.sprite = bonusShopClass.bonusPicture[selectedBonus];
+            bonusShopClass.bonusName.text = bonusShopClass.bonusNameString[selectedBonus];
+            bonusShopClass.bonusDescription.text = bonusShopClass.bonusDescString[selectedBonus];
+
+            GameObject[] allBonusButtons = GameObject.FindGameObjectsWithTag("BonusButtonPrefabGame");
+
+            string curName = this.name;
+
+            for (int i = 0; i < allBonusButtons.Length; i++)
+            {
+                if(allBonusButtons[i].name != curName)
+                {
+                    BonusButton bb = allBonusButtons[i].gameObject.GetComponent<BonusButton>();
+                    bb.bonusButtonShop.GetComponent<Button>().interactable = false;
+                }
+            }
+
+            
+            // set state
+            bonusShopClass.shopState = BonusShop.ShopState.SetBonus;
         }
-
-
     }
+
 
     private void OnDestroy()
     {

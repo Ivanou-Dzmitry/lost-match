@@ -186,7 +186,7 @@ public class GameBoard : MonoBehaviour
 
                     elements = worldClass.levels[level].element;
 
-                    scoreGoals = worldClass.levels[level].scoreGoals;
+                    scoreGoals = worldClass.levels[level].scoreGoals; //get score goals for stars
 
                     gameBoardBack = worldClass.levels[level].elementsBack; //back
 

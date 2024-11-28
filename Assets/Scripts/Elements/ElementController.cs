@@ -125,6 +125,8 @@ public class ElementController : MonoBehaviour
         bonusShopClass.bonusDescPanel.SetActive(false);
 
         bonusShopClass.shopState = BonusShop.ShopState.Game;
+
+        
     }
 
 

@@ -39,14 +39,28 @@ public class SettingsManager : MonoBehaviour
         {
             gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         }
-        
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();       
-        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();        
-        
+
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+
         if (gameDataClass != null)
         {
-            LoadData();            
+            LoadData();
         }
+
+        //get safe area values
+        Rect safeArea = Screen.safeArea;
+
+        float safeAreaHeight = safeArea.height;
+
+        int screenHeight = Screen.height;
+
+        float unsafeAreaHeight = screenHeight - safeAreaHeight;
+
+        Debug.Log($"Screen Width: {unsafeAreaHeight}, Screen Height: {safeAreaHeight}");
+
+
+
     }
 
     public void PauseGame()

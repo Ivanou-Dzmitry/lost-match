@@ -1608,6 +1608,14 @@ MonoBehaviour:
   infoText: {fileID: 563040343}
   fadeDuration: 6
   buyParticles01: {fileID: 1859684084}
+  bonusSelected: 0
+  bonusDescPanel: {fileID: 0}
+  bonusName: {fileID: 0}
+  bonusDescription: {fileID: 0}
+  bonusImage: {fileID: 0}
+  bonusPicture: []
+  bonusNameString: []
+  bonusDescString: []
 --- !u!4 &347628252
 Transform:
   m_ObjectHideFlags: 0
@@ -4065,11 +4073,11 @@ PrefabInstance:
     - target: {fileID: 5601757450022709980, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
-      objectReference: {fileID: 1435084868, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
+      objectReference: {fileID: -1759191245, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
     - target: {fileID: 6243024207450926389, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1154500454, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
+      objectReference: {fileID: -1440322303, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
     - target: {fileID: 7188586234186477361, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
       propertyPath: bonusNumber
       value: 0
@@ -10034,7 +10042,11 @@ PrefabInstance:
     - target: {fileID: 5601757450022709980, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
       value: 
-      objectReference: {fileID: 1435084868, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
+      objectReference: {fileID: -1759191245, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
+    - target: {fileID: 6243024207450926389, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1440322303, guid: 788a7b09aa2ed7944bc0acaa3eb8b1f9, type: 3}
     - target: {fileID: 7188586234186477361, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: bonusButton
       value: 
@@ -11147,6 +11159,14 @@ MonoBehaviour:
   infoText: {fileID: 0}
   fadeDuration: 6
   buyParticles01: {fileID: 0}
+  bonusSelected: 0
+  bonusDescPanel: {fileID: 0}
+  bonusName: {fileID: 0}
+  bonusDescription: {fileID: 0}
+  bonusImage: {fileID: 0}
+  bonusPicture: []
+  bonusNameString: []
+  bonusDescString: []
 --- !u!1 &1785199367
 GameObject:
   m_ObjectHideFlags: 0

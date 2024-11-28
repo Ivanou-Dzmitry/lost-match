@@ -11,7 +11,8 @@ public class BonusShop : MonoBehaviour
     {
         Levels,
         Game,
-        SetBonus
+        SetBonus,
+        SetLastBonus
     }
 
     public ShopState shopState;

@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\Game\GameBoard.cs" />
     <Compile Include="Assets\Scripts\SoundManager.cs" />
+    <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\Elements\ElementController.cs" />
     <Compile Include="Assets\Scripts\UI\GoalPanel.cs" />
     <Compile Include="Assets\Scripts\UI\BonusButton.cs" />

@@ -18,7 +18,7 @@ public class BonusButton : MonoBehaviour
 
     //buttons
     public GameObject bonusButtonShop;
-    
+
     private int bonusCount;
     private int tempBonusCount;
 
@@ -34,9 +34,15 @@ public class BonusButton : MonoBehaviour
     public Button plusButton;
     public Button minusButton;
 
+    public Image maxSign;
+
     [Header("Sound")]
     public AudioClip buttonClick;
     public AudioClip buySound01;
+
+    [Header("Particles")]
+    public ParticleSystem bonusPart01;
+    public ParticleSystem bonusPart02;
 
 
     public static readonly Color SoftPinkClr = new Color(0.902f, 0.729f, 0.859f, 1f);
@@ -44,7 +50,7 @@ public class BonusButton : MonoBehaviour
 
     private float timer = 1f; // Tracks time
 
-    public Image maxSign;
+
 
     // Start is called before the first frame update
     void Start()
@@ -54,7 +60,7 @@ public class BonusButton : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
-        if (bonusShopClass.infoText != null )
+        if (bonusShopClass.infoText != null)
             bonusShopClass.infoText.text = "";
 
         UpdateBonusCount();
@@ -62,12 +68,12 @@ public class BonusButton : MonoBehaviour
         //set bonuce price
         if (gameDataClass.saveData.bonusesPrice != null)
             this.bonusPrice = gameDataClass.saveData.bonusesPrice[bonusNumber];
-        
+
         //set bonuce price text
         if (this.bonusPriceText != null)
             this.bonusPriceText.text = "" + this.bonusPrice;
 
-        if(this.counterPopUpText != null)
+        if (this.counterPopUpText != null)
             this.counterPopUpText.text = string.Empty;
 
         updInfo = true;
@@ -86,7 +92,7 @@ public class BonusButton : MonoBehaviour
 
     void OnEnable()
     {
-        if (gameDataClass != null && bonusShopClass!= null)
+        if (gameDataClass != null && bonusShopClass != null)
         {
             UpdateBonusCount();
 
@@ -132,27 +138,40 @@ public class BonusButton : MonoBehaviour
         int maxCount = gameDataClass.saveData.maxBonusCount[bonusNumber];
         int currentCount = gameDataClass.saveData.bonuses[bonusNumber] + bonusShopClass.tempBonuses[bonusNumber];
 
+        //turn off particles
+        if (bonusShopClass.bonusSelected == -1)
+        {
+            BonusParticleManager(false);
+        }
+
         //turn on sign
         if (this.maxSign != null)
         {
             this.maxSign.enabled = (currentCount == maxCount);
         }
 
+      
         //button enables
         if (totalBonusCount == 0)
         {
-            this.bonusButtonShop.GetComponent<Button>().interactable = false;
+            //for last bonus
+            if (bonusShopClass.shopState != BonusShop.ShopState.SetLastBonus)
+                this.bonusButtonShop.GetComponent<Button>().interactable = false;
         }
-        else
+        else if (totalBonusCount > 0)
         {
             if (bonusShopClass.shopState != BonusShop.ShopState.SetBonus)
                 this.bonusButtonShop.GetComponent<Button>().interactable = true;
+
+            //for last bonus
+            if (bonusShopClass.shopState == BonusShop.ShopState.SetLastBonus)
+                this.bonusButtonShop.GetComponent<Button>().interactable = false;
         }
 
     }
 
     public void AddBonus(int bonus)
-    { 
+    {
         int bonusPrice = gameDataClass.saveData.bonusesPrice[bonus];
         int credits = bonusShopClass.tempCreditsCount;
         int maxCount = gameDataClass.saveData.maxBonusCount[bonus];
@@ -164,18 +183,18 @@ public class BonusButton : MonoBehaviour
         int debt = 0;
         bool operation_permissible = false;
 
-        debt = credits - bonusPrice;       
+        debt = credits - bonusPrice;
 
         //if credits enought
         if (debt >= 0 && bonusCount < maxCount)
             operation_permissible = true;
 
         if (operation_permissible)
-        {            
+        {
             bonusShopClass.tempCreditsCount = credits - bonusPrice;
             bonusShopClass.tempBonuses[bonus] += 1;
             bonusShopClass.infoText.text = "";
-            
+
             bonusShopClass.BuyEffects();
             //orders
             bonusShopClass.ordersCount[bonus] += 1;
@@ -185,8 +204,8 @@ public class BonusButton : MonoBehaviour
             StartCoroutine(FadeOutPopUp());
 
             //play sound
-            soundManagerClass.PlaySound(buySound01);     
-            
+            soundManagerClass.PlaySound(buySound01);
+
             //mac label
             if (bonusShopClass.tempBonuses[bonus] == maxCount)
             {
@@ -197,13 +216,13 @@ public class BonusButton : MonoBehaviour
         {
             if (operation_permissible == false)
                 bonusShopClass.ShowInfo(bonusPrice, "NoFounds");
-            
+
             if (bonusCount >= maxCount)
             {
                 bonusShopClass.ShowInfo(bonusCount, "MaxCount");
                 this.maxSign.enabled = true;
             }
-                
+
         }
 
         //sfx for buy
@@ -225,7 +244,7 @@ public class BonusButton : MonoBehaviour
             //max label
             this.maxSign.enabled = false;
         }
-       
+
         StartCoroutine(FadeOutPopUp());
 
         //orders
@@ -243,7 +262,7 @@ public class BonusButton : MonoBehaviour
     }
 
     private void ButtonColor(int bonus)
-    {       
+    {
         if (bonusShopClass.ordersCount[bonus] > 0)
         {
             this.GetComponent<Image>().color = LightGreenClr;
@@ -255,7 +274,7 @@ public class BonusButton : MonoBehaviour
             this.GetComponent<Image>().color = SoftPinkClr;
             this.minusButton.interactable = false;
             this.minusButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
-        }                               
+        }
     }
 
 
@@ -278,27 +297,44 @@ public class BonusButton : MonoBehaviour
 
     }
 
+    public void BonusParticleManager(bool mode)
+    {
+        if(this.bonusPart01 != null && this.bonusPart02 != null)
+        {
+            if (mode)
+            {
+                this.bonusPart01.Play();
+                this.bonusPart02.Play();
+            }
+            else
+            {
+                this.bonusPart01.Stop();
+                this.bonusPart02.Stop();
+            }
+        }
+
+    }
+
     public void BonusButtonClick()
     {
-        //Debug.Log(bonusShopClass.bonusSelected);
-
-        if (bonusShopClass.shopState == BonusShop.ShopState.SetBonus)
+        if (bonusShopClass.shopState == BonusShop.ShopState.SetBonus || bonusShopClass.shopState == BonusShop.ShopState.SetLastBonus)
         {
             int selectedBonus = this.bonusNumber;
             int bonusCount = gameDataClass.saveData.bonuses[selectedBonus];
+
             gameDataClass.saveData.bonuses[selectedBonus] = bonusCount + 1;
 
-            bonusShopClass.bonusDescPanel.SetActive(false);
+            ToggleBonusDescriptionPanel(false);
 
             updInfo = true;
 
-            //Debug.Log("Return " + selectedBonus);
-
             bonusShopClass.shopState = BonusShop.ShopState.Game;
             bonusShopClass.bonusSelected = -1;
-        }
 
-            else if (bonusShopClass.shopState == BonusShop.ShopState.Game)
+            //turn off particles
+            BonusParticleManager(false);
+        }
+        else if (bonusShopClass.shopState == BonusShop.ShopState.Game)
         {
             bonusShopClass.bonusSelected = -1;
             
@@ -311,32 +347,55 @@ public class BonusButton : MonoBehaviour
 
             gameDataClass.saveData.bonuses[selectedBonus] = bonusCount - 1;
 
-            //Debug.Log("Click on Bonus: " + this.name + "/ " + this.bonusNumber +"/count: "+ bonusCount);
+            //set state
+            if (gameDataClass.saveData.bonuses[selectedBonus] == 0)
+            {
+                bonusShopClass.shopState = BonusShop.ShopState.SetLastBonus;
+            }
+            else
+            {
+                bonusShopClass.shopState = BonusShop.ShopState.SetBonus;
+            }
            
             updInfo = true;
 
-            bonusShopClass.bonusDescPanel.SetActive(true);
-            bonusShopClass.bonusImage.sprite = bonusShopClass.bonusPicture[selectedBonus];
-            bonusShopClass.bonusName.text = bonusShopClass.bonusNameString[selectedBonus];
-            bonusShopClass.bonusDescription.text = bonusShopClass.bonusDescString[selectedBonus];
+            ToggleBonusDescriptionPanel(true);
 
-            GameObject[] allBonusButtons = GameObject.FindGameObjectsWithTag("BonusButtonPrefabGame");
+            //show description
+            SetBonusDescription(selectedBonus);
 
-            string curName = this.name;
+            //disable other buttons
+            DisableOtherBonusButtons(this.name);
 
-            for (int i = 0; i < allBonusButtons.Length; i++)
-            {
-                if(allBonusButtons[i].name != curName)
-                {
-                    BonusButton bb = allBonusButtons[i].gameObject.GetComponent<BonusButton>();
-                    bb.bonusButtonShop.GetComponent<Button>().interactable = false;
-                }
-            }
-
-            
-            // set state
-            bonusShopClass.shopState = BonusShop.ShopState.SetBonus;
+            //turn on particles
+            BonusParticleManager(true);
         }
+    }
+
+    void SetBonusDescription(int selectedBonus)
+    {
+        bonusShopClass.bonusImage.sprite = bonusShopClass.bonusPicture[selectedBonus];
+        bonusShopClass.bonusName.text = bonusShopClass.bonusNameString[selectedBonus];
+        bonusShopClass.bonusDescription.text = bonusShopClass.bonusDescString[selectedBonus];
+    }
+
+    void DisableOtherBonusButtons(string currentButtonName)
+    {
+        GameObject[] allBonusButtons = GameObject.FindGameObjectsWithTag("BonusButtonPrefabGame");
+
+        foreach (var buttonObject in allBonusButtons)
+        {
+            if (buttonObject.name != currentButtonName)
+            {
+                Button button = buttonObject.GetComponent<BonusButton>().bonusButtonShop.GetComponent<Button>();
+                button.interactable = false;
+            }
+        }
+    }
+
+    void ToggleBonusDescriptionPanel(bool isActive)
+    {
+        bonusShopClass.bonusDescPanel.SetActive(isActive);
     }
 
 

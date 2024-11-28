@@ -12,12 +12,13 @@ public class ScoreManager : MonoBehaviour
 
     public int score;
     private int numberStars;
-    private int scoreBarLenght;
     public TMP_Text scoreText;
 
     public Slider scoreBar;
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
+
+    private float[] starPosition;
 
     private bool update;
 
@@ -35,11 +36,6 @@ public class ScoreManager : MonoBehaviour
             gameDataClass.LoadFromFile();
         }
 
-        //get score
-        if (gameBoardClass != null)
-        {
-            GetScoreData();
-        }
 
         for (int i = 0; i < levelStars.Length; i++)
         {
@@ -47,21 +43,48 @@ public class ScoreManager : MonoBehaviour
 
         }
 
-        if(scoreText.text != null)
+        if (scoreText.text != null)
             scoreText.text = "" + gameDataClass.saveData.credits;
-    }
 
-    private void GetScoreData()
-    {
-        int scoreGoalsLength = gameBoardClass.scoreGoals.Length;
 
-        scoreBarLenght = 0;
+        // Cache the RectTransform of the score bar
+        RectTransform rectTransformSlide = scoreBar.GetComponent<RectTransform>();
+        float sliderWidth = rectTransformSlide.rect.width;
 
-        for (int i = 0; i < scoreGoalsLength; i++)
+        // Get the max value from scoreGoals
+        int maxValue = gameBoardClass.scoreGoals[gameBoardClass.scoreGoals.Length - 1];
+
+        // Calculate one percent of the slider width (used for position calculation)
+        float onePercent = sliderWidth / maxValue;
+
+        // Cache the length of levelStars to avoid repeated calls in the loop
+        int starCount = levelStars.Length;
+
+        // Pre-allocate starPosition array with size based on the starCount
+        float[] starPosition = new float[starCount];
+
+        for (int i = 0; i < starCount; i++)
         {
-            scoreBarLenght = scoreBarLenght + gameBoardClass.scoreGoals[i];
+            // Calculate the position for the star based on the score goal
+            starPosition[i] = onePercent * gameBoardClass.scoreGoals[i];
+
+            // Cache RectTransform for each star (avoid GetComponent inside the loop)
+            RectTransform rectTransformStar = levelStars[i].GetComponent<RectTransform>();
+
+            // Calculate new position considering the image width
+            float imageWidth = rectTransformStar.rect.width/2;
+            Vector3 currentPosition = rectTransformStar.localPosition;
+
+            // Update the position of the star
+            rectTransformStar.localPosition = new Vector3(starPosition[i] - imageWidth, currentPosition.y, currentPosition.z);
         }
+
+
+        UpdateBar();
+
     }
+
+
 
     public void IncreaseScore(int amountToIncrease)
     {
@@ -119,11 +142,23 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateBar()
     {
-        if (gameBoardClass != null && scoreBar != null)
+        //update score bar
+        if (gameBoardClass?.scoreGoals != null && scoreBar != null && gameBoardClass.scoreGoals.Length > 0)
         {
-            int scoreGoalsLength = gameBoardClass.scoreGoals.Length;
+            // Update score bar using the last element of scoreGoals
+            scoreBar.value = (float)score / gameBoardClass.scoreGoals[^1];
+        }
 
-            scoreBar.value = (float)score / (float)gameBoardClass.scoreGoals[scoreGoalsLength - 1];
+        // Get the Image component of the fillRect
+        if (scoreBar != null)
+        {
+            Image fillImage = scoreBar.fillRect.GetComponent<Image>();
+
+            // Hide the fillRect image if credits are 0, otherwise show it
+            if (fillImage != null)
+            {
+                fillImage.enabled = score > 0;
+            }
         }
     }
 

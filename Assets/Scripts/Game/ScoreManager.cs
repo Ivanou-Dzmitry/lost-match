@@ -11,16 +11,13 @@ public class ScoreManager : MonoBehaviour
     private GameData gameDataClass;
 
     public int score;
-    private int numberStars;
+    public int tempScore;
+    public int numberStars;
     public TMP_Text scoreText;
 
     public Slider scoreBar;
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
-
-    private float[] starPosition;
-
-    private bool update;
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +26,6 @@ public class ScoreManager : MonoBehaviour
 
         GameObject gameDataObject = GameObject.FindWithTag("GameData");
         gameDataClass = gameDataObject.GetComponent<GameData>();
-
 
         if (gameDataClass != null)
         {
@@ -40,7 +36,6 @@ public class ScoreManager : MonoBehaviour
         for (int i = 0; i < levelStars.Length; i++)
         {
             levelStars[i].sprite = levelStarsSpite[1];
-
         }
 
         if (scoreText.text != null)
@@ -90,8 +85,10 @@ public class ScoreManager : MonoBehaviour
     {
         score += amountToIncrease; //score
 
-        gameDataClass.saveData.credits += amountToIncrease;
-       
+        tempScore += amountToIncrease;
+
+        //gameDataClass.saveData.credits += amountToIncrease;
+
         //for stars
         for (int i = 0; i < gameBoardClass.scoreGoals.Length; i++)
         {
@@ -128,8 +125,6 @@ public class ScoreManager : MonoBehaviour
         }
 
         UpdateBar();
-
-        update = true;
     }
 
     private void OnApplicationPause()
@@ -162,14 +157,4 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {        
-        if (update)
-        {
-            scoreText.text = "" + gameDataClass.saveData.credits; //show score
-            update = false;
-        }
-        
-    }
 }

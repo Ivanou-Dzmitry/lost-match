@@ -28,6 +28,6 @@ MonoBehaviour:
     counterValue: 14
   levelGoals:
   - numberGoalsNeeded: 15
-    numberCollectedGoals: 0
+    numberCollectedGoals: 15
     goalSprite: {fileID: 21300000, guid: 6b8d7bcf9c0df3845ba6f1b962aa232e, type: 3}
     matchValue: element_03

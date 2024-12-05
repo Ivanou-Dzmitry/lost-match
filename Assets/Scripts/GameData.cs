@@ -20,7 +20,8 @@ public class SaveData
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;
-    public float musicVolume;    
+    public float musicVolume;
+    public string savedTime;
 }
 
 public class GameData : MonoBehaviour
@@ -129,6 +130,8 @@ public class GameData : MonoBehaviour
         saveData.musicToggle = true;
         saveData.soundVolume = 1.0f;
         saveData.musicVolume = 0.5f;
+
+        saveData.savedTime = "";
     }
 
     private void OnDisable()

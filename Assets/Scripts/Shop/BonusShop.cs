@@ -19,6 +19,7 @@ public class BonusShop : MonoBehaviour
 
     //classes
     private GameData gameDataClass;
+    private TimeManager timeManagerClass;
 
     //temp data
     public int[] tempBonuses;
@@ -28,13 +29,16 @@ public class BonusShop : MonoBehaviour
     //private int livesCount;
     public int[] ordersCount;
 
-    
+    [Header("Shop Panel")]
+    public GameObject bonusShopPanel;
 
+    [Header("Credits")]
     public TMP_Text creditsCountPanelText;
     public TMP_Text creditsCountShopText;
     public Slider creditsCountSlider; //slider
     public Button buyButton;
 
+    [Header("Notification Stuff")]
     public TMP_Text infoText;    
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
@@ -55,6 +59,8 @@ public class BonusShop : MonoBehaviour
     public string[] bonusNameString;
     public string[] bonusDescString;
 
+    
+
     private void Awake()
     {
         tempBonuses = new int[bonusCount];
@@ -67,7 +73,7 @@ public class BonusShop : MonoBehaviour
     {
         //classes        
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
-
+        timeManagerClass = GameObject.FindWithTag("GameData").GetComponent<TimeManager>();
         SetupShop();
 
         //Debug.Log("here");
@@ -153,20 +159,31 @@ public class BonusShop : MonoBehaviour
         buyParticles01.Play();
     }
 
-    public void ShowInfo(int value, string type)
+    public void ShowInfo(int value, string type, string busterName = null)
     {
+
         switch (type)
         {
             case "NoFounds":
-                infoText.text = "Not enough credits to purchase! This bonus costs " + value + " credits";
+                infoText.text = $"Not enough credits to purchase! {busterName} costs {value} credits";
                 break;
             case "MaxCount":
-                infoText.text = "Maximum quantity purchased: " + value + " pcs.";
+                infoText.text = $"Maximum quantity of {busterName} purchased: {value} pcs";
+                break;
+            case "NoLives":
+                infoText.text = "Need to buy batteries!";
+                break;
+            case "BuyBonus":
+                infoText.text = "The " + busterName + " was added to cart";
+                break;
+            case "ReturnBonus":
+                infoText.text = "The " + busterName + " was removed from the cart";
                 break;
             default:
                 infoText.text = "";
                 break;
         }
+
 
         // Stop the previous coroutine if it's running
         if (fadeOutCoroutine != null)

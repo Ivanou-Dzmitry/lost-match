@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Elements\ElementController.cs" />
     <Compile Include="Assets\Scripts\UI\GoalPanel.cs" />
     <Compile Include="Assets\Scripts\UI\BonusButton.cs" />
+    <Compile Include="Assets\Scripts\Shop\TimeManager.cs" />
     <Compile Include="Assets\Scripts\Game\EndGameManager.cs" />
     <Compile Include="Assets\Scripts\Game\ScoreManager.cs" />
     <Compile Include="Assets\Scripts\Game\GoalManager.cs" />

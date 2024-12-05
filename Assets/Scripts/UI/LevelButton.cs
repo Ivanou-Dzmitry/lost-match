@@ -25,12 +25,14 @@ public class LevelButton : MonoBehaviour
 
     private GameData gameDataClass;
     private LevelGoals levelGoalsClass;
+    private BonusShop bonusShopClass;
 
     // Start is called before the first frame update
     void Start()
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
         myButton = GetComponent<Button>();
 
@@ -112,6 +114,20 @@ public class LevelButton : MonoBehaviour
 
             confirmPanel.SetActive(true);
         }
+        else
+        {
+            bonusShopClass.bonusShopPanel.SetActive(true);
+            //bonusShopClass.OpenShop();
+
+
+            StartCoroutine(ShowInfoAfterPanelActive());
+        }
+    }
+
+    private IEnumerator ShowInfoAfterPanelActive()
+    {
+        yield return null; // Wait for one frame
+        bonusShopClass.ShowInfo(0, "NoLives");
     }
 
 }

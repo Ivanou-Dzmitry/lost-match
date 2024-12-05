@@ -6,7 +6,9 @@ public class UIManager : MonoBehaviour
 {
     public RectTransform panelTop; // Assign your panel's RectTransform in the Inspector
     public RectTransform panelCenter;
-    int paddingTop = 8; // Assign your panel's RectTransform in the Inspector
+    public RectTransform panelBottom;
+
+    public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
     void Start()
     {
@@ -15,8 +17,6 @@ public class UIManager : MonoBehaviour
 
     void AdjustPanelPosition()
     {
-        if (panelTop == null) return;
-
         // Get the safe area values
         Rect safeArea = Screen.safeArea;
 
@@ -26,16 +26,39 @@ public class UIManager : MonoBehaviour
         // Calculate the height of the unsafe zone (top and bottom combined)
         float unsafeZoneHeight = screenHeight - safeArea.height;
 
-        // Lower the panel by the unsafe zone's height at the bottom
-        Vector2 anchoredPosition = panelTop.anchoredPosition;
-        Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
+        float panelTopHeight = 0;
 
-        anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
-        anchoredPosition2.y = -unsafeZoneHeight - paddingTop;
+        if (panelTop != null)
+        {
+            panelTopHeight = panelTop.rect.height;
 
-        panelTop.anchoredPosition = anchoredPosition;
-        panelCenter.anchoredPosition = anchoredPosition2;
+            // Lower the panel by the unsafe zone's height at the bottom
+            Vector2 anchoredPosition = panelTop.anchoredPosition;
+            anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
+            panelTop.anchoredPosition = anchoredPosition;
+        }
 
-        Debug.Log($"Safe Area: {safeArea}, Unsafe Zone Height: {unsafeZoneHeight}");
+        float panelBottomHeight = 0;
+
+        if (panelBottom != null)
+        {
+            panelBottomHeight = panelBottom.rect.height;
+        }
+
+        float panelCenterHeight = 0;
+
+        if (panelCenter != null)
+        {
+            panelCenterHeight = panelCenter.rect.height;
+
+            //change size
+            Vector2 currentSize = panelCenter.sizeDelta;
+            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y - unsafeZoneHeight);
+
+            Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
+            anchoredPosition2.y = -unsafeZoneHeight - panelTopHeight - paddingPanels;
+            panelCenter.anchoredPosition = anchoredPosition2;
+        }
+        
     }
 }

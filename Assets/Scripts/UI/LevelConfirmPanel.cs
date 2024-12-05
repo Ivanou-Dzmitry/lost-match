@@ -50,12 +50,6 @@ public class LevelConfirmPanel : MonoBehaviour
         SetupIntroGoals();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     void LoadData()
     {
         activeStars = 0;

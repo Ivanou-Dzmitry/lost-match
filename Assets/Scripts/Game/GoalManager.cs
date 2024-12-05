@@ -108,7 +108,8 @@ public class GoalManager : MonoBehaviour
                 currentGoals[i].thisCheck.enabled = true; //turn check ON               
             }
 
-            if (goalsCompleted >= levelGoals.Length)
+            //end game procedure
+            if (goalsCompleted >= levelGoals.Length && gameBoardClass.currentState == GameState.move )
             {
                 if (endGameManagerClass != null)
                 {

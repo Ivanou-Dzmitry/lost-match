@@ -11,7 +11,9 @@ public class SettingsManager : MonoBehaviour
     private SoundManager soundManagerClass;    
     private GameBoard gameBoardClass;
 
+    [Header("Screens")]
     public GameObject settingsScreen;
+    public GameObject quitScreen;
 
     public bool paused = false;
 
@@ -73,15 +75,15 @@ public class SettingsManager : MonoBehaviour
     {
         if (sceneName == "GameBoard")
         {
-            if (paused && !settingsScreen.activeInHierarchy)
+            if (paused)
             {
-                settingsScreen.SetActive(true);
-                gameBoardClass.currentState = GameState.pause;
+                //settingsScreen.SetActive(true);
+                gameBoardClass.currentState = GameState.pause;                
             }
 
-            if (!paused && settingsScreen.activeInHierarchy)
+            if (!paused)
             {
-                settingsScreen.SetActive(false);
+                //settingsScreen.SetActive(false);
                 gameBoardClass.currentState = GameState.move;
             }
         }

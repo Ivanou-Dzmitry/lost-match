@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR;
 
 
 public class BonusButton : MonoBehaviour
@@ -12,7 +13,9 @@ public class BonusButton : MonoBehaviour
     private SoundManager soundManagerClass;
 
     //number
+    [Header("Busters")]
     public int bonusNumber;
+    public string busterName;
 
     private bool updInfo;
 
@@ -82,6 +85,12 @@ public class BonusButton : MonoBehaviour
     private void Awake()
     {
         //disable minus button
+        HideMinusButton();
+    }
+
+    private void HideMinusButton()
+    {
+        //disable minus button
         if (this.minusButton != null)
         {
             this.minusButton.interactable = false;
@@ -100,8 +109,6 @@ public class BonusButton : MonoBehaviour
 
             this.GetComponent<Image>().color = SoftPinkClr;
 
-
-
             //max sign
             this.maxSign.enabled = false;
 
@@ -111,6 +118,8 @@ public class BonusButton : MonoBehaviour
             this.counterPopUpText.text = string.Empty;
 
             updInfo = true;
+
+            HideMinusButton();
         }
     }
 
@@ -206,6 +215,8 @@ public class BonusButton : MonoBehaviour
             //play sound
             soundManagerClass.PlaySound(buySound01);
 
+            bonusShopClass.ShowInfo(1, "BuyBonus", this.busterName);
+
             //mac label
             if (bonusShopClass.tempBonuses[bonus] == maxCount)
             {
@@ -215,11 +226,11 @@ public class BonusButton : MonoBehaviour
         else
         {
             if (operation_permissible == false)
-                bonusShopClass.ShowInfo(bonusPrice, "NoFounds");
+                bonusShopClass.ShowInfo(bonusPrice, "NoFounds", this.busterName);
 
             if (bonusCount >= maxCount)
             {
-                bonusShopClass.ShowInfo(bonusCount, "MaxCount");
+                bonusShopClass.ShowInfo(bonusCount, "MaxCount", this.busterName);
                 this.maxSign.enabled = true;
             }
 
@@ -243,6 +254,8 @@ public class BonusButton : MonoBehaviour
 
             //max label
             this.maxSign.enabled = false;
+
+            bonusShopClass.ShowInfo(1, "ReturnBonus", this.busterName);
         }
 
         StartCoroutine(FadeOutPopUp());
@@ -291,8 +304,7 @@ public class BonusButton : MonoBehaviour
             timer = 0f;
 
             UpdateBonusCount();
-
-            updInfo = false;
+            updInfo = false;  
         }
 
     }
@@ -402,7 +414,7 @@ public class BonusButton : MonoBehaviour
     private void OnDestroy()
     {
         // Code to execute before the component is destroyed
-        updInfo = true;
+        updInfo = true;        
     }
 
     IEnumerator FadeOutPopUp()

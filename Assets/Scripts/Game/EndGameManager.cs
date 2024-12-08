@@ -24,12 +24,13 @@ public class EndGameManager : MonoBehaviour
     private GameData gameDataClass;
     public EndGameRequriments EndGameReqClass;
     public ScoreManager scoreManagerClass;
+    public SoundManager soundManagerClass;
 
     //panels
     public GameObject winPanel;
     public GameObject tryPanel;
 
-    public TMP_Text counter;
+    public TMP_Text movesCounter;
     public int curCounterVal;
 
     [Header("Win Panel")]
@@ -38,13 +39,16 @@ public class EndGameManager : MonoBehaviour
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
     public ParticleSystem[] starsPart;
+    public AudioClip winMusic;
 
     [Header("Congrat")]
     public ParticleSystem[] congratPart;
 
     [Header("Lose Panel")]
-    public TMP_Text levelNumberLose;    
-
+    public TMP_Text levelNumberLose;
+    public TMP_Text creditsCountLose;
+    public Button retryLooseButton;
+    public AudioClip loseMusic;
 
 
     // Start is called before the first frame update
@@ -53,6 +57,7 @@ public class EndGameManager : MonoBehaviour
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
         SetGameType();
         SetupGame();
@@ -81,7 +86,7 @@ public class EndGameManager : MonoBehaviour
     {
         curCounterVal = EndGameReqClass.counterValue;
 
-        counter.text = "" + curCounterVal;
+        movesCounter.text = "" + curCounterVal;
     }
 
     public void DecreaseCounterVal()
@@ -89,10 +94,10 @@ public class EndGameManager : MonoBehaviour
         if (gameBoardClass.currentState != GameState.pause)
         {
             curCounterVal--;
-            counter.text = "" + curCounterVal;
+            movesCounter.text = "" + curCounterVal;
 
             //for end game
-            if (curCounterVal <= 0)
+            if (curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
             {
                 LoseGame();
             }
@@ -102,15 +107,14 @@ public class EndGameManager : MonoBehaviour
     public void WinGame()
     {
         winPanel.SetActive(true);
-        gameBoardClass.currentState = GameState.win;
+        gameBoardClass.currentState = GameState.win;     
 
-        curCounterVal = 0;
-        counter.text = "" + curCounterVal;
+        movesCounter.text = "" + curCounterVal;
 
         levelNumber.text = "LEVEL " + (gameBoardClass.level + 1);
 
         //credits. saved if close, but not save if retry
-        int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.tempScore;
+        int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
 
         creditsCount.text = "Credits: " + currentCreditsCount;
 
@@ -125,49 +129,112 @@ public class EndGameManager : MonoBehaviour
         {
             congratPart[i].Play();
         }
-        
 
+        if (soundManagerClass != null)
+        {
+            soundManagerClass.PlayMusic(winMusic);
+        }
 
     }
 
     public void LoseGame()
     {
-        //lives
-        int currentLives = gameDataClass.saveData.bonuses[5];
-        currentLives = currentLives - 1;
-        gameDataClass.saveData.bonuses[5] = currentLives;
+        levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);
 
+        int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
+        creditsCountLose.text = "Credits: " + currentCreditsCount;
+
+        //reduce lives
+        int currentLives = gameDataClass.saveData.bonuses[5];
+
+        if (currentLives > 0)
+        {
+            currentLives = currentLives - 1;
+            gameDataClass.saveData.bonuses[5] = currentLives;
+        }
+        
         tryPanel.SetActive(true);
+
+        //disable button if life = 0
+        DisableLooseButton();
 
         gameBoardClass.currentState = GameState.lose;
         curCounterVal = 0;
-        counter.text = "" + curCounterVal;
+        movesCounter.text = "" + curCounterVal;
+
+        if (soundManagerClass != null)
+        {
+            soundManagerClass.PlayMusic(loseMusic);
+        }
     }
 
 
     public void PlayNext()
     {
-        gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
-        gameDataClass.SaveToFile();
+        if (gameDataClass.saveData.bonuses[5] > 0)
+        {
+            gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
+            gameDataClass.SaveToFile();
 
-        SceneManager.LoadScene("GameBoard");
+            SceneManager.LoadScene("GameBoard");
 
-        SaveCredits();
+            SaveCredits();
+        }
     }
 
     public void RetryLevel()
     {
-        gameDataClass.saveData.levelToLoad = (gameBoardClass.level);
-        gameDataClass.SaveToFile();
+        if (gameDataClass.saveData.bonuses[5] > 0)
+        {
+            gameDataClass.saveData.levelToLoad = (gameBoardClass.level);
+            gameDataClass.SaveToFile();
 
-        SceneManager.LoadScene("GameBoard");        
+            SceneManager.LoadScene("GameBoard");
+        }
     }
 
+    //save credit only if press Next or go to levels screen
     public void SaveCredits()
     {
-        //add colected credits
-        gameDataClass.saveData.credits += scoreManagerClass.tempScore;
+        //add colected credits if Close or Next
+        gameDataClass.saveData.credits += scoreManagerClass.score;
         gameDataClass.SaveToFile();
+    }
+
+    private void Update()
+    {
+        DisableLooseButton();      
+    }
+
+    private void DisableLooseButton()
+    {
+        if (gameDataClass.saveData.bonuses[5] > 0)
+        {
+            retryLooseButton.interactable = true;
+            Animator animator = retryLooseButton.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.enabled = true;
+            }
+        }
+        else
+        {
+            retryLooseButton.interactable = false;
+            Animator animator = retryLooseButton.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.enabled = false;
+            }
+        }
+    }
+
+    public void QuitAndLooseLife()
+    {
+        if (gameDataClass.saveData.bonuses[5] > 0)
+        {
+            gameDataClass.saveData.bonuses[5] -= 1; //minus 1 life
+            gameDataClass.SaveToFile();
+        }
     }
 
 }

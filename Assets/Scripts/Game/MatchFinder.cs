@@ -61,6 +61,8 @@ public class MatchFinder : MonoBehaviour
     {
         yield return null;
 
+        gameBoardClass.matchState = GameState.matching_inprogress;
+
         for (int i = 0; i < gameBoardClass.column; i++)
         {
             for (int j = 0; j < gameBoardClass.row; j++)
@@ -137,11 +139,6 @@ public class MatchFinder : MonoBehaviour
                                     GetNearbyPieces(upElement, currentElement, downElement);
                                 }
                             }
-
-
-
-
-
                         }
                     }
                 }
@@ -434,6 +431,5 @@ public class MatchFinder : MonoBehaviour
                 }
             }
         }
-
     }
 }

@@ -20,6 +20,7 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
+    private SoundManager soundManagerClass;
 
     //temp data
     public int[] tempBonuses;
@@ -59,12 +60,14 @@ public class BonusShop : MonoBehaviour
     public string[] bonusNameString;
     public string[] bonusDescString;
 
-    
+    [Header("Sound")]
+    public AudioClip buySound;
 
     private void Awake()
     {
         tempBonuses = new int[bonusCount];
-        ZeroBonus();
+        ordersCount = new int[bonusCount];
+        ZeroBonus();        
     }
 
 
@@ -74,6 +77,8 @@ public class BonusShop : MonoBehaviour
         //classes        
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         timeManagerClass = GameObject.FindWithTag("GameData").GetComponent<TimeManager>();
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+
         SetupShop();
 
         //Debug.Log("here");
@@ -135,6 +140,9 @@ public class BonusShop : MonoBehaviour
 
     public void BuyBonus()
     {
+        if (buySound != null)
+            soundManagerClass.PlaySound(buySound);
+
         for (int i = 0; i < tempBonuses.Length; i++)
         {             
             gameDataClass.saveData.bonuses[i] = gameDataClass.saveData.bonuses[i] + tempBonuses[i];
@@ -152,11 +160,13 @@ public class BonusShop : MonoBehaviour
        
         ZeroBonus();
 
+
     }
 
     public void BuyEffects()
     {
-        buyParticles01.Play();
+        if (buyParticles01 != null)
+            buyParticles01.Play();
     }
 
     public void ShowInfo(int value, string type, string busterName = null)
@@ -237,7 +247,7 @@ public class BonusShop : MonoBehaviour
         if(creditsCountSlider != null)
         {
             Image fillImage = creditsCountSlider.fillRect.GetComponent<Image>();
-
+           
             // Hide the fillRect image if credits are 0, otherwise show it
             if (fillImage != null)
             {
@@ -256,6 +266,5 @@ public class BonusShop : MonoBehaviour
         }
 
         UpdateCredits(tempCreditsCount);
-
     }
 }

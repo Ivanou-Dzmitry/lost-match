@@ -1224,6 +1224,7 @@ MonoBehaviour:
   minusButton: {fileID: 8709472004963894464}
   maxSign: {fileID: 7529179995183935086}
   buttonClick: {fileID: 8300000, guid: 464fddd76c621574f8431566b5487635, type: 3}
+  returnClick: {fileID: 8300000, guid: 7872e4928fae1ae44aa00141f9b3c17c, type: 3}
   buySound01: {fileID: 8300000, guid: 0a5e3ee75cde30349938a8cd8f93ece6, type: 3}
   bonusPart01: {fileID: 0}
   bonusPart02: {fileID: 0}

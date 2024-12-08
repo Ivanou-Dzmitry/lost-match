@@ -13,7 +13,9 @@ public enum GameState
     move,
     win,
     lose,
-    pause
+    pause,
+    matching_stop,
+    matching_inprogress
 }
 
 public enum TileKind
@@ -82,8 +84,10 @@ public class GameBoard : MonoBehaviour
     [Header("Scriptable Objects")]
     public World worldClass;
     public int level;
+    public AudioClip levelMusic;
 
     public GameState currentState = GameState.move;
+    public GameState matchState = GameState.matching_inprogress;
 
     [Header("Size")]
     public int column;
@@ -258,6 +262,12 @@ public class GameBoard : MonoBehaviour
 
         //load back sprite
         elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
+
+        if(soundManagerClass != null)
+        {
+            soundManagerClass.PlayMusic(levelMusic);
+        }
+        
     }
 
     //empty cells
@@ -452,6 +462,7 @@ public class GameBoard : MonoBehaviour
             {
                 if (allElements[i, j] != null)
                 {
+                    matchState = GameState.matching_inprogress;
                     DestroyMatchesAt(i, j);
                 }
             }
@@ -478,7 +489,7 @@ public class GameBoard : MonoBehaviour
                             // Move dot to the new position
                             allElements[i, k].GetComponent<ElementController>().row = j;
                             allElements[i, j] = allElements[i, k]; // Move reference to the new position
-                            allElements[i, k] = null; // Clear the old position
+                            allElements[i, k] = null; // Clear the old position                            
                             break;
                         }
                     }
@@ -509,7 +520,6 @@ public class GameBoard : MonoBehaviour
     {
         GameObject elementParticle = Instantiate(element, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
         ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-
 
         Destroy(elementParticle, .9f);
     }
@@ -639,7 +649,7 @@ public class GameBoard : MonoBehaviour
             allElements[thisColumn, thisRow] = null;
 
             //clear match list
-            matchFinderClass.currentMatch.Clear();
+            matchFinderClass.currentMatch.Clear();          
         }       
     }
 
@@ -682,7 +692,8 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-
+        
+        matchState = GameState.matching_inprogress;
         matchFinderClass.FindAllMatches(); //find match 2
     }
 
@@ -716,7 +727,8 @@ public class GameBoard : MonoBehaviour
         while (MatchesOnBoard())
         {
             streakValue++; //for score                                 
-            DestroyMatches();
+            matchState = GameState.matching_inprogress;
+            DestroyMatches();            
             yield break;
         }
 
@@ -724,11 +736,16 @@ public class GameBoard : MonoBehaviour
 
         if (IsDeadLock())
         {
-            ShuffleBoard();
+            matchState = GameState.matching_inprogress;
+            ShuffleBoard();            
         }
 
         if (currentState != GameState.pause)
             currentState = GameState.move;
+
+        //stop
+        matchState = GameState.matching_stop;
+        goalManagerClass.UpdateGoals();
     }
 
 
@@ -1185,7 +1202,6 @@ public class GameBoard : MonoBehaviour
                     allElements[i, j] = newBoard[cellToUse];
 
                     newBoard.Remove(newBoard[cellToUse]);
-
                 }
             }
         }
@@ -1194,7 +1210,6 @@ public class GameBoard : MonoBehaviour
         {
             ShuffleBoard();
         }
-
     }
 
 }

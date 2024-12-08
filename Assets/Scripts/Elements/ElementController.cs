@@ -26,6 +26,7 @@ public class ElementController : MonoBehaviour
     private MatchFinder matchFinderClass;
     private EndGameManager endGameManagerClass;
     private BonusShop bonusShopClass;
+    private HintManager hintManagerClass;
 
     private float movementSpeed = 20.0f;
 
@@ -67,11 +68,18 @@ public class ElementController : MonoBehaviour
         matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        hintManagerClass = GameObject.FindWithTag("HintManager").GetComponent<HintManager>();
     }
 
     //step 1
     private void OnMouseDown()
     {
+        //destroy hint
+        if (hintManagerClass != null)
+        {
+            hintManagerClass.DestroyHint();
+        }
+
         if (gameBoardClass.currentState == GameState.move)
         {
             firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -269,7 +277,7 @@ public class ElementController : MonoBehaviour
                 if (endGameManagerClass != null)
                 {
                     if (endGameManagerClass.EndGameReqClass.gameType == GameType.Moves)
-                    {
+                    {                        
                         endGameManagerClass.DecreaseCounterVal();
                     }
                 }                

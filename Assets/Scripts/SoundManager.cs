@@ -51,13 +51,13 @@ public class SoundManager : MonoBehaviour
         //load data
         if (!gameDataClass.saveData.soundToggle)
         {
-            settingsManagerClass.MuteSound(true);
+            settingsManagerClass.MuteSound(0);
         }
 
 
         if (!gameDataClass.saveData.musicToggle)
         {
-            settingsManagerClass.MuteMusic(true);
+            settingsManagerClass.MuteMusic(0);
         }
 
         //load vol
@@ -84,7 +84,35 @@ public class SoundManager : MonoBehaviour
 
     public void PlaySound(AudioClip clip)
     {
-        effectsSource.PlayOneShot(clip);
+        if (gameDataClass.saveData.soundToggle == true)
+        {
+            effectsSource.PlayOneShot(clip);
+        }
+        
+    }
+
+    public void PlayMusic(AudioClip clip)
+    {
+        if (gameDataClass.saveData.musicToggle == true)
+        {
+            musicSource.clip = clip;
+
+            //stop previous
+            if (musicSource != null && musicSource.isPlaying)
+            {
+                musicSource.Stop();
+            }
+
+            musicSource.Play();
+        }
+    }
+
+    public void StopMusic()
+    {
+        if (musicSource != null && musicSource.isPlaying)
+        {
+            musicSource.Stop();
+        }
     }
 
 

@@ -11,7 +11,6 @@ public class ScoreManager : MonoBehaviour
     private GameData gameDataClass;
 
     public int score;
-    public int tempScore;
     public int numberStars;
     public TMP_Text scoreText;
 
@@ -79,13 +78,11 @@ public class ScoreManager : MonoBehaviour
 
     }
 
-
-
     public void IncreaseScore(int amountToIncrease)
     {
         score += amountToIncrease; //score
 
-        tempScore += amountToIncrease;
+        //tempScore += amountToIncrease;
 
         //gameDataClass.saveData.credits += amountToIncrease;
 

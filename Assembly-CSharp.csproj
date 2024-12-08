@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\Elements\SpecialElements.cs" />
     <Compile Include="Assets\Scripts\GameData.cs" />
     <Compile Include="Assets\Scripts\Shop\BonusShop.cs" />
+    <Compile Include="Assets\Scripts\LevelsSceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\LevelConfirmPanel.cs" />
     <Compile Include="Assets\Scripts\Game\MatchFinder.cs" />
     <Compile Include="Assets\Scripts\Elements\Element.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Assets\Scripts\CameraManager.cs" />
     <Compile Include="Assets\Scripts\Game\GameBoard.cs" />
     <Compile Include="Assets\Scripts\SoundManager.cs" />
+    <Compile Include="Assets\Scripts\Game\HintManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\Elements\ElementController.cs" />
     <Compile Include="Assets\Scripts\UI\GoalPanel.cs" />

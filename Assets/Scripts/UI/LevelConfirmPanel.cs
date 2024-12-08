@@ -60,6 +60,11 @@ public class LevelConfirmPanel : MonoBehaviour
             activeStars = gameDataClass.saveData.stars[level - 1];
             highScore = gameDataClass.saveData.highScore[level - 1];
         }
+        else
+        {
+            activeStars = 3;
+            highScore = 9999;
+        }
 
         levelToLoad = level - 1;
 

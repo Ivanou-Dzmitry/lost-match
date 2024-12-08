@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,15 +23,16 @@ public class SettingsManager : MonoBehaviour
 
     [Header("Sound")]
     public Button soundButton;
-    public Sprite soundOnSprite;
-    public Sprite soundOffSprite;
     public Slider soundSlider;
+    public TMP_Text soundValueTxt;
+    public Sprite[] soundButtonSprites;
 
     [Header("Music")]
     public Button musicButton;
-    public Sprite musicOnSprite;
-    public Sprite musicOffSprite;
     public Slider musicSlider;
+    public TMP_Text musicValueTxt;
+    public Sprite[] musicButtonSprites;
+
 
     private void Start()
     {
@@ -59,15 +62,48 @@ public class SettingsManager : MonoBehaviour
 
         float unsafeAreaHeight = screenHeight - safeAreaHeight;
 
-        Debug.Log($"Screen Width: {unsafeAreaHeight}, Screen Height: {safeAreaHeight}");
+        //Debug.Log($"Screen Width: {unsafeAreaHeight}, Screen Height: {safeAreaHeight}");
 
 
+        // Update the text value
+        UpdateTextValue();
+    }
 
+
+    void UpdateTextValue()
+    {
+        if (musicValueTxt != null)
+        {
+            // Convert the slider value (0.0 to 1.0) to percentage (0% to 100%)
+            int percentage = Mathf.RoundToInt(musicSlider.value * 100);
+            if(percentage > 0)
+            {
+                musicValueTxt.text = percentage + "%";
+            }
+            else
+            {
+                musicValueTxt.text = "Muted";
+            }            
+        }
+
+        if (soundValueTxt != null)
+        {
+            // Convert the slider value (0.0 to 1.0) to percentage (0% to 100%)
+            int percentage = Mathf.RoundToInt(soundSlider.value * 100);
+            if (percentage > 0)
+            {
+                soundValueTxt.text = percentage + "%";
+            }
+            else
+            {
+                soundValueTxt.text = "Muted";
+            }
+                
+        }
     }
 
     public void PauseGame()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
         paused = !paused;
     }
 
@@ -77,42 +113,29 @@ public class SettingsManager : MonoBehaviour
         {
             if (paused)
             {
-                //settingsScreen.SetActive(true);
                 gameBoardClass.currentState = GameState.pause;                
             }
 
             if (!paused)
             {
-                //settingsScreen.SetActive(false);
                 gameBoardClass.currentState = GameState.move;
             }
         }
     }
 
     private void LoadData()
-    {        
+    {
+        
         //set sound
-        if (gameDataClass.saveData.soundToggle)
+        if (!gameDataClass.saveData.soundToggle)                       
         {
-            soundButton.image.sprite = soundOnSprite;
-            soundSlider.interactable = true;
-        }
-        else
-        {
-            soundButton.image.sprite = soundOffSprite;
-            soundSlider.interactable = false;
+            soundButton.image.sprite = soundButtonSprites[1];            
         }
 
         //set music
-        if (gameDataClass.saveData.musicToggle)
+        if (!gameDataClass.saveData.musicToggle)
         {
-            musicButton.image.sprite = musicOnSprite;
-            musicSlider.interactable = true;
-        }
-        else
-        {
-            musicButton.image.sprite = musicOffSprite;
-            musicSlider.interactable = false;
+            musicButton.image.sprite = musicButtonSprites[1];
         }
 
         //load volume
@@ -123,65 +146,135 @@ public class SettingsManager : MonoBehaviour
 
     public void SoundButton()
     {
-        if (!gameDataClass.saveData.soundToggle)
-        {
-            gameDataClass.saveData.soundToggle = true;
-            soundButton.image.sprite = soundOnSprite;
-            soundSlider.interactable = true;
-        }
-        else
-        {
-            gameDataClass.saveData.soundToggle = false;
-            soundButton.image.sprite = soundOffSprite;
-            soundSlider.interactable = false;
-        }
-
+        ToggleAudio(
+            ref gameDataClass.saveData.soundToggle,
+            soundButton,
+            soundButtonSprites,
+            gameDataClass.saveData.soundVolume,
+            MuteSound,
+            soundValueTxt
+        );
     }
 
     public void MusicButton()
     {
-        if (!gameDataClass.saveData.musicToggle)
+        ToggleAudio(
+            ref gameDataClass.saveData.musicToggle,
+            musicButton,
+            musicButtonSprites,
+            gameDataClass.saveData.musicVolume,
+            MuteMusic,
+            musicValueTxt
+        );
+    }
+
+    private void ToggleAudio(
+        ref bool toggle,
+        Button button,
+        Sprite[] sprite,
+        float volume,
+        Action<float> muteFunction,
+        TMP_Text valueText)
+    {
+        if (!toggle)
         {
-            gameDataClass.saveData.musicToggle = true;
-            musicButton.image.sprite = musicOnSprite;
-            musicSlider.interactable = true;
+            toggle = true;
+            button.image.sprite = sprite[0];
+            muteFunction(volume);
         }
         else
         {
-            gameDataClass.saveData.musicToggle = false;
-            musicButton.image.sprite = musicOffSprite;
-            musicSlider.interactable = false;
+            toggle = false;
+            button.image.sprite = sprite[1];
+            muteFunction(0);
+            valueText.text = "Muted";
         }
     }
 
 
     public void SoundVolume()
-    {
-        gameDataClass.saveData.soundVolume = soundSlider.value;
-        soundManagerClass.SetVolume("sound");
+    {                
+        if (gameDataClass.saveData.soundToggle == true)
+        {
+            gameDataClass.saveData.soundVolume = soundSlider.value;
+            soundManagerClass.SetVolume("sound");
+            MuteSound(soundSlider.value);
+
+            if (soundSlider.value <= 0.01f)
+            {
+                SoundButton();
+                soundButton.image.sprite = soundButtonSprites[1];
+            }
+            else
+            {
+                gameDataClass.saveData.soundToggle = true;
+                soundButton.image.sprite = soundButtonSprites[0];
+            }
+
+            UpdateTextValue();
+        }
     }
 
     public void MusicVolume()
     {
-        gameDataClass.saveData.musicVolume = musicSlider.value;
-        soundManagerClass.SetVolume("music");
+        if (gameDataClass.saveData.musicToggle == true)
+        {
+            gameDataClass.saveData.musicVolume = musicSlider.value;
+            soundManagerClass.SetVolume("music");
+            MuteMusic(musicSlider.value);
+
+            if (musicSlider.value <= 0.01f)
+            {
+                MusicButton();
+                musicButton.image.sprite = musicButtonSprites[1];
+            }
+            else
+            {
+                gameDataClass.saveData.musicToggle = true;
+                musicButton.image.sprite = musicButtonSprites[0];
+            }
+
+            UpdateTextValue();
+        }
+
     }
 
-
-    public void MuteSound(bool muted)
+    public void MuteSound(float sliderValue)
     {
+        // Find the GameObject with the "EffectSource" tag
         GameObject gameObject = GameObject.FindWithTag("EffectSource");
-        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 
-        audioSource.mute = !audioSource.mute;
+        if (gameObject != null)
+        {
+            // Get the AudioSource component
+            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+
+            if (audioSource != null)
+            {
+                // Mute the AudioSource if slider value is 0%, unmute otherwise
+                audioSource.mute = sliderValue <= 0.01f;
+                UpdateTextValue(); 
+            }
+        }
     }
 
-    public void MuteMusic(bool muted)
+    public void MuteMusic(float sliderValue)
     {
+        // Find the GameObject with the "EffectSource" tag
         GameObject gameObject = GameObject.FindWithTag("MusicSource");
-        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 
-        audioSource.mute = !audioSource.mute;
+        if (gameObject != null)
+        {
+            // Get the AudioSource component
+            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+
+            if (audioSource != null)
+            {
+                // Mute the AudioSource if slider value is 0%, unmute otherwise
+                audioSource.mute = sliderValue <= 0.01f;
+                UpdateTextValue(); 
+            }
+        }
     }
 
     public void SwitchScene(string sceneName)
@@ -198,4 +291,5 @@ public class SettingsManager : MonoBehaviour
             gameDataClass.SaveToFile();
         }
     }
+
 }

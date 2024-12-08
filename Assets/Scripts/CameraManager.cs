@@ -13,6 +13,8 @@ public class CameraManager : MonoBehaviour
     public float padding = 1;
     public float yOffset = 1;
 
+    public float orthographicSize = 9.4f;
+
     public GameObject backImage;
     public GameObject elementBack;
 
@@ -33,7 +35,7 @@ public class CameraManager : MonoBehaviour
 
         transform.position = temPos;
 
-        Camera.main.orthographicSize = 8.88f;
+        Camera.main.orthographicSize = orthographicSize;
 
         //background
         backImage.transform.position = new Vector3(temPos.x, temPos.y, 0);

@@ -41,6 +41,7 @@ public class BonusButton : MonoBehaviour
 
     [Header("Sound")]
     public AudioClip buttonClick;
+    public AudioClip returnClick;
     public AudioClip buySound01;
 
     [Header("Particles")]
@@ -133,6 +134,13 @@ public class BonusButton : MonoBehaviour
             bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
         }
 
+        // for Game
+        if (bonusShopClass.shopState == BonusShop.ShopState.Game)
+        {
+            bonusShopClass.creditsCountShopText.text = "" + bonusShopClass.tempCreditsCount;
+            bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
+        }
+
         this.bonusCount = gameDataClass.saveData.bonuses[bonusNumber];
 
         //for shopping
@@ -202,9 +210,14 @@ public class BonusButton : MonoBehaviour
         {
             bonusShopClass.tempCreditsCount = credits - bonusPrice;
             bonusShopClass.tempBonuses[bonus] += 1;
-            bonusShopClass.infoText.text = "";
 
+            if (bonusShopClass.infoText != null)
+            {
+                bonusShopClass.infoText.text = "";
+            }
+            
             bonusShopClass.BuyEffects();
+
             //orders
             bonusShopClass.ordersCount[bonus] += 1;
             ButtonColor(bonus);
@@ -269,7 +282,8 @@ public class BonusButton : MonoBehaviour
         ButtonColor(bonus);
 
         //sfx for buy
-        soundManagerClass.PlaySound(buttonClick);
+        if (returnClick!=null)
+            soundManagerClass.PlaySound(returnClick);
 
         updInfo = true;
     }

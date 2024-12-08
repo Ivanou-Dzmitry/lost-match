@@ -30,7 +30,7 @@ public class GameData : MonoBehaviour
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
 
-    public int bonusCount = 6;
+    public int bonusCount = 7;
 
 
     private void Awake()
@@ -91,16 +91,20 @@ public class GameData : MonoBehaviour
         }
 
         saveData.bonusesPrice = new int[bonusCount];
+
         for (int i = 0; i < saveData.bonusesPrice.Length; i++)
         {
             saveData.bonusesPrice[i] = 0;
         }
 
         saveData.maxBonusCount = new int[bonusCount];
+
         for (int i = 0; i < saveData.maxBonusCount.Length; i++)
         {
             saveData.maxBonusCount[i] = 0;
         }
+
+        Debug.Log(saveData.bonusesPrice.Length);
 
         //set prices
         saveData.bonusesPrice[0] = 15; //refresh
@@ -108,7 +112,8 @@ public class GameData : MonoBehaviour
         saveData.bonusesPrice[2] = 35; //wrap
         saveData.bonusesPrice[3] = 25; //line
         saveData.bonusesPrice[4] = 25; //line
-        saveData.bonusesPrice[5] = 100; //energy
+        saveData.bonusesPrice[5] = 100; //energy battery
+        saveData.bonusesPrice[6] = 100; //move
 
         //set max count
         saveData.maxBonusCount[0] = 3;
@@ -117,6 +122,7 @@ public class GameData : MonoBehaviour
         saveData.maxBonusCount[3] = 10;
         saveData.maxBonusCount[4] = 10;
         saveData.maxBonusCount[5] = 3;
+        saveData.maxBonusCount[6] = 20;
 
 
         //debug

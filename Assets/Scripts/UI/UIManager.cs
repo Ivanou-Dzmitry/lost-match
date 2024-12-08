@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
 
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
+    private int topPanelHeight = 150;
+
     void Start()
     {
         AdjustPanelPosition();
@@ -32,31 +34,28 @@ public class UIManager : MonoBehaviour
         {
             panelTopHeight = panelTop.rect.height;
 
+            //set size
+            Vector2 size = panelTop.sizeDelta;
+            size.y = unsafeZoneHeight + topPanelHeight;
+            panelTop.sizeDelta = size;
+
             // Lower the panel by the unsafe zone's height at the bottom
             Vector2 anchoredPosition = panelTop.anchoredPosition;
-            anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
-            panelTop.anchoredPosition = anchoredPosition;
+            anchoredPosition.y = 0;
+
+            //anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
+            panelTop.anchoredPosition = anchoredPosition;            
         }
 
-        float panelBottomHeight = 0;
-
-        if (panelBottom != null)
-        {
-            panelBottomHeight = panelBottom.rect.height;
-        }
-
-        float panelCenterHeight = 0;
 
         if (panelCenter != null)
         {
-            panelCenterHeight = panelCenter.rect.height;
-
             //change size
             Vector2 currentSize = panelCenter.sizeDelta;
-            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y - unsafeZoneHeight);
+            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y);            
 
             Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
-            anchoredPosition2.y = -unsafeZoneHeight - panelTopHeight - paddingPanels;
+            anchoredPosition2.y = -unsafeZoneHeight - topPanelHeight - paddingPanels;
             panelCenter.anchoredPosition = anchoredPosition2;
         }
         

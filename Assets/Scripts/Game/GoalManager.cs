@@ -108,13 +108,19 @@ public class GoalManager : MonoBehaviour
                 currentGoals[i].thisCheck.enabled = true; //turn check ON               
             }
 
-            //end game procedure
-            if (goalsCompleted >= levelGoals.Length && gameBoardClass.currentState == GameState.move )
+            //end game procedure only when match is stop
+            if (goalsCompleted >= levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
             {
                 if (endGameManagerClass != null)
-                {
+                {                    
                     endGameManagerClass.WinGame();
                 }
+            }
+
+            //for end game
+            if (endGameManagerClass.curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
+            {
+                endGameManagerClass.LoseGame();
             }
         }
     }

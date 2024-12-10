@@ -173,10 +173,10 @@ MonoBehaviour:
     counterValue: 30
   levelGoals:
   - numberGoalsNeeded: 30
-    numberCollectedGoals: 0
+    numberCollectedGoals: 7
     goalSprite: {fileID: 21300000, guid: bb9a65553c30ee54e80ad40813dc433f, type: 3}
     matchValue: breakable_01
   - numberGoalsNeeded: 14
-    numberCollectedGoals: 0
+    numberCollectedGoals: 1
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01

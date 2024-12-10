@@ -27,6 +27,7 @@ public class ElementController : MonoBehaviour
     private EndGameManager endGameManagerClass;
     private BonusShop bonusShopClass;
     private HintManager hintManagerClass;
+    private GoalManager goalManagerClass;
 
     private float movementSpeed = 20.0f;
 
@@ -69,6 +70,7 @@ public class ElementController : MonoBehaviour
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         hintManagerClass = GameObject.FindWithTag("HintManager").GetComponent<HintManager>();
+        goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
     }
 
     //step 1
@@ -85,13 +87,14 @@ public class ElementController : MonoBehaviour
             firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
 
+        //run using bonus
         if(bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
         {
             UseBonus();
         }                
     }
 
-
+    //use selected bonus
     private void UseBonus()
     {
 
@@ -102,6 +105,7 @@ public class ElementController : MonoBehaviour
         {
             case 0:
                 gameBoardClass.ShuffleBoard();
+                goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
                 break;
 
             case 1:

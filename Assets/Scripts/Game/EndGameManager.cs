@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,7 +15,7 @@ public class EndGameRequriments
 {
     public GameType gameType;
 
-    public int counterValue;
+    public int counterValue;    
 }
 
 public class EndGameManager : MonoBehaviour
@@ -32,6 +33,8 @@ public class EndGameManager : MonoBehaviour
 
     public TMP_Text movesCounter;
     public int curCounterVal;
+    public Image movesAlarm;
+    public Animator animatorAlarm;
 
     [Header("Win Panel")]
     public TMP_Text levelNumber;
@@ -49,6 +52,8 @@ public class EndGameManager : MonoBehaviour
     public TMP_Text creditsCountLose;
     public Button retryLooseButton;
     public AudioClip loseMusic;
+
+    public int finalLevelNumber = 10;
 
 
     // Start is called before the first frame update
@@ -87,6 +92,8 @@ public class EndGameManager : MonoBehaviour
         curCounterVal = EndGameReqClass.counterValue;
 
         movesCounter.text = "" + curCounterVal;
+
+        movesAlarm.enabled = false;
     }
 
     public void DecreaseCounterVal()
@@ -96,18 +103,31 @@ public class EndGameManager : MonoBehaviour
             curCounterVal--;
             movesCounter.text = "" + curCounterVal;
 
+            //turn on alarm
+            if(curCounterVal <= 5)
+            {
+                movesAlarm.enabled = true;
+                animatorAlarm.SetTrigger("PlayAnimation");
+            }
+            else
+            {
+                movesAlarm.enabled = false;
+            }
+
             //for end game
-            if (curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
+/*            if (curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
             {
                 LoseGame();
-            }
+            }*/
         }
     }
 
     public void WinGame()
     {
         winPanel.SetActive(true);
-        gameBoardClass.currentState = GameState.win;     
+
+        //stop animation
+        animatorAlarm.enabled = false;
 
         movesCounter.text = "" + curCounterVal;
 
@@ -138,8 +158,11 @@ public class EndGameManager : MonoBehaviour
     }
 
     public void LoseGame()
-    {
+    {   
         levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);
+
+        //stop animation
+        animatorAlarm.enabled = false;
 
         int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
         creditsCountLose.text = "Credits: " + currentCreditsCount;
@@ -157,8 +180,7 @@ public class EndGameManager : MonoBehaviour
 
         //disable button if life = 0
         DisableLooseButton();
-
-        gameBoardClass.currentState = GameState.lose;
+        
         curCounterVal = 0;
         movesCounter.text = "" + curCounterVal;
 
@@ -171,14 +193,20 @@ public class EndGameManager : MonoBehaviour
 
     public void PlayNext()
     {
-        if (gameDataClass.saveData.bonuses[5] > 0)
-        {
+        int nextLevelNumber = gameBoardClass.level + 1;
+
+        if (gameDataClass.saveData.bonuses[5] > 0 && nextLevelNumber < finalLevelNumber)
+        {            
             gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
             gameDataClass.SaveToFile();
 
-            SceneManager.LoadScene("GameBoard");
-
             SaveCredits();
+            SceneManager.LoadScene("GameBoard");            
+        }
+        else
+        {
+            SaveCredits();
+            SceneManager.LoadScene("Levels");
         }
     }
 

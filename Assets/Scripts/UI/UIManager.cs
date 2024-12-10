@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class UIManager : MonoBehaviour
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
     private int topPanelHeight = 150;
+    private int topPanelInGameHeight = 200;
 
     void Start()
     {
@@ -30,13 +32,25 @@ public class UIManager : MonoBehaviour
 
         float panelTopHeight = 0;
 
+        Scene currentScene = SceneManager.GetActiveScene();
+        string sceneName = currentScene.name;
+
         if (panelTop != null)
         {
             panelTopHeight = panelTop.rect.height;
 
             //set size
             Vector2 size = panelTop.sizeDelta;
-            size.y = unsafeZoneHeight + topPanelHeight;
+
+            if (sceneName == "GameBoard")
+            {
+                size.y = unsafeZoneHeight + topPanelInGameHeight;
+            }
+            else
+            {
+                size.y = unsafeZoneHeight + topPanelHeight;
+            }
+            
             panelTop.sizeDelta = size;
 
             // Lower the panel by the unsafe zone's height at the bottom
@@ -46,6 +60,7 @@ public class UIManager : MonoBehaviour
             //anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
             panelTop.anchoredPosition = anchoredPosition;            
         }
+
 
 
         if (panelCenter != null)

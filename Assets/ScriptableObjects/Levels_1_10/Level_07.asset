@@ -136,5 +136,5 @@ MonoBehaviour:
   levelGoals:
   - numberGoalsNeeded: 36
     numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: aa09e65ac224ca84ca59ecec7bafe832, type: 3}
+    goalSprite: {fileID: 21300000, guid: 7965554bf0f9b924dbb0d5bc4e54fd12, type: 3}
     matchValue: element_01

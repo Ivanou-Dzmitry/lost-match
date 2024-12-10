@@ -69,8 +69,8 @@ public class LevelConfirmPanel : MonoBehaviour
         levelToLoad = level - 1;
 
         confirmPanel.SetActive(true);
-        highScoreText.text = "Items collected: " + highScore;
-        headerText.text = "LEVEL " + level + " GOALS";
+        highScoreText.text = "Collected: " + highScore;
+        headerText.text = "LEVEL " + level;
 
         for (int i = 0; i < activeStars; i++)
         {

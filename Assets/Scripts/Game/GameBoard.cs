@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Unity.VisualScripting;
 using System.Xml.Linq;
+using TMPro;
 
 
 public enum GameState
@@ -83,7 +84,10 @@ public class GameBoard : MonoBehaviour
 {
     [Header("Scriptable Objects")]
     public World worldClass;
+
+    [Header("Level Info")]
     public int level;
+    public TMP_Text levelNumberTxt;
     public AudioClip levelMusic;
 
     public GameState currentState = GameState.move;
@@ -267,7 +271,10 @@ public class GameBoard : MonoBehaviour
         {
             soundManagerClass.PlayMusic(levelMusic);
         }
-        
+
+        matchState = GameState.matching_stop;
+
+        levelNumberTxt.text = "Level " + (level + 1);
     }
 
     //empty cells
@@ -719,8 +726,8 @@ public class GameBoard : MonoBehaviour
     //refill final step
     private IEnumerator FillBoardCo()
     {
-       
-        RefillBoard(); //refil board
+       if (currentState != GameState.win)
+            RefillBoard(); //refil board
 
         yield return new WaitForSeconds(refillDelay);
 
@@ -737,7 +744,8 @@ public class GameBoard : MonoBehaviour
         if (IsDeadLock())
         {
             matchState = GameState.matching_inprogress;
-            ShuffleBoard();            
+            ShuffleBoard();
+            goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
         }
 
         if (currentState != GameState.pause)
@@ -1209,6 +1217,7 @@ public class GameBoard : MonoBehaviour
         if (IsDeadLock())
         {
             ShuffleBoard();
+            goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
         }
     }
 

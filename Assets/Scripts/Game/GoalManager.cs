@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Microsoft.Win32.SafeHandles;
 
 
 [System.Serializable]
@@ -34,6 +36,11 @@ public class GoalManager : MonoBehaviour
     //classes
     private GameBoard gameBoardClass;
     private EndGameManager endGameManagerClass;
+
+    [Header("Final Text")]
+    public GameObject finalTextPanel;
+    public TMP_Text finalText;
+    private float waitingTime = 2f;
 
     // Start is called before the first frame update
     void Start()
@@ -98,31 +105,88 @@ public class GoalManager : MonoBehaviour
         int goalsCompleted = 0;
 
         for (int i = 0; i < levelGoals.Length; i++)
-        {            
+        {           
+            //count on item
             currentGoals[i].thisText.text = "" + (levelGoals[i].numberGoalsNeeded - levelGoals[i].numberCollectedGoals);
 
+            //turn on check mark
             if (levelGoals[i].numberCollectedGoals >= levelGoals[i].numberGoalsNeeded)
             {
                 goalsCompleted++;         
                 currentGoals[i].thisText.text = "";
                 currentGoals[i].thisCheck.enabled = true; //turn check ON               
             }
+        }
 
-            //end game procedure only when match is stop
-            if (goalsCompleted >= levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
+        //end game procedure only when match is stop: goals=yes,
+        if (goalsCompleted >= levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
+        {
+            if (endGameManagerClass != null)
             {
-                if (endGameManagerClass != null)
-                {                    
-                    endGameManagerClass.WinGame();
-                }
-            }
-
-            //for end game
-            if (endGameManagerClass.curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
-            {
-                endGameManagerClass.LoseGame();
+                StartCoroutine(DelayedWin());
             }
         }
+
+        //for end game: moves = 0, goals=no
+        if (endGameManagerClass.curCounterVal <= 0 && goalsCompleted < levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
+        {
+            StartCoroutine(DelayedLose());
+        }
+    }
+
+    public void ShowInGameInfo(string infoText, bool showPanel)
+    {
+        if (showPanel)
+        {
+            finalTextPanel.SetActive(true);
+            finalText.text = infoText;
+        }
+        else
+        {
+            finalTextPanel.SetActive(false);
+            finalText.text = "";
+        }
+
+        //hide panel
+        if (finalTextPanel != null && finalTextPanel.activeSelf)
+        {
+            StartCoroutine(HidePanelCoroutine(waitingTime));
+        }
+    }
+
+    private IEnumerator HidePanelCoroutine(float delay)
+    {
+        yield return new WaitForSeconds(delay); // Wait for the specified delay
+        finalTextPanel.SetActive(false); // Hide the panel
+    }
+
+    private IEnumerator DelayedWin()
+    {
+        // Code to run before WinGame
+        gameBoardClass.currentState = GameState.win;
+
+        ShowInGameInfo("Level Completed!", true);
+
+        yield return new WaitForSeconds(waitingTime); // Wait for ... second
+
+        // Call WinGame after delay
+        finalTextPanel.SetActive(false);
+        endGameManagerClass.WinGame();
+        
+    }
+
+    private IEnumerator DelayedLose()
+    {
+        // Code to run before LoseGame
+        gameBoardClass.currentState = GameState.lose;
+
+        ShowInGameInfo("Out of moves!", true);
+
+        yield return new WaitForSeconds(waitingTime); // Wait for ... second
+
+        // Call LoseGame after delay
+        finalTextPanel.SetActive(false);
+        endGameManagerClass.LoseGame();        
     }
 
     public void CompareGoal(string goalToCompare)

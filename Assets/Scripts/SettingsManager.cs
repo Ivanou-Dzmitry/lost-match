@@ -105,22 +105,22 @@ public class SettingsManager : MonoBehaviour
     public void PauseGame()
     {
         paused = !paused;
+
+        if (paused)
+        {
+            gameBoardClass.currentState = GameState.pause;
+        }
+
+        if (!paused && gameBoardClass.currentState != GameState.win)
+        {
+            if (gameBoardClass.currentState != GameState.lose)
+                gameBoardClass.currentState = GameState.move;
+        }
     }
 
     private void Update()
     {
-        if (sceneName == "GameBoard")
-        {
-            if (paused)
-            {
-                gameBoardClass.currentState = GameState.pause;                
-            }
 
-            if (!paused)
-            {
-                gameBoardClass.currentState = GameState.move;
-            }
-        }
     }
 
     private void LoadData()

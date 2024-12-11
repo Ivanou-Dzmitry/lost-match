@@ -130,6 +130,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
   scoreGoals: 210000004200000064000000
+  goalsDescription: "\u0421ollect the shoes"
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 24

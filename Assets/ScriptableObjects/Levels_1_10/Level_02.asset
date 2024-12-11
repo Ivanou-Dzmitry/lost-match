@@ -102,6 +102,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   scoreGoals: 3c0000005a00000078000000
+  goalsDescription: Destroy gum blockers
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 28

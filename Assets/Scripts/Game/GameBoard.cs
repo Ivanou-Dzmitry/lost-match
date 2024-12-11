@@ -129,6 +129,7 @@ public class GameBoard : MonoBehaviour
     public int baseValue = 1;
     public int streakValue = 1;
     public int[] scoreGoals;
+    public string goalsDescription;
 
     //for blank
     private bool[,] emptyElement;
@@ -195,6 +196,8 @@ public class GameBoard : MonoBehaviour
                     elements = worldClass.levels[level].element;
 
                     scoreGoals = worldClass.levels[level].scoreGoals; //get score goals for stars
+
+                    goalsDescription = worldClass.levels[level].goalsDescription;
 
                     gameBoardBack = worldClass.levels[level].elementsBack; //back
 

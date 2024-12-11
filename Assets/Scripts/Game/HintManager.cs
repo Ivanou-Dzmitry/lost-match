@@ -35,13 +35,11 @@ public class HintManager : MonoBehaviour
                 hintDelaySec = hintDelay;
             }
         }            
-
     }
 
     //all posible matches
     List<GameObject> FindAllMatches()
     {
-
         List<GameObject> possibleMatches = new List<GameObject>();
 
         for (int i = 0; i < gameBoardClass.column; i++)
@@ -79,10 +77,12 @@ public class HintManager : MonoBehaviour
     {
         List<GameObject> possibleMoves = new List<GameObject>();
 
+        possibleMoves.Clear();
+
         if (gameBoardClass.matchState == GameState.matching_stop)
             possibleMoves = FindAllMatches();
 
-        if (possibleMoves.Count > 0 && gameBoardClass.currentState == GameState.move)
+        if (possibleMoves.Count > 0 && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == GameState.matching_stop)
         {
             int pieceToUse = UnityEngine.Random.Range(0, possibleMoves.Count);
 

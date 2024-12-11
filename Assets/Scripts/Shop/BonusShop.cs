@@ -32,6 +32,19 @@ public class BonusShop : MonoBehaviour
 
     [Header("Shop Panel")]
     public GameObject bonusShopPanel;
+    public GameObject panelWithBonuses;
+    public TMP_Text panelNameTxt;
+
+    [Header("Sound")]
+    public AudioClip buySound;
+
+    [Header("Panel Shop")]
+    public GameObject  panelWithShop;
+    public Vector2 constantSizePWS = new Vector2(768, 1700);
+
+    [Header("Panel Controls")]
+    public GameObject panelWithControls;
+    public Vector2 constantSizePWC = new Vector2(768, 1634);
 
     [Header("Credits")]
     public TMP_Text creditsCountPanelText;
@@ -40,7 +53,7 @@ public class BonusShop : MonoBehaviour
     public Button buyButton;
 
     [Header("Notification Stuff")]
-    public TMP_Text infoText;    
+    public TMP_Text infoText;    //The store displays boosters that are available in the equipment
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
 
@@ -60,8 +73,9 @@ public class BonusShop : MonoBehaviour
     public string[] bonusNameString;
     public string[] bonusDescString;
 
-    [Header("Sound")]
-    public AudioClip buySound;
+
+
+    private string defaultInfoText = "Shop displays items that are available in the inventory, and purchased items";
 
     private void Awake()
     {
@@ -82,6 +96,9 @@ public class BonusShop : MonoBehaviour
         SetupShop();
 
         //Debug.Log("here");
+
+        if(infoText != null)
+            infoText.text = defaultInfoText;
     }
 
     public void SetupShop()
@@ -111,7 +128,6 @@ public class BonusShop : MonoBehaviour
             creditsCountSlider.minValue = 0;
             creditsCountSlider.value = tempCreditsCount;
         }
-        
 
     }
 
@@ -130,12 +146,38 @@ public class BonusShop : MonoBehaviour
         bonusSelected = -1;
     }
 
+    public void TurnOnPanels()
+    {
+        if (panelWithBonuses != null)
+        {
+            foreach (Transform child in panelWithBonuses.transform)
+            {
+                // Check if the child has the "PanelWithBonus" tag
+                if (child.CompareTag("PanelWithBonus"))
+                {
+                    // Enable the panel
+                    child.gameObject.SetActive(true);
+                }
+            }
+        }
 
-    public void OpenShop()
+        //restore size
+        RectTransform panelShopRect = panelWithShop.GetComponent<RectTransform>();
+        panelShopRect.sizeDelta = constantSizePWS;
+
+        //restore size
+        RectTransform panelControlRect = panelWithControls.GetComponent<RectTransform>();
+        panelControlRect.sizeDelta = constantSizePWC;
+    }
+
+
+    public void OpenShop(string shopName)
     {       
         ZeroBonus();
 
         SetupShop();
+
+        panelNameTxt.text = shopName;
     }
 
     public void BuyBonus()
@@ -219,7 +261,8 @@ public class BonusShop : MonoBehaviour
         }
 
         // After fading out, you can hide or disable the text if needed
-        //textToFade.gameObject.SetActive(false);
+        infoText.text = defaultInfoText;
+        infoText.color = originalColor;
     }
 
     void BuyButtonLogic()
@@ -266,5 +309,87 @@ public class BonusShop : MonoBehaviour
         }
 
         UpdateCredits(tempCreditsCount);
+    }
+
+    public void LivesClick()
+    {
+        if (shopState == BonusShop.ShopState.Levels)
+        {
+            {
+                Debug.Log("!Lives!");
+            }
+        }
+    }
+
+
+    public void DisableSpecificChildren(string type)
+    {
+        if (panelWithBonuses != null)
+        {
+            // Find all GameObjects with the "PanelWithBonus" tag
+            GameObject[] panels = GameObject.FindGameObjectsWithTag("PanelWithBonus");
+
+            for (int i =0; i < panels.Length; i++)
+            {
+                //for buster shop
+                if (type=="Buster")
+                {
+                    if(panels[i].name == "Lives")
+                    {
+                        panels[i].gameObject.SetActive(false);
+                    }
+                        
+                }
+                //for lives shop
+                if (type == "Lives")
+                {
+                    if(panels[i].name != "Lives")
+                    {
+                        panels[i].gameObject.SetActive(false);
+                    }
+                        
+                }
+
+                //for muves shop
+                if (type == "Moves")
+                {
+                    if (panels[i].name != "Moves")
+                    {
+                        panels[i].gameObject.SetActive(false);
+                    }
+                }
+            }
+
+            float totalVisibleHeight = 0f;
+
+
+            //get decrease value
+            if (panelWithBonuses != null)
+            {
+                foreach (Transform child in panelWithBonuses.transform)
+                {
+                    // Check if the child has the "PanelWithBonus" tag
+                    if (child.CompareTag("PanelWithBonus"))
+                    {
+                        if (!child.gameObject.activeSelf)
+                        {
+                            RectTransform panelRect = child.gameObject.GetComponent<RectTransform>();
+                            totalVisibleHeight += panelRect.rect.height;
+                        }
+                    }
+                }
+            }
+
+            //height
+            // Adjust the ShopPanel height
+            RectTransform shopPanelRect = panelWithShop.GetComponent<RectTransform>();
+            float newHeight = shopPanelRect.rect.height - totalVisibleHeight;
+            shopPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(newHeight, 0f));
+
+            RectTransform shopControlsRect = panelWithControls.GetComponent<RectTransform>();
+            float newHeightControls = shopControlsRect.rect.height - totalVisibleHeight;
+            shopControlsRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(newHeightControls, 0f));
+
+        }
     }
 }

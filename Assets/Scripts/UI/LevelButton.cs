@@ -10,19 +10,18 @@ public class LevelButton : MonoBehaviour
     private Button myButton;
     private int activeStars;
 
-    [Header("Level UI")]
+    [Header("Confirm Panel UI")]
     public Image[] stars;
     public GameObject starsPanel;
-    public TMP_Text levelText;
+    public TMP_Text levelText;    
     public int level;
-    private int highScore;
     public GameObject confirmPanel;
-    
 
     [Header("Stars")]
     public Sprite starOffSprite;
     public Sprite starOnSprite;
 
+    //classes
     private GameData gameDataClass;
     private LevelGoals levelGoalsClass;
     private BonusShop bonusShopClass;
@@ -32,7 +31,7 @@ public class LevelButton : MonoBehaviour
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
-        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
 
         myButton = GetComponent<Button>();
 
@@ -111,14 +110,17 @@ public class LevelButton : MonoBehaviour
             confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
 
             levelGoalsClass.GetGoals(level - 1);
-
+   
             confirmPanel.SetActive(true);
         }
         else
         {
             bonusShopClass.bonusShopPanel.SetActive(true);
-            //bonusShopClass.OpenShop();
 
+            //open lives shop
+            bonusShopClass.DisableSpecificChildren("Lives");
+
+            bonusShopClass.OpenShop("BATTERIES");
 
             StartCoroutine(ShowInfoAfterPanelActive());
         }

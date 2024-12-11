@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
     private int topPanelHeight = 150;
-    private int topPanelInGameHeight = 200;
+    private int topPanelInGameHeight = 170;
 
     void Start()
     {
@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
             //set size
             Vector2 size = panelTop.sizeDelta;
 
+            //panel for game and levels
             if (sceneName == "GameBoard")
             {
                 size.y = unsafeZoneHeight + topPanelInGameHeight;

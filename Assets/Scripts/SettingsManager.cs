@@ -72,25 +72,12 @@ public class SettingsManager : MonoBehaviour
 
     void UpdateTextValue()
     {
-        if (musicValueTxt != null)
-        {
-            // Convert the slider value (0.0 to 1.0) to percentage (0% to 100%)
-            int percentage = Mathf.RoundToInt(musicSlider.value * 100);
-            if(percentage > 0)
-            {
-                musicValueTxt.text = percentage + "%";
-            }
-            else
-            {
-                musicValueTxt.text = "Muted";
-            }            
-        }
-
         if (soundValueTxt != null)
         {
             // Convert the slider value (0.0 to 1.0) to percentage (0% to 100%)
             int percentage = Mathf.RoundToInt(soundSlider.value * 100);
-            if (percentage > 0)
+
+            if (percentage > 0 && gameDataClass.saveData.soundToggle)
             {
                 soundValueTxt.text = percentage + "%";
             }
@@ -98,7 +85,21 @@ public class SettingsManager : MonoBehaviour
             {
                 soundValueTxt.text = "Muted";
             }
-                
+        }
+
+        if (musicValueTxt != null)
+        {
+            // Convert the slider value (0.0 to 1.0) to percentage (0% to 100%)
+            int percentage = Mathf.RoundToInt(musicSlider.value * 100);
+            
+            if (percentage > 0 && gameDataClass.saveData.musicToggle)
+            {
+                musicValueTxt.text = percentage + "%";
+            }
+            else
+            {
+                musicValueTxt.text = "Muted";
+            }            
         }
     }
 

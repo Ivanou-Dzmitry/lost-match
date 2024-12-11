@@ -64,9 +64,6 @@ public class BonusButton : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
-        if (bonusShopClass.infoText != null)
-            bonusShopClass.infoText.text = "";
-
         UpdateBonusCount();
 
         //set bonuce price
@@ -105,9 +102,7 @@ public class BonusButton : MonoBehaviour
         if (gameDataClass != null && bonusShopClass != null)
         {
             UpdateBonusCount();
-
-            bonusShopClass.infoText.text = "";
-
+           
             this.GetComponent<Image>().color = SoftPinkClr;
 
             //max sign
@@ -210,11 +205,6 @@ public class BonusButton : MonoBehaviour
         {
             bonusShopClass.tempCreditsCount = credits - bonusPrice;
             bonusShopClass.tempBonuses[bonus] += 1;
-
-            if (bonusShopClass.infoText != null)
-            {
-                bonusShopClass.infoText.text = "";
-            }
             
             bonusShopClass.BuyEffects();
 
@@ -261,8 +251,7 @@ public class BonusButton : MonoBehaviour
         if (bonusShopClass.tempBonuses[bonus] > 0)
         {
             bonusShopClass.tempCreditsCount = bonusShopClass.tempCreditsCount + gameDataClass.saveData.bonusesPrice[bonus];
-            bonusShopClass.tempBonuses[bonus] -= 1;
-            bonusShopClass.infoText.text = "";
+            bonusShopClass.tempBonuses[bonus] -= 1;            
             this.counterPopUpText.text = "-1";
 
             //max label
@@ -447,4 +436,5 @@ public class BonusButton : MonoBehaviour
 
         counterPopUpText.text = string.Empty;
     }
+
 }

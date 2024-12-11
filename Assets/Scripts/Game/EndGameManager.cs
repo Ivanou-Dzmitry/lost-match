@@ -124,9 +124,10 @@ public class EndGameManager : MonoBehaviour
 
     public void WinGame()
     {
-        winPanel.SetActive(true);
+        if(winPanel.activeSelf == false)
+            winPanel.SetActive(true);
 
-        //stop animation
+        //stop animation finalTextPanel.activeSelf
         animatorAlarm.enabled = false;
 
         movesCounter.text = "" + curCounterVal;
@@ -158,7 +159,10 @@ public class EndGameManager : MonoBehaviour
     }
 
     public void LoseGame()
-    {   
+    {
+        if (tryPanel.activeSelf == false)
+            tryPanel.SetActive(true);
+
         levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);
 
         //stop animation
@@ -175,8 +179,6 @@ public class EndGameManager : MonoBehaviour
             currentLives = currentLives - 1;
             gameDataClass.saveData.bonuses[5] = currentLives;
         }
-        
-        tryPanel.SetActive(true);
 
         //disable button if life = 0
         DisableLooseButton();

@@ -29,6 +29,8 @@ public class LevelConfirmPanel : MonoBehaviour
     public GameObject goalPrefab;
     public GameObject goalIntroParent;
 
+    public TMP_Text goalsDescriptionText;
+
     [Header("GUI")]
     public GameObject confirmPanel;
 
@@ -37,17 +39,21 @@ public class LevelConfirmPanel : MonoBehaviour
     {
         confirmPanel.SetActive(false);
 
+        //classes
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
 
+        //stars off
         for (int i = 0; i < 3; i++)
         {
             stars[i].sprite = starOffSprite;
         }
 
-        LoadData(); //from file
+        if (gameDataClass != null)
+            LoadData(); //from file
 
-        SetupIntroGoals();
+        if (levelGoalsClass != null)
+            SetupIntroGoals();
     }
 
     void LoadData()
@@ -69,9 +75,12 @@ public class LevelConfirmPanel : MonoBehaviour
         levelToLoad = level - 1;
 
         confirmPanel.SetActive(true);
+
+        //set text
         highScoreText.text = "Collected: " + highScore;
         headerText.text = "LEVEL " + level;
 
+        //stars turn on
         for (int i = 0; i < activeStars; i++)
         {
             stars[i].sprite = starOnSprite;
@@ -94,6 +103,8 @@ public class LevelConfirmPanel : MonoBehaviour
             introPanel.thisSprite = levelGoalsClass.levelGoals[i].goalSprite;
             introPanel.thisString = "" + levelGoalsClass.levelGoals[i].numberGoalsNeeded; //goals 
         }
+        
+        goalsDescriptionText.text = "" + levelGoalsClass.goalDescription;
     }
 
     //delete goals on close panel

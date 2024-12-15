@@ -30,7 +30,7 @@ public class GameData : MonoBehaviour
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
 
-    public int bonusCount = 7;
+    public int bonusCount = 11;
 
 
     private void Awake()
@@ -76,13 +76,14 @@ public class GameData : MonoBehaviour
     {
         saveData = new SaveData();
 
-        //game data
+        //game data levels stuff
         saveData.levelToLoad = 1;
         saveData.isActive = new bool[11];
         saveData.stars = new int[11];
         saveData.highScore = new int[11];
         saveData.isActive[0] = true; //turn on 1st level
         
+        //buster type
         saveData.bonuses = new int[bonusCount];
 
         for (int i = 0; i < saveData.bonuses.Length; i++)
@@ -90,6 +91,7 @@ public class GameData : MonoBehaviour
             saveData.bonuses[i] = 0;
         }
 
+        //buster price
         saveData.bonusesPrice = new int[bonusCount];
 
         for (int i = 0; i < saveData.bonusesPrice.Length; i++)
@@ -97,6 +99,7 @@ public class GameData : MonoBehaviour
             saveData.bonusesPrice[i] = 0;
         }
 
+        //maximus busters count
         saveData.maxBonusCount = new int[bonusCount];
 
         for (int i = 0; i < saveData.maxBonusCount.Length; i++)
@@ -104,16 +107,25 @@ public class GameData : MonoBehaviour
             saveData.maxBonusCount[i] = 0;
         }
 
-        Debug.Log(saveData.bonusesPrice.Length);
-
+        
         //set prices
         saveData.bonusesPrice[0] = 15; //refresh
         saveData.bonusesPrice[1] = 50; //color
         saveData.bonusesPrice[2] = 35; //wrap
         saveData.bonusesPrice[3] = 25; //line
         saveData.bonusesPrice[4] = 25; //line
-        saveData.bonusesPrice[5] = 100; //energy battery
-        saveData.bonusesPrice[6] = 100; //move
+
+        saveData.bonusesPrice[5] = 100; //energy battery 1
+        saveData.bonusesPrice[6] = 150; //move 1
+
+        //bundle lives
+        saveData.bonusesPrice[7] = 150; //energy battery 2
+        saveData.bonusesPrice[8] = 250; //energy battery 3
+
+        //bundle moves
+        saveData.bonusesPrice[9] = 250; //move x
+        saveData.bonusesPrice[10] = 400; //move xx
+
 
         //set max count
         saveData.maxBonusCount[0] = 3;
@@ -121,22 +133,32 @@ public class GameData : MonoBehaviour
         saveData.maxBonusCount[2] = 5;
         saveData.maxBonusCount[3] = 10;
         saveData.maxBonusCount[4] = 10;
-        saveData.maxBonusCount[5] = 3;
-        saveData.maxBonusCount[6] = 20;
+
+        saveData.maxBonusCount[5] = 5; //energy battery 1
+        saveData.maxBonusCount[6] = 20; //move 1
+
+        //bundle lives
+        saveData.maxBonusCount[7] = 2; //energy battery 1
+        saveData.maxBonusCount[8] = 1; //energy battery 1
+
+        //bundle moves
+        saveData.maxBonusCount[9] = 1; //move x
+        saveData.maxBonusCount[10] = 1; //move xx
 
 
-        //debug
+        //start=0
         saveData.credits = 6000;
 
         //saveData.lives = 3;
-        saveData.bonuses[5] = 3; //set lives bonus #5
+        saveData.bonuses[5] = 5; //set lives bonus #5
 
-        //settings
+        //sound and music settings
         saveData.soundToggle = true;
         saveData.musicToggle = true;
         saveData.soundVolume = 1.0f;
         saveData.musicVolume = 0.5f;
-
+        
+        //time for battery
         saveData.savedTime = "";
     }
 

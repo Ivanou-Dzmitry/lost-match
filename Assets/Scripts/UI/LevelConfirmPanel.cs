@@ -37,7 +37,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
     void OnEnable()
     {
-        confirmPanel.SetActive(false);
+        //confirmPanel.SetActive(false);
 
         //classes
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
@@ -74,7 +74,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
         levelToLoad = level - 1;
 
-        confirmPanel.SetActive(true);
+        //confirmPanel.SetActive(true);
 
         //set text
         highScoreText.text = "Collected: " + highScore;

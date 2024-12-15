@@ -17,8 +17,14 @@ public class BonusButton : MonoBehaviour
     public int bonusNumber;
     public string busterName;
 
+    [Header("Bundle")]
+    public int bundleRootBonus; //what bonus is root
+    public int bundleCount;
+    public bool isBundle;    
+
     private bool updInfo;
 
+    [Header("Buttons UI")]
     //buttons
     public GameObject bonusButtonShop;
 
@@ -49,11 +55,10 @@ public class BonusButton : MonoBehaviour
     public ParticleSystem bonusPart02;
 
 
-    public static readonly Color SoftPinkClr = new Color(0.902f, 0.729f, 0.859f, 1f);
-    public static readonly Color LightGreenClr = new Color(0.729f, 0.902f, 0.8f, 1f);
+    public static readonly Color beforeBuyColor = new Color(0.902f, 0.729f, 0.859f, 1f); //default
+    public static readonly Color afterBuyColor = new Color(0.729f, 0.902f, 0.8f, 1f); //when buy
 
     private float timer = 1f; // Tracks time
-
 
 
     // Start is called before the first frame update
@@ -69,6 +74,7 @@ public class BonusButton : MonoBehaviour
         //set bonuce price
         if (gameDataClass.saveData.bonusesPrice != null)
             this.bonusPrice = gameDataClass.saveData.bonusesPrice[bonusNumber];
+        
 
         //set bonuce price text
         if (this.bonusPriceText != null)
@@ -103,15 +109,18 @@ public class BonusButton : MonoBehaviour
         {
             UpdateBonusCount();
            
-            this.GetComponent<Image>().color = SoftPinkClr;
+            this.GetComponent<Image>().color = beforeBuyColor;
 
             //max sign
-            this.maxSign.enabled = false;
+            if (this.maxSign != null)
+                this.maxSign.enabled = false;
 
             if (gameDataClass.saveData.bonuses[bonusNumber] == 0)
                 this.bonusButtonShop.GetComponent<Button>().interactable = false;
 
-            this.counterPopUpText.text = string.Empty;
+            //counter
+            if(this.counterPopUpText!= null)
+                this.counterPopUpText.text = string.Empty;
 
             updInfo = true;
 
@@ -133,7 +142,7 @@ public class BonusButton : MonoBehaviour
         if (bonusShopClass.shopState == BonusShop.ShopState.Game)
         {
             bonusShopClass.creditsCountShopText.text = "" + bonusShopClass.tempCreditsCount;
-            bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
+            //bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
         }
 
         this.bonusCount = gameDataClass.saveData.bonuses[bonusNumber];
@@ -182,9 +191,61 @@ public class BonusButton : MonoBehaviour
 
     }
 
+    //add only root bonus
+    public void AddBundle(GameObject topObject)
+    {
+        BonusButton thisBonusButton = topObject.GetComponent<BonusButton>();
+
+        //data bonus
+        int bonus = thisBonusButton.bonusNumber;
+
+        //bonus for update with bundle
+        int rootBonus = thisBonusButton.bundleRootBonus;
+
+        int credits = bonusShopClass.tempCreditsCount;
+        int maxCount = gameDataClass.saveData.maxBonusCount[rootBonus]; //root        
+        int currentCount = gameDataClass.saveData.bonuses[rootBonus]; //root
+        int bonusPrice = gameDataClass.saveData.bonusesPrice[bonus];
+
+        //check max
+        int bonusCount = currentCount + thisBonusButton.bundleCount; //root
+
+        int debt = 0;
+        bool operation_permissible = false;
+
+        debt = credits - thisBonusButton.bonusPrice;
+
+        //if credits enought
+        if (debt >= 0 && bonusCount <= maxCount)
+            operation_permissible = true;
+
+        //Debug.Log(this.bonusPrice);
+
+        if (operation_permissible)
+        {
+            bonusShopClass.tempBonuses[rootBonus] += thisBonusButton.bundleCount; //add Root bonus
+            bonusShopClass.tempCreditsCount = credits - thisBonusButton.bonusPrice; //minus price
+
+           bonusShopClass.BuyBonus();
+           bonusShopClass.CloseShop();
+        }
+        else
+        {
+            if (operation_permissible == false)
+                bonusShopClass.ShowInfo(bonusPrice, "NoFounds", thisBonusButton.busterName);
+
+            //if max count
+            if (bonusCount >= maxCount)
+            {
+                bonusShopClass.ShowInfo(maxCount, "MaxCount", thisBonusButton.busterName);
+                this.maxSign.enabled = true;
+            }
+        }
+    }
+
     public void AddBonus(int bonus)
     {
-        int bonusPrice = gameDataClass.saveData.bonusesPrice[bonus];
+        //int bonusPrice = gameDataClass.saveData.bonusesPrice[bonus];
         int credits = bonusShopClass.tempCreditsCount;
         int maxCount = gameDataClass.saveData.maxBonusCount[bonus];
         int currentCount = gameDataClass.saveData.bonuses[bonus];
@@ -195,17 +256,17 @@ public class BonusButton : MonoBehaviour
         int debt = 0;
         bool operation_permissible = false;
 
-        debt = credits - bonusPrice;
-
+         debt = credits - this.bonusPrice;
+           
         //if credits enought
         if (debt >= 0 && bonusCount < maxCount)
             operation_permissible = true;
 
         if (operation_permissible)
-        {
-            bonusShopClass.tempCreditsCount = credits - bonusPrice;
-            bonusShopClass.tempBonuses[bonus] += 1;
-            
+        {           
+            bonusShopClass.tempBonuses[bonus] += 1; //add 1 bonus
+            bonusShopClass.tempCreditsCount = credits - this.bonusPrice; //minus price
+
             bonusShopClass.BuyEffects();
 
             //orders
@@ -229,21 +290,20 @@ public class BonusButton : MonoBehaviour
         else
         {
             if (operation_permissible == false)
-                bonusShopClass.ShowInfo(bonusPrice, "NoFounds", this.busterName);
+                bonusShopClass.ShowInfo(this.bonusPrice, "NoFounds", this.busterName);
 
+            //if max count
             if (bonusCount >= maxCount)
             {
                 bonusShopClass.ShowInfo(bonusCount, "MaxCount", this.busterName);
                 this.maxSign.enabled = true;
             }
-
         }
 
         //sfx for buy
         soundManagerClass.PlaySound(buttonClick);
 
         updInfo = true;
-
     }
 
     public void RemoveBonus(int bonus)
@@ -251,7 +311,10 @@ public class BonusButton : MonoBehaviour
         if (bonusShopClass.tempBonuses[bonus] > 0)
         {
             bonusShopClass.tempCreditsCount = bonusShopClass.tempCreditsCount + gameDataClass.saveData.bonusesPrice[bonus];
-            bonusShopClass.tempBonuses[bonus] -= 1;            
+
+            //Minus logic
+            bonusShopClass.tempBonuses[bonus] -= 1;                
+
             this.counterPopUpText.text = "-1";
 
             //max label
@@ -281,13 +344,13 @@ public class BonusButton : MonoBehaviour
     {
         if (bonusShopClass.ordersCount[bonus] > 0)
         {
-            this.GetComponent<Image>().color = LightGreenClr;
+            this.GetComponent<Image>().color = afterBuyColor;
             this.minusButton.interactable = true;
             this.minusButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
         }
         else
         {
-            this.GetComponent<Image>().color = SoftPinkClr;
+            this.GetComponent<Image>().color = beforeBuyColor;
             this.minusButton.interactable = false;
             this.minusButton.GetComponent<Image>().color = new Color(1, 1, 1, 0);
         }
@@ -327,7 +390,6 @@ public class BonusButton : MonoBehaviour
                 this.bonusPart02.Stop();
             }
         }
-
     }
 
     public void BonusButtonClick()

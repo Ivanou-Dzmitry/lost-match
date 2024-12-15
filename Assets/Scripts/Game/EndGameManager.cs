@@ -31,6 +31,10 @@ public class EndGameManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject tryPanel;
 
+    //confirm
+    public GameObject confirmPanel;
+    private LevelGoals levelGoalsClass;
+
     public TMP_Text movesCounter;
     public int curCounterVal;
     public Image movesAlarm;
@@ -61,6 +65,7 @@ public class EndGameManager : MonoBehaviour
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
+        levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
@@ -197,13 +202,25 @@ public class EndGameManager : MonoBehaviour
     {
         int nextLevelNumber = gameBoardClass.level + 1;
 
-        if (gameDataClass.saveData.bonuses[5] > 0 && nextLevelNumber < finalLevelNumber)
-        {            
-            gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
-            gameDataClass.SaveToFile();
+        //get moves
+        if (nextLevelNumber < finalLevelNumber)
+        {
+            winPanel.SetActive(false);
+
+            LevelConfirmPanel lCP = confirmPanel.GetComponent<LevelConfirmPanel>();
+
+            lCP.level = nextLevelNumber + 1;
+            lCP.levelToLoad = nextLevelNumber;
+
+            levelGoalsClass.GetGoals(nextLevelNumber);
+
+            confirmPanel.SetActive(true);
+
+           // gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
+           // gameDataClass.SaveToFile();
 
             SaveCredits();
-            SceneManager.LoadScene("GameBoard");            
+            //SceneManager.LoadScene("GameBoard");            
         }
         else
         {

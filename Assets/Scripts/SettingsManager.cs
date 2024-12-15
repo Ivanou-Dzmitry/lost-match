@@ -214,6 +214,11 @@ public class SettingsManager : MonoBehaviour
 
             UpdateTextValue();
         }
+        else
+        {
+            if(soundSlider.value > 0.01f)
+                gameDataClass.saveData.soundToggle = true;
+        }
     }
 
     public void MusicVolume()
@@ -236,6 +241,11 @@ public class SettingsManager : MonoBehaviour
             }
 
             UpdateTextValue();
+        }
+        else
+        {
+            if (musicSlider.value > 0.01f)
+                gameDataClass.saveData.musicToggle = true;
         }
 
     }

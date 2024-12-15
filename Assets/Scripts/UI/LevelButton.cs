@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static BonusShop;
 
 public class LevelButton : MonoBehaviour
 {
@@ -115,12 +116,8 @@ public class LevelButton : MonoBehaviour
         }
         else
         {
-            bonusShopClass.bonusShopPanel.SetActive(true);
-
             //open lives shop
-            bonusShopClass.DisableSpecificChildren("Lives");
-
-            bonusShopClass.OpenShop("BATTERIES");
+            bonusShopClass.OpenShop(ShopType.Lives);            
 
             StartCoroutine(ShowInfoAfterPanelActive());
         }

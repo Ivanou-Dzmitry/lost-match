@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using System.Collections.Generic;
 
 
 public class BonusShop : MonoBehaviour
@@ -15,12 +16,23 @@ public class BonusShop : MonoBehaviour
         SetLastBonus
     }
 
+    public enum ShopType
+    {
+        Busters,
+        Lives,
+        Moves,
+        Closed
+    }
+
     public ShopState shopState;
+
+    //for different types
+    public ShopType shopType;
 
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
-    private SoundManager soundManagerClass;
+    private SoundManager soundManagerClass;    
 
     //temp data
     public int[] tempBonuses;
@@ -31,33 +43,33 @@ public class BonusShop : MonoBehaviour
     public int[] ordersCount;
 
     [Header("Shop Panel")]
-    public GameObject bonusShopPanel;
-    public GameObject panelWithBonuses;
-    public TMP_Text panelNameTxt;
+    public GameObject[] shopPanel;
+
+    [Header("Shop Name")]
+    public TMP_Text[] shopName;
 
     [Header("Sound")]
     public AudioClip buySound;
 
-    [Header("Panel Shop")]
-    public GameObject  panelWithShop;
-    public Vector2 constantSizePWS = new Vector2(768, 1700);
-
-    [Header("Panel Controls")]
-    public GameObject panelWithControls;
-    public Vector2 constantSizePWC = new Vector2(768, 1634);
-
     [Header("Credits")]
     public TMP_Text creditsCountPanelText;
+    
+    public TMP_Text[] creditsCountText;
+
     public TMP_Text creditsCountShopText;
+
     public Slider creditsCountSlider; //slider
     public Button buyButton;
 
     [Header("Notification Stuff")]
-    public TMP_Text infoText;    //The store displays boosters that are available in the equipment
+    private TMP_Text infoText;    //The store displays boosters that are available in the equipment    
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
+    private int timeLeft;
+    public TMP_Text livesCount;
 
-    int bonusCount = 6;
+    //!important
+    int bonusCount = 10;
 
     public ParticleSystem buyParticles01;
 
@@ -74,8 +86,9 @@ public class BonusShop : MonoBehaviour
     public string[] bonusDescString;
 
 
-
-    private string defaultInfoText = "Shop displays items that are available in the inventory, and purchased items";
+    private List<string> defInfoText = new List<string>();
+    
+    private Color defaultInfoTextColor = new Color(0.196f, 0.231f, 0.4f, 1.0f);
 
     private void Awake()
     {
@@ -89,46 +102,58 @@ public class BonusShop : MonoBehaviour
     void Start()
     {
         //classes        
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
-        timeManagerClass = GameObject.FindWithTag("GameData").GetComponent<TimeManager>();
-        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();        
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();        
+        timeManagerClass = GameObject.FindWithTag("TimeManager").GetComponent<TimeManager>();
 
         SetupShop();
 
-        //Debug.Log("here");
+        //set type
+        shopType = ShopType.Closed;
 
-        if(infoText != null)
-            infoText.text = defaultInfoText;
+        //add default
+        defInfoText.Add("Displays items that are available in the inventory, and purchased items");
+        defInfoText.Add("Energy is needed to collect lost items");
+        defInfoText.Add("Buy the required number of moves");
     }
 
     public void SetupShop()
     {
         //get data from save
         creditsCount = gameDataClass.saveData.credits;
-        //gameDataClass.saveData.bonuses[5] = gameDataClass.saveData.lives; //
-
-        //add prices
-        //gameDataClass.saveData.bonusesPrice = bonusPrice;
-
+        
         //temp credits
         tempCreditsCount = creditsCount;
 
         //show data
-        if(creditsCountPanelText != null)
+        for(int i = 0; i < creditsCountText.Length; i++)
         {
-            creditsCountPanelText.text = "" + creditsCount;
-        }
+            if (creditsCountText[i] != null)
+                creditsCountText[i].text = "" + creditsCount;
+        }       
+
+        //main panel
+        creditsCountPanelText.text = "" + creditsCount;
+
 
         //in shop
         if (creditsCountShopText != null)
         {
             creditsCountShopText.text = "" + tempCreditsCount;
 
-            creditsCountSlider.maxValue = tempCreditsCount;
-            creditsCountSlider.minValue = 0;
-            creditsCountSlider.value = tempCreditsCount;
+            if(creditsCountSlider != null)
+            {
+                creditsCountSlider.maxValue = tempCreditsCount;
+                creditsCountSlider.minValue = 0;
+                creditsCountSlider.value = tempCreditsCount;
+            }
+
         }
 
+        if (timeManagerClass != null)
+        {
+            timeLeft = timeManagerClass.CheckConditions();
+        }
     }
 
     public void ZeroBonus()
@@ -144,40 +169,6 @@ public class BonusShop : MonoBehaviour
         }
 
         bonusSelected = -1;
-    }
-
-    public void TurnOnPanels()
-    {
-        if (panelWithBonuses != null)
-        {
-            foreach (Transform child in panelWithBonuses.transform)
-            {
-                // Check if the child has the "PanelWithBonus" tag
-                if (child.CompareTag("PanelWithBonus"))
-                {
-                    // Enable the panel
-                    child.gameObject.SetActive(true);
-                }
-            }
-        }
-
-        //restore size
-        RectTransform panelShopRect = panelWithShop.GetComponent<RectTransform>();
-        panelShopRect.sizeDelta = constantSizePWS;
-
-        //restore size
-        RectTransform panelControlRect = panelWithControls.GetComponent<RectTransform>();
-        panelControlRect.sizeDelta = constantSizePWC;
-    }
-
-
-    public void OpenShop(string shopName)
-    {       
-        ZeroBonus();
-
-        SetupShop();
-
-        panelNameTxt.text = shopName;
     }
 
     public void BuyBonus()
@@ -201,8 +192,6 @@ public class BonusShop : MonoBehaviour
         //livesCountPanelText.text = "" + gameDataClass.saveData.lives;
        
         ZeroBonus();
-
-
     }
 
     public void BuyEffects()
@@ -213,7 +202,6 @@ public class BonusShop : MonoBehaviour
 
     public void ShowInfo(int value, string type, string busterName = null)
     {
-
         switch (type)
         {
             case "NoFounds":
@@ -230,6 +218,9 @@ public class BonusShop : MonoBehaviour
                 break;
             case "ReturnBonus":
                 infoText.text = "The " + busterName + " was removed from the cart";
+                break;
+            case "LifeWaiting":
+                infoText.text = $"{value} minutes until your energy is refilled";
                 break;
             default:
                 infoText.text = "";
@@ -261,7 +252,7 @@ public class BonusShop : MonoBehaviour
         }
 
         // After fading out, you can hide or disable the text if needed
-        infoText.text = defaultInfoText;
+        infoText.text = defInfoText[1];
         infoText.color = originalColor;
     }
 
@@ -321,75 +312,87 @@ public class BonusShop : MonoBehaviour
         }
     }
 
-
-    public void DisableSpecificChildren(string type)
+    public void CloseShop()
     {
-        if (panelWithBonuses != null)
+        ZeroBonus();
+
+        // Stop the previous coroutine if it's running
+        if (fadeOutCoroutine != null)
         {
-            // Find all GameObjects with the "PanelWithBonus" tag
-            GameObject[] panels = GameObject.FindGameObjectsWithTag("PanelWithBonus");
-
-            for (int i =0; i < panels.Length; i++)
-            {
-                //for buster shop
-                if (type=="Buster")
-                {
-                    if(panels[i].name == "Lives")
-                    {
-                        panels[i].gameObject.SetActive(false);
-                    }
-                        
-                }
-                //for lives shop
-                if (type == "Lives")
-                {
-                    if(panels[i].name != "Lives")
-                    {
-                        panels[i].gameObject.SetActive(false);
-                    }
-                        
-                }
-
-                //for muves shop
-                if (type == "Moves")
-                {
-                    if (panels[i].name != "Moves")
-                    {
-                        panels[i].gameObject.SetActive(false);
-                    }
-                }
-            }
-
-            float totalVisibleHeight = 0f;
-
-
-            //get decrease value
-            if (panelWithBonuses != null)
-            {
-                foreach (Transform child in panelWithBonuses.transform)
-                {
-                    // Check if the child has the "PanelWithBonus" tag
-                    if (child.CompareTag("PanelWithBonus"))
-                    {
-                        if (!child.gameObject.activeSelf)
-                        {
-                            RectTransform panelRect = child.gameObject.GetComponent<RectTransform>();
-                            totalVisibleHeight += panelRect.rect.height;
-                        }
-                    }
-                }
-            }
-
-            //height
-            // Adjust the ShopPanel height
-            RectTransform shopPanelRect = panelWithShop.GetComponent<RectTransform>();
-            float newHeight = shopPanelRect.rect.height - totalVisibleHeight;
-            shopPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(newHeight, 0f));
-
-            RectTransform shopControlsRect = panelWithControls.GetComponent<RectTransform>();
-            float newHeightControls = shopControlsRect.rect.height - totalVisibleHeight;
-            shopControlsRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(newHeightControls, 0f));
-
+            StopCoroutine(fadeOutCoroutine);
         }
+
+        //close shop
+        if (shopType == ShopType.Busters)
+        {
+            shopPanel[0].SetActive(false);
+        }
+        else
+        {
+            shopPanel[1].SetActive(false);
+        }
+            
+        shopType = ShopType.Closed;
+    }
+
+    //converter
+    public void IntToShopType(int type)
+    {
+        //0-busters, 1-lives, 2- moves
+        ShopType shopType = (ShopType)type;
+        OpenShop(shopType);
+    }
+
+
+    public void OpenShop(ShopType type)
+    {       
+        ZeroBonus();       
+        SetupShop();
+      
+        //for buster shop
+        if (type == ShopType.Busters)
+        {
+            shopPanel[0].SetActive(true);
+            shopName[0].text = "SHOP";
+            shopType = ShopType.Busters;
+        }
+        //for lives shop
+        if (type == ShopType.Lives)
+        {
+            shopPanel[1].SetActive(true);
+            shopName[1].text = "ENERGY";
+            shopType = ShopType.Lives;
+            livesCount.text = "" + gameDataClass.saveData.bonuses[5];
+        }
+
+        //for muves shop
+        if (type == ShopType.Moves)
+        {
+            shopPanel[1].SetActive(true);
+            shopName[1].text = "MOVES";
+            shopType = ShopType.Moves;
+        }
+
+        //get info text
+        GameObject infoTextObject = GameObject.FindGameObjectWithTag("ShopInfoText");
+        infoText = infoTextObject.GetComponent<TMP_Text>();
+
+        if (infoText != null)
+        {
+            if (type == ShopType.Busters)
+                infoText.text = defInfoText[0];
+
+            if (type == ShopType.Lives)
+                infoText.text = defInfoText[1];
+
+            if (type == ShopType.Moves)
+                infoText.text = defInfoText[2];
+
+            infoText.color = defaultInfoTextColor;
+        }
+
+        //if timer started
+        if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+            ShowInfo(timeLeft, "LifeWaiting");
     }
 }

@@ -11,8 +11,19 @@ public class UIManager : MonoBehaviour
 
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
-    private int topPanelHeight = 150;
-    private int topPanelInGameHeight = 170;
+    private int topPanelHeight = 180;
+
+    [Header("Panel Shop")]
+    public GameObject panelWithShop;
+    public Vector2 constantSizePWS = new Vector2(768, 2050);
+
+    [Header("Panel With Shop Controls")]
+    public GameObject panelWithControls;
+    public Vector2 constantSizePWC = new Vector2(768, 1990);
+
+    [Header("Panel With Shop Items")]
+    public GameObject panelWithShopItems;
+    public Vector2 constantSizePSI = new Vector2(768, 1200);
 
     void Start()
     {
@@ -43,15 +54,8 @@ public class UIManager : MonoBehaviour
             Vector2 size = panelTop.sizeDelta;
 
             //panel for game and levels
-            if (sceneName == "GameBoard")
-            {
-                size.y = unsafeZoneHeight + topPanelInGameHeight;
-            }
-            else
-            {
-                size.y = unsafeZoneHeight + topPanelHeight;
-            }
-            
+            size.y = unsafeZoneHeight + topPanelHeight;
+
             panelTop.sizeDelta = size;
 
             // Lower the panel by the unsafe zone's height at the bottom
@@ -62,8 +66,6 @@ public class UIManager : MonoBehaviour
             panelTop.anchoredPosition = anchoredPosition;            
         }
 
-
-
         if (panelCenter != null)
         {
             //change size
@@ -73,7 +75,7 @@ public class UIManager : MonoBehaviour
             Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
             anchoredPosition2.y = -unsafeZoneHeight - topPanelHeight - paddingPanels;
             panelCenter.anchoredPosition = anchoredPosition2;
-        }
-        
+        }        
     }
+
 }

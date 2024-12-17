@@ -30,7 +30,8 @@ public class GameData : MonoBehaviour
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
 
-    public int bonusCount = 11;
+    private int bonusCount = 11;
+    private int levelsCount = 21;
 
 
     private void Awake()
@@ -78,10 +79,12 @@ public class GameData : MonoBehaviour
 
         //game data levels stuff
         saveData.levelToLoad = 1;
-        saveData.isActive = new bool[11];
-        saveData.stars = new int[11];
-        saveData.highScore = new int[11];
-        saveData.isActive[0] = true; //turn on 1st level
+        saveData.isActive = new bool[levelsCount];
+        saveData.stars = new int[levelsCount];
+        saveData.highScore = new int[levelsCount];
+
+        //turn on 1st level
+        saveData.isActive[0] = true; 
         
         //buster type
         saveData.bonuses = new int[bonusCount];

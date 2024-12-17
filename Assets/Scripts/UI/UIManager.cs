@@ -1,20 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
-    public RectTransform panelTop; // Assign your panel's RectTransform in the Inspector
+    public Canvas mainCanvas;
+    private Vector2 canvasDimension;
+    
+
+    [Header("Main Panels")]
+    public RectTransform panelTop; // Assign your panel's RectTransform in the Inspector    
     public RectTransform panelCenter;
     public RectTransform panelBottom;
 
+    [Header("Panels with Button Levels")]
+    public RectTransform panelLevelButtons; //for buttons
+
+    [Header("Padding between Panels")]
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
+    private float panelCenterHeight;
+
     private int topPanelHeight = 190;
+    private int panelBottomHeight = 150;
+    private int controlButtonsHeight = 64;
 
     void Start()
     {
+        RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
+        canvasDimension.y = canvasRect.rect.height;
+        canvasDimension.x = canvasRect.rect.width;
+
         AdjustPanelPosition();
     }
 
@@ -22,7 +40,6 @@ public class UIManager : MonoBehaviour
     {
         // Get the safe area values
         Rect safeArea = Screen.safeArea;
-        Debug.Log("safeArea H:" + safeArea.height);
 
         // Get the screen height
         float screenHeight = Screen.height;
@@ -41,11 +58,14 @@ public class UIManager : MonoBehaviour
 
             //set size
             Vector2 size = panelTop.sizeDelta;
+            
 
             //panel for game and levels
             size.y = unsafeZoneHeight + topPanelHeight;
 
             panelTop.sizeDelta = size;
+
+            panelTopHeight = size.y;
 
             // Lower the panel by the unsafe zone's height at the bottom
             Vector2 anchoredPosition = panelTop.anchoredPosition;
@@ -55,16 +75,37 @@ public class UIManager : MonoBehaviour
             panelTop.anchoredPosition = anchoredPosition;            
         }
 
+        panelCenterHeight = 0;
+
         if (panelCenter != null)
         {
             //change size
             Vector2 currentSize = panelCenter.sizeDelta;
-            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y);            
+            currentSize.y = canvasDimension.y - panelTopHeight - (paddingPanels*2) - panelBottomHeight;
+
+            panelCenterHeight = currentSize.y;            
+
+            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y);
 
             Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
             anchoredPosition2.y = -unsafeZoneHeight - topPanelHeight - paddingPanels;
             panelCenter.anchoredPosition = anchoredPosition2;
         }        
+
+        if(panelLevelButtons != null)
+        {
+            Vector2 currentSize = panelLevelButtons.sizeDelta;
+            currentSize.y = panelCenterHeight - (controlButtonsHeight*2);
+            panelLevelButtons.sizeDelta = new Vector2(currentSize.x, currentSize.y);
+
+            LevelButtonsPanelSize();
+        }
+
+    }
+
+    public float LevelButtonsPanelSize()
+    {
+        return panelLevelButtons.sizeDelta.y;
     }
 
 }

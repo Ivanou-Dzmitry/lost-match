@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
@@ -32,38 +33,26 @@ public class SoundManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject gameDataObject = GameObject.FindWithTag("GameData");
-        gameDataClass = gameDataObject.GetComponent<GameData>();
-
-        GameObject setManageObject = GameObject.FindWithTag("SettingsManager");
-        settingsManagerClass = setManageObject.GetComponent<SettingsManager>();
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();       
+        settingsManagerClass = GameObject.FindWithTag("SettingsManager").GetComponent<SettingsManager>();
+       
 
         if (gameDataClass != null)
         {
-            LoadData();
+            LoadSoundData();
         }
-
     }
 
 
-    private void LoadData()
+    private void LoadSoundData()
     {
-        //load data
-        if (!gameDataClass.saveData.soundToggle)
-        {
-            settingsManagerClass.MuteSound(0);
-        }
+        SetVolume("sound");
+        SetVolume("music");
 
-
-        if (!gameDataClass.saveData.musicToggle)
-        {
-            settingsManagerClass.MuteMusic(0);
-        }
-
-        //load vol
-        effectsSource.volume = gameDataClass.saveData.soundVolume;
-        musicSource.volume = gameDataClass.saveData.musicVolume;
+        MuteSound(gameDataClass.saveData.soundToggle);
+        MuteMusic(gameDataClass.saveData.musicToggle);        
     }
+
 
     public void SetVolume(string type)
     {
@@ -79,6 +68,35 @@ public class SoundManager : MonoBehaviour
                 musicSource.volume = gameDataClass.saveData.musicVolume;
             }
         }
+    }
+
+    public void MuteSound(bool value)
+    {
+        if (value)
+        {
+            effectsSource.mute = false;
+        }
+        else
+        {
+            effectsSource.mute = true;
+        }
+        
+    }
+
+    public void MuteMusic(bool value)
+    {
+        if(value)
+        {
+            musicSource.mute = false;
+        }
+        else
+        {
+            musicSource.mute = true;
+        }
+
+        AudioClip clip = musicSource.clip;
+        if (clip != null)
+            PlayMusic(clip);
     }
 
 

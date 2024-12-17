@@ -32,7 +32,10 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
-    private SoundManager soundManagerClass;    
+    private SoundManager soundManagerClass;
+
+    [Header("End Game Class")]
+    public EndGameManager endGameManagerClass;
 
     //temp data
     public int[] tempBonuses;
@@ -56,7 +59,7 @@ public class BonusShop : MonoBehaviour
     
     public TMP_Text[] creditsCountText;
 
-    public TMP_Text creditsCountShopText;
+    public TMP_Text creditsCountShopText; //credits in shop
 
     public Slider creditsCountSlider; //slider
     public Button buyButton;
@@ -69,7 +72,7 @@ public class BonusShop : MonoBehaviour
     public TMP_Text livesCount;
 
     //!important
-    int bonusCount = 10;
+    int bonusCount = 11;
 
     public ParticleSystem buyParticles01;
 
@@ -114,7 +117,7 @@ public class BonusShop : MonoBehaviour
         //add default
         defInfoText.Add("Displays items that are available in the inventory, and purchased items");
         defInfoText.Add("Energy is needed to collect lost items");
-        defInfoText.Add("Buy the required number of moves");
+        defInfoText.Add("Buy the required number of moves to continue the game");
     }
 
     public void SetupShop()
@@ -181,6 +184,15 @@ public class BonusShop : MonoBehaviour
             gameDataClass.saveData.bonuses[i] = gameDataClass.saveData.bonuses[i] + tempBonuses[i];
         }
 
+        //set moves
+        if(shopType == ShopType.Moves)
+        {
+            if (endGameManagerClass != null)
+            {
+                endGameManagerClass.BuyMoves();
+            }                
+        }
+
         //lives
         //gameDataClass.saveData.lives += tempBonuses[5]; 
 
@@ -189,7 +201,6 @@ public class BonusShop : MonoBehaviour
 
         //update text on panel
         creditsCountPanelText.text = "" + gameDataClass.saveData.credits;
-        //livesCountPanelText.text = "" + gameDataClass.saveData.lives;
        
         ZeroBonus();
     }
@@ -362,15 +373,16 @@ public class BonusShop : MonoBehaviour
             shopPanel[1].SetActive(true);
             shopName[1].text = "ENERGY";
             shopType = ShopType.Lives;
-            livesCount.text = "" + gameDataClass.saveData.bonuses[5];
+            livesCount.text = "" + gameDataClass.saveData.bonuses[5]; //lives in shop
         }
 
         //for muves shop
         if (type == ShopType.Moves)
         {
             shopPanel[1].SetActive(true);
-            shopName[1].text = "MOVES";
+            shopName[1].text = "KEEP PLAYING?";
             shopType = ShopType.Moves;
+            livesCount.text = "" + gameDataClass.saveData.bonuses[5]; //lives in shop
         }
 
         //get info text

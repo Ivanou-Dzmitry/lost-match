@@ -295,6 +295,16 @@ public class ElementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("MouseDown");
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            Debug.Log("Up");
+        }
+
         targetX = column;
         targetY = row;        
 

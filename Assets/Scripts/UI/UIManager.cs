@@ -11,19 +11,7 @@ public class UIManager : MonoBehaviour
 
     public int paddingPanels; // Assign your panel's RectTransform in the Inspector
 
-    private int topPanelHeight = 180;
-
-    [Header("Panel Shop")]
-    public GameObject panelWithShop;
-    public Vector2 constantSizePWS = new Vector2(768, 2050);
-
-    [Header("Panel With Shop Controls")]
-    public GameObject panelWithControls;
-    public Vector2 constantSizePWC = new Vector2(768, 1990);
-
-    [Header("Panel With Shop Items")]
-    public GameObject panelWithShopItems;
-    public Vector2 constantSizePSI = new Vector2(768, 1200);
+    private int topPanelHeight = 190;
 
     void Start()
     {
@@ -34,6 +22,7 @@ public class UIManager : MonoBehaviour
     {
         // Get the safe area values
         Rect safeArea = Screen.safeArea;
+        Debug.Log("safeArea H:" + safeArea.height);
 
         // Get the screen height
         float screenHeight = Screen.height;

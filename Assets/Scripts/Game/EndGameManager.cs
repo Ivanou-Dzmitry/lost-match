@@ -24,8 +24,9 @@ public class EndGameManager : MonoBehaviour
     private GameBoard gameBoardClass;
     private GameData gameDataClass;
     public EndGameRequriments EndGameReqClass;
-    public ScoreManager scoreManagerClass;
-    public SoundManager soundManagerClass;
+    private ScoreManager scoreManagerClass;
+    private SoundManager soundManagerClass;
+    private BonusShop bonusShopClass;
 
     //panels
     public GameObject winPanel;
@@ -33,12 +34,17 @@ public class EndGameManager : MonoBehaviour
 
     //confirm
     public GameObject confirmPanel;
-    private LevelGoals levelGoalsClass;
+    private LevelGoals levelGoalsClass;    
 
+    [Header("Alarm")]
     public TMP_Text movesCounter;
     public int curCounterVal;
     public Image movesAlarm;
-    public Animator animatorAlarm;
+    public Animator animatorAlarm; //animator
+    public AudioClip levelMusic;
+
+    [Header("Moves Shop")]
+
 
     [Header("Win Panel")]
     public TMP_Text levelNumber;
@@ -59,7 +65,6 @@ public class EndGameManager : MonoBehaviour
 
     public int finalLevelNumber = 10;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -68,6 +73,7 @@ public class EndGameManager : MonoBehaviour
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
         SetGameType();
         SetupGame();
@@ -98,7 +104,7 @@ public class EndGameManager : MonoBehaviour
 
         movesCounter.text = "" + curCounterVal;
 
-        movesAlarm.enabled = false;
+        AlarmAnimation(curCounterVal, true);
     }
 
     public void DecreaseCounterVal()
@@ -106,24 +112,45 @@ public class EndGameManager : MonoBehaviour
         if (gameBoardClass.currentState != GameState.pause)
         {
             curCounterVal--;
-            movesCounter.text = "" + curCounterVal;
 
-            //turn on alarm
-            if(curCounterVal <= 5)
+            //avoid - values in counter
+            if(curCounterVal >= 0)
             {
-                movesAlarm.enabled = true;
-                animatorAlarm.SetTrigger("PlayAnimation");
+                movesCounter.text = "" + curCounterVal;
+                AlarmAnimation(curCounterVal, true);
             }
             else
             {
-                movesAlarm.enabled = false;
-            }
+                movesCounter.text = "0";
+                AlarmAnimation(curCounterVal, false);
+            }                
+            
+        }
+    }
 
-            //for end game
-/*            if (curCounterVal <= 0 && gameBoardClass.matchState == GameState.matching_stop)
-            {
-                LoseGame();
-            }*/
+    private void AlarmAnimation(int movesValue, bool value)
+    {
+        animatorAlarm.enabled = value;
+
+        //turn on alarm
+        if (movesValue <= 5 && movesValue!=0)
+        {
+            movesAlarm.enabled = true;
+            animatorAlarm.SetTrigger("PlayAnimation");            
+        }
+        else
+        {
+            movesAlarm.enabled = false;
+        }
+
+        //speed
+        if(movesValue > 3)
+        {
+            animatorAlarm.speed = 1;
+        }
+        else
+        { 
+            animatorAlarm.speed = 2;
         }
     }
 
@@ -133,7 +160,7 @@ public class EndGameManager : MonoBehaviour
             winPanel.SetActive(true);
 
         //stop animation finalTextPanel.activeSelf
-        animatorAlarm.enabled = false;
+        AlarmAnimation(curCounterVal, false);
 
         movesCounter.text = "" + curCounterVal;
 
@@ -151,11 +178,13 @@ public class EndGameManager : MonoBehaviour
             starsPart[i].Play();
         }
 
-        for(int i = 0; i< congratPart.Length; i++)
+        //particles
+        for (int i = 0; i< congratPart.Length; i++)
         {
             congratPart[i].Play();
         }
 
+        //music
         if (soundManagerClass != null)
         {
             soundManagerClass.PlayMusic(winMusic);
@@ -166,16 +195,31 @@ public class EndGameManager : MonoBehaviour
     public void LoseGame()
     {
         if (tryPanel.activeSelf == false)
-            tryPanel.SetActive(true);
+        {
+            bonusShopClass.IntToShopType(2);
+        }           
 
         levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);
 
         //stop animation
-        animatorAlarm.enabled = false;
+        AlarmAnimation(curCounterVal, false);
 
-        int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
-        creditsCountLose.text = "Credits: " + currentCreditsCount;
+        int currentCreditsCount = scoreManagerClass.score;
+        creditsCountLose.text = "You collect " + currentCreditsCount;
 
+        //zero moves
+        curCounterVal = 0;
+        gameDataClass.saveData.bonuses[6] = 0;        
+        movesCounter.text = "" + curCounterVal;
+
+        if (soundManagerClass != null)
+        {
+            soundManagerClass.PlayMusic(loseMusic);
+        }
+    }
+
+    public void ReduceLives()
+    {
         //reduce lives
         int currentLives = gameDataClass.saveData.bonuses[5];
 
@@ -183,17 +227,6 @@ public class EndGameManager : MonoBehaviour
         {
             currentLives = currentLives - 1;
             gameDataClass.saveData.bonuses[5] = currentLives;
-        }
-
-        //disable button if life = 0
-        DisableLooseButton();
-        
-        curCounterVal = 0;
-        movesCounter.text = "" + curCounterVal;
-
-        if (soundManagerClass != null)
-        {
-            soundManagerClass.PlayMusic(loseMusic);
         }
     }
 
@@ -250,30 +283,19 @@ public class EndGameManager : MonoBehaviour
 
     private void Update()
     {
-        DisableLooseButton();      
+ 
     }
 
-    private void DisableLooseButton()
+    public void BuyMoves()
     {
-        if (gameDataClass.saveData.bonuses[5] > 0)
-        {
-            retryLooseButton.interactable = true;
-            Animator animator = retryLooseButton.GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.enabled = true;
-            }
-        }
-        else
-        {
-            retryLooseButton.interactable = false;
-            Animator animator = retryLooseButton.GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.enabled = false;
-            }
-        }
+        curCounterVal = gameDataClass.saveData.bonuses[6];
+        movesCounter.text = "" + gameDataClass.saveData.bonuses[6];
+        gameBoardClass.currentState = GameState.move;
+        soundManagerClass.PlayMusic(levelMusic);
+
+        AlarmAnimation(curCounterVal, true);
     }
+
 
     public void QuitAndLooseLife()
     {

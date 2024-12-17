@@ -116,15 +116,15 @@ public class GameData : MonoBehaviour
         saveData.bonusesPrice[4] = 25; //line
 
         saveData.bonusesPrice[5] = 100; //energy battery 1
-        saveData.bonusesPrice[6] = 150; //move 1
+        saveData.bonusesPrice[6] = 160; //move 1
 
         //bundle lives
         saveData.bonusesPrice[7] = 150; //energy battery 2
         saveData.bonusesPrice[8] = 250; //energy battery 3
 
         //bundle moves
-        saveData.bonusesPrice[9] = 250; //move x
-        saveData.bonusesPrice[10] = 400; //move xx
+        saveData.bonusesPrice[9] = 270; //move x
+        saveData.bonusesPrice[10] = 430; //move xx
 
 
         //set max count
@@ -147,7 +147,7 @@ public class GameData : MonoBehaviour
 
 
         //start=0
-        saveData.credits = 6000;
+        saveData.credits = 1000;
 
         //saveData.lives = 3;
         saveData.bonuses[5] = 5; //set lives bonus #5
@@ -171,4 +171,18 @@ public class GameData : MonoBehaviour
     {
         SaveToFile();
     }
+
+    public void DebugAddCredits()
+    {
+        saveData.credits = 10000;
+    }
+
+    public void DebugOpenLevels()
+    {
+        for(int i = 0; i< saveData.isActive.Length; i++)
+        {
+            saveData.isActive[i] = true;
+        }
+    }
+
 }

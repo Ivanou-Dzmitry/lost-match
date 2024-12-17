@@ -40,7 +40,8 @@ public class GoalManager : MonoBehaviour
     [Header("Final Text")]
     public GameObject finalTextPanel;
     public TMP_Text finalText;
-    private float waitingTime = 2f;
+
+    private float waitingTime = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -156,7 +157,8 @@ public class GoalManager : MonoBehaviour
 
     private IEnumerator HidePanelCoroutine(float delay)
     {
-        yield return new WaitForSeconds(delay); // Wait for the specified delay
+        yield return new WaitForSeconds(delay); // Wait for the specified delay        
+
         finalTextPanel.SetActive(false); // Hide the panel
     }
 
@@ -170,7 +172,6 @@ public class GoalManager : MonoBehaviour
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 
         // Call WinGame after delay
-        finalTextPanel.SetActive(false);
         endGameManagerClass.WinGame();
         
     }
@@ -185,8 +186,12 @@ public class GoalManager : MonoBehaviour
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 
         // Call LoseGame after delay
-        finalTextPanel.SetActive(false);
         endGameManagerClass.LoseGame();        
+    }
+
+    private void PanelActivator()
+    {
+        finalTextPanel.SetActive(false); // Completely disable the panel
     }
 
     public void CompareGoal(string goalToCompare)

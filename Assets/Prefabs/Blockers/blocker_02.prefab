@@ -99,10 +99,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitPoints: 2
-  elementSound: {fileID: 8300000, guid: 020cce481a0471948826bc0a23750d69, type: 3}
-  destroyParticle: {fileID: 5804476535608525528, guid: 776cde81936a4544192e88c6bc553b8a, type: 3}
+  elementSounds:
+  - {fileID: 8300000, guid: 096dc17e83fa9fa478a752cd3f5c93da, type: 3}
+  - {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
+  elementParticles:
+  - {fileID: 5804476535608525528, guid: 776cde81936a4544192e88c6bc553b8a, type: 3}
+  - {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
   objLayer02: {fileID: 1580275849465435111}
   objLayer03: {fileID: 0}
+  elementLayers:
+  - {fileID: 1580275849465435111}
 --- !u!1 &1580275849465435111
 GameObject:
   m_ObjectHideFlags: 0

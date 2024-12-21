@@ -90,8 +90,8 @@ public class GameBoard : MonoBehaviour
     public TMP_Text levelNumberTxt;
     public AudioClip levelMusic;
 
-    public GameState currentState = GameState.move;
-    public GameState matchState = GameState.matching_inprogress;
+    public GameState currentState;
+    public GameState matchState;
 
     [Header("Size")]
     public int column;
@@ -135,13 +135,13 @@ public class GameBoard : MonoBehaviour
     private bool[,] emptyElement;
 
     [Header("Prefabs")]
-    public GameObject elementPrefab;
+    //public GameObject elementPrefab;
     public GameObject break01Prefab;
     public GameObject break02Prefab;
     public GameObject blocker01Prefab;
     public GameObject blocker02Prefab;
-    public GameObject expand01Prefab;
-    public GameObject locker01Prefab;
+    //public GameObject expand01Prefab;
+    //public GameObject locker01Prefab;
 
     //for lock
     public SpecialElements[,] lockedCells;
@@ -275,6 +275,7 @@ public class GameBoard : MonoBehaviour
             soundManagerClass.PlayMusic(levelMusic);
         }
 
+        //stop 1
         matchState = GameState.matching_stop;
 
         levelNumberTxt.text = "Level " + (level + 1);
@@ -423,6 +424,8 @@ public class GameBoard : MonoBehaviour
         {
             GenPreloadLayout();
         }
+
+        matchState = GameState.matching_stop;
     }
 
     //check for matching
@@ -471,8 +474,7 @@ public class GameBoard : MonoBehaviour
             for (int j = 0; j < row; j++)
             {
                 if (allElements[i, j] != null)
-                {
-                    matchState = GameState.matching_inprogress;
+                {                    
                     DestroyMatchesAt(i, j);
                 }
             }
@@ -526,32 +528,24 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private void RunSpecParticles(GameObject element, int thisCol, int thisRow)
-    {
-        GameObject elementParticle = Instantiate(element, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-        ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-
-        Destroy(elementParticle, .9f);
-    }
-
 
     private void RunParticles(ElementController element, int thisCol, int thisRow)
     {
         if (element.isColumnBomb)
         {
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
 
-            Destroy(elementParticle, .9f);
+            Destroy(elementParticle, 1.9f);
 
         }
 
         if (element.isWrapBomb)
         {
             GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
 
-            Destroy(elementParticle, .9f);
+            Destroy(elementParticle, 1.9f);
         }
 
         if (element.isRowBomb)
@@ -559,9 +553,9 @@ public class GameBoard : MonoBehaviour
             // Set rotation to 90 degrees around the Z axis
             Quaternion rotation = Quaternion.Euler(0, 0, 90);
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
-            ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
      
-            Destroy(elementParticle, .9f);
+            Destroy(elementParticle, 1.9f);
         }
 
             if (element.destroyParticle != null)
@@ -578,6 +572,43 @@ public class GameBoard : MonoBehaviour
         yield return new WaitForSeconds(delay);
     }
 
+    private void DestroyBreakableAt(int thisColumn, int thisRow)
+    {
+        if (breakableCells[thisColumn, thisRow] != null)
+        {
+            SpecialElements currentBreak = breakableCells[thisColumn, thisRow];
+            currentBreak.TakeDamage(1); // Apply damage
+
+            int hitPoints = currentBreak.hitPoints;
+
+            if (hitPoints >= 0 && hitPoints < currentBreak.elementSounds.Length)
+            {
+                // Play sound if available
+                if (currentBreak.elementSounds[hitPoints] != null)
+                {
+                    PlaySound(currentBreak.elementSounds[hitPoints]);
+                }
+
+                // Run particles if available
+                if (currentBreak.elementParticles[hitPoints] != null)
+                {
+                    GameObject particle = Instantiate(
+                        currentBreak.elementParticles[hitPoints],
+                        breakableCells[thisColumn, thisRow].transform.position,
+                        Quaternion.identity
+                    );
+                    Destroy(particle, 2.0f); // Particle delay
+                }
+            }
+
+            // Destroy cell if hit points are 0 or less
+            if (hitPoints <= 0)
+            {
+                breakableCells[thisColumn, thisRow] = null;
+            }
+        }
+    }
+
     // step 10  
     private void DestroyMatchesAt(int thisColumn, int thisRow)
     {        
@@ -586,30 +617,43 @@ public class GameBoard : MonoBehaviour
         {
             ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();
 
+            //destroy breakable
+            DestroyBreakableAt(thisColumn, thisRow);
+/*
             SpecialElements currentBreak = breakableCells[thisColumn, thisRow];
 
             //breakable tiles
             if (breakableCells[thisColumn, thisRow] != null)
             {
-                breakableCells[thisColumn, thisRow].TakeDamage(1);
+                breakableCells[thisColumn, thisRow].TakeDamage(1); //damage here                
+
 
                 if (breakableCells[thisColumn, thisRow].hitPoints <= 0)
-                {                    
-                    //sound
-                    if (currentBreak.elementSound != null)
+                {
+                    //play sound
+                    if (currentBreak.elementSounds[0] != null)
                     {
-                        PlaySound(currentBreak.elementSound);
+                        PlaySound(currentBreak.elementSounds[0]);
                     }
 
-                    RunSpecParticles(currentBreak.destroyParticle, thisColumn, thisRow);
+                    //run particles
+                    RunSpecParticles(currentBreak.elementParticles[0], thisColumn, thisRow);
 
-                    //particles for break
-                    //GameObject break01Part = Instantiate(currentBreak.destroyParticle, allElements[thisColumn, thisRow].transform.position, Quaternion.identity);
-                    //Destroy(break01Part, 0.9f);
-
+                    //destroy cell
                     breakableCells[thisColumn, thisRow] = null;
-                }
-            }
+                } 
+                else if (breakableCells[thisColumn, thisRow].hitPoints == 1)
+                {
+                    //play sound
+                    if (currentBreak.elementSounds[1] != null)
+                    {
+                        PlaySound(currentBreak.elementSounds[1]);
+                    }
+                    
+                    //run particles
+                    RunSpecParticles(currentBreak.elementParticles[1], thisColumn, thisRow);
+                }                
+            }*/
 
 
             //goal for dots
@@ -631,8 +675,10 @@ public class GameBoard : MonoBehaviour
                 goalManagerClass.UpdateGoals();
             }
 
+            
+
             //for blockers
-            DamageBlockers(thisColumn, thisRow);
+            DamageBlockers(thisColumn, thisRow);            
 
             //sound
             if (currentElement.elementSound != null)
@@ -654,8 +700,10 @@ public class GameBoard : MonoBehaviour
                 bombsCells[thisColumn, thisRow] = null;
             }
 
+            currentElement.DestroyAnimation();
+
             //main destroy
-            Destroy(allElements[thisColumn, thisRow]);
+            Destroy(allElements[thisColumn, thisRow], .5f);
             allElements[thisColumn, thisRow] = null;
 
             //clear match list
@@ -704,6 +752,7 @@ public class GameBoard : MonoBehaviour
         }
         
         matchState = GameState.matching_inprogress;
+
         matchFinderClass.FindAllMatches(); //find match 2
     }
 
@@ -729,8 +778,8 @@ public class GameBoard : MonoBehaviour
     //refill final step
     private IEnumerator FillBoardCo()
     {
-       if (currentState != GameState.win)
-            RefillBoard(); //refil board
+       
+        RefillBoard(); //refil board
 
         yield return new WaitForSeconds(refillDelay);
 
@@ -745,8 +794,7 @@ public class GameBoard : MonoBehaviour
         currentElement = null;
 
         if (IsDeadLock())
-        {
-            matchState = GameState.matching_inprogress;
+        {            
             ShuffleBoard();
             goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
         }
@@ -756,6 +804,7 @@ public class GameBoard : MonoBehaviour
 
         //stop
         matchState = GameState.matching_stop;
+
         goalManagerClass.UpdateGoals();
     }
 
@@ -928,23 +977,36 @@ public class GameBoard : MonoBehaviour
                 // Log the current blocker
                 SpecialElements currentBlocker = blockerCells[thisColumn, thisRow];
 
-                if (currentBlocker.elementSound != null)
+                //get hit points
+                int hitPoint = blockerCells[thisColumn, thisRow].hitPoints;
+
+                // Effects queue
+                if (hitPoint <= 0 || hitPoint <= currentBlocker.elementSounds.Length)
                 {
-                    PlaySound(currentBlocker.elementSound);
+                    int index = Mathf.Clamp(hitPoint, 0, currentBlocker.elementSounds.Length - 1);
+
+                    if (currentBlocker.elementSounds[index] != null)
+                    {
+                        PlaySound(currentBlocker.elementSounds[index]);
+                    }
+
+                    if (currentBlocker.elementParticles[index] != null)
+                    {
+                        GameObject blockerParticle = Instantiate(
+                            currentBlocker.elementParticles[index],
+                            blockerCells[thisColumn, thisRow].transform.position,
+                            Quaternion.identity
+                        );
+                        Destroy(blockerParticle, 1.9f); // Particle delay
+                    }
+
+                    // Remove the blocker if hit points are 0 or less
+                    if (hitPoint <= 0)
+                    {
+                        blockerCells[thisColumn, thisRow] = null;
+                    }
                 }
 
-                //particles for break
-                if (currentBlocker.destroyParticle != null)
-                {
-                    GameObject blocker01Part = Instantiate(currentBlocker.destroyParticle, blockerCells[thisColumn, thisRow].transform.position, Quaternion.identity);
-                    Destroy(blocker01Part, 0.9f);
-                }
-
-                // Remove the blocker if its hit points are 0 or less
-                if (blockerCells[thisColumn, thisRow].hitPoints <= 0)
-                {
-                    blockerCells[thisColumn, thisRow] = null;
-                }
             }
         }
     }

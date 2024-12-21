@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: trail_01_mat
+  m_Name: break_01_mat
   m_Shader: {fileID: 210, guid: 0000000000000000f000000000000000, type: 0}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -44,11 +44,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 2800000, guid: 5be802541e4f9b04891659099af9f916, type: 3}
+        m_Texture: {fileID: 2800000, guid: 18a511c5048aec24396cd589a8962d90, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 888255e153d2bd14a9ba013ddfc4e94b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4aba20ce4b4a8cf4a92ded9dfb711477, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -77,7 +77,7 @@ Material:
     - _DistortionBlend: 0.5
     - _DistortionEnabled: 0
     - _DistortionStrength: 1
-    - _DistortionStrengthScaled: 0
+    - _DistortionStrengthScaled: 0.1
     - _DstBlend: 10
     - _EmissionEnabled: 1
     - _FlipbookMode: 0
@@ -99,8 +99,8 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 0.12673402, g: 1, b: 0, a: 1}
+    - _Color: {r: 3.5648696, g: 3.5648696, b: 3.5648696, a: 1}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
-    - _EmissionColor: {r: 0.23628666, g: 2.0000005, b: 0, a: 1}
+    - _EmissionColor: {r: 0.2617802, g: 0.30890062, b: 0.5340317, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

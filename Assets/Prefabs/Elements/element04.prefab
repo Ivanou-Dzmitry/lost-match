@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 8247112836122269087}
   - component: {fileID: -4392141092137468474}
   - component: {fileID: 290232123240542978}
+  - component: {fileID: -8400924866669061650}
   m_Layer: 0
   m_Name: element04
   m_TagString: element_04
@@ -244,3 +245,24 @@ MonoBehaviour:
   destroyParticle: {fileID: 7008526993925193625, guid: f9321d6d8d601ad41a5e322d1312b756, type: 3}
   lineBombParticle: {fileID: 3413543184670853712, guid: 95e48f46ebe23174b8d7f6bd43edf594, type: 3}
   wrapBombParticle: {fileID: 3413543184670853712, guid: ee26daa44d7a3db49bc6d756faf29cd1, type: 3}
+--- !u!95 &-8400924866669061650
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6196800066225916189}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 66171c2455d897540809e791bb9c7407, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

@@ -98,7 +98,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitPoints: 1
-  elementSound: {fileID: 8300000, guid: 25a5e7776d0b7fe4088addafd9095977, type: 3}
-  destroyParticle: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
+  elementSound01: {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
+  elementSound02: {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
+  elementSounds:
+  - {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
+  destroyParticle01: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
+  destroyParticle02: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
+  elementParticles:
+  - {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
   objLayer02: {fileID: 0}
   objLayer03: {fileID: 0}
+  elementLayers: []

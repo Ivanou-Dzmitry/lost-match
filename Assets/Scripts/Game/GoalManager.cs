@@ -105,6 +105,10 @@ public class GoalManager : MonoBehaviour
     {
         int goalsCompleted = 0;
 
+        Canvas pnlC = goalGameParent.GetComponent<Canvas>();
+
+        pnlC.overrideSorting = false;
+
         for (int i = 0; i < levelGoals.Length; i++)
         {           
             //count on item
@@ -119,8 +123,15 @@ public class GoalManager : MonoBehaviour
             }
         }
 
+        //state for run
+        bool runState = false;
+
+        if (gameBoardClass.matchState == GameState.matching_stop && gameBoardClass.currentState != GameState.wait)
+            runState = true;
+
+
         //end game procedure only when match is stop: goals=yes,
-        if (goalsCompleted >= levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
+        if (goalsCompleted >= levelGoals.Length && runState)
         {
             if (endGameManagerClass != null)
             {
@@ -129,8 +140,9 @@ public class GoalManager : MonoBehaviour
         }
 
         //for end game: moves = 0, goals=no
-        if (endGameManagerClass.curCounterVal <= 0 && goalsCompleted < levelGoals.Length && gameBoardClass.matchState == GameState.matching_stop)
+        if (endGameManagerClass.curCounterVal <= 0 && goalsCompleted < levelGoals.Length && runState)
         {
+            pnlC.overrideSorting = true;
             StartCoroutine(DelayedLose());
         }
     }

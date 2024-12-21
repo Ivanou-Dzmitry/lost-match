@@ -60,6 +60,11 @@ public class ElementController : MonoBehaviour
     public GameObject lineBombParticle;
     public GameObject wrapBombParticle;
 
+    [Header("Animation")]
+    private Animator animatorElement;
+
+    private float lastCallTime; // Track the last time the function was called
+
 
     // Start is called before the first frame update
     void Start()
@@ -71,15 +76,23 @@ public class ElementController : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         hintManagerClass = GameObject.FindWithTag("HintManager").GetComponent<HintManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
+
+        animatorElement = GetComponent<Animator>();
     }
 
     //step 1
     private void OnMouseDown()
     {
-        //destroy hint
+       //destroy hint
         if (hintManagerClass != null)
         {
             hintManagerClass.DestroyHint();
+        }
+
+        //animation
+        if (animatorElement != null)
+        {
+            animatorElement.SetBool("Touched", true);
         }
 
         if (gameBoardClass.currentState == GameState.move)
@@ -91,7 +104,7 @@ public class ElementController : MonoBehaviour
         if(bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
         {
             UseBonus();
-        }                
+        }         
     }
 
     //use selected bonus
@@ -136,15 +149,20 @@ public class ElementController : MonoBehaviour
         bonusShopClass.bonusSelected = -1;
         bonusShopClass.bonusDescPanel.SetActive(false);
 
-        bonusShopClass.shopState = BonusShop.ShopState.Game;
-
-        
+        bonusShopClass.shopState = BonusShop.ShopState.Game;        
     }
+
 
 
     //step 2
     private void OnMouseUp()
     {
+        //animation
+        if (animatorElement != null)
+        {
+            animatorElement.SetBool("Touched", false);
+        }
+
         if (gameBoardClass.currentState == GameState.move)
         {
             finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -158,6 +176,9 @@ public class ElementController : MonoBehaviour
         //work with swipe only
         if (Mathf.Abs(finalTouchPos.y - firstTouchPos.y) > swipeResist || Mathf.Abs(finalTouchPos.x - firstTouchPos.x) > swipeResist)
         {
+            //state
+            gameBoardClass.currentState = GameState.wait;
+
             swipeAngle = Mathf.Atan2(finalTouchPos.y - firstTouchPos.y, finalTouchPos.x - firstTouchPos.x) * 180 / Mathf.PI;
 
             MoveElement(); // work with element part 1
@@ -194,6 +215,8 @@ public class ElementController : MonoBehaviour
             gameBoardClass.currentState = GameState.move;
         }
     }
+
+
 
     // step 6
     void MoveElementMechanics(Vector2 direction)
@@ -297,12 +320,12 @@ public class ElementController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("MouseDown");
+            //
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Up");
+            //
         }
 
         targetX = column;
@@ -318,6 +341,11 @@ public class ElementController : MonoBehaviour
         else
         {
             transform.position = targetPosition;
+
+/*            if (gameBoardClass.currentState == GameState.wait)
+            {
+                CallFunctionOncePerSecond();
+            }*/
         }
 
         if (gameBoardClass.allElements[column, row] != this.gameObject)
@@ -325,6 +353,16 @@ public class ElementController : MonoBehaviour
             gameBoardClass.allElements[column, row] = this.gameObject;
 
             matchFinderClass.FindAllMatches(); //find match 1
+        }
+    }
+
+    void CallFunctionOncePerSecond()
+    {
+        // Check if at least one second has passed since the last call
+        if (Time.time - lastCallTime >= 1.0f)
+        {
+            matchFinderClass.FindAllMatches();
+            lastCallTime = Time.time; // Update the last call time
         }
     }
 
@@ -388,4 +426,13 @@ public class ElementController : MonoBehaviour
             bombLayer.sprite = wrapBombSprite;
         }            
     }
+
+    public void DestroyAnimation()
+    {
+        if (animatorElement != null)
+        {
+            animatorElement.SetBool("Destroy", true);
+        }
+    }
+
 }

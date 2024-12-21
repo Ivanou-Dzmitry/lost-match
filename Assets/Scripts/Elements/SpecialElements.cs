@@ -10,15 +10,14 @@ public class SpecialElements : MonoBehaviour
     public int hitPoints;
 
     [Header("Sound")]
-    public AudioClip elementSound;
+    public AudioClip[] elementSounds;
 
     [Header("Particles")]
-    public GameObject destroyParticle;
+    public GameObject[] elementParticles;
 
     //for mylti hits objects
     [Header("Layers")]
-    public GameObject objLayer02;
-    public GameObject objLayer03;
+    public GameObject[] elementLayers;
 
 
     // Start is called before the first frame update
@@ -68,16 +67,14 @@ public class SpecialElements : MonoBehaviour
 
     void LayerManager()
     {
-        //hide if 1 hitpoint
-        if (objLayer02 != null && hitPoints == 1)
+        //hide layers
+        for (int i = 0; i < elementLayers.Length; i++)
         {
-            objLayer02.gameObject.SetActive(false);
+            if (elementLayers[i] != null && hitPoints == i + 1)
+            {
+                elementLayers[i].gameObject.SetActive(false);
+            }
         }
 
-        //hide if 2 hitpoint
-        if (objLayer02 != null && hitPoints == 2)
-        {
-            objLayer02.gameObject.SetActive(false);
-        }
     }
 }

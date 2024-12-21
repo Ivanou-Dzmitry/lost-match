@@ -99,10 +99,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitPoints: 2
-  elementSound: {fileID: 8300000, guid: 74378eb767c1be642a3512a17b078e43, type: 3}
-  destroyParticle: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
+  elementSounds:
+  - {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
+  - {fileID: 8300000, guid: 74378eb767c1be642a3512a17b078e43, type: 3}
+  elementParticles:
+  - {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
+  - {fileID: 6634894383000490887, guid: c1a78754df0b20045a5a1fdaf07bd3f8, type: 3}
   objLayer02: {fileID: 6818687712055374015}
   objLayer03: {fileID: 0}
+  elementLayers:
+  - {fileID: 6818687712055374015}
 --- !u!1 &6818687712055374015
 GameObject:
   m_ObjectHideFlags: 0
@@ -175,7 +181,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1779671539
   m_SortingLayer: 1
-  m_SortingOrder: 2
+  m_SortingOrder: 7
   m_Sprite: {fileID: 21300000, guid: f6cc38b7384ec2a4eabc9cc2122bb7c6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

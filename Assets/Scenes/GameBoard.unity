@@ -10085,13 +10085,10 @@ MonoBehaviour:
   streakValue: 1
   scoreGoals: 00000000
   goalsDescription: 
-  elementPrefab: {fileID: 0}
   break01Prefab: {fileID: 6527145333783162085, guid: 4a65e9f68bbc3444cac79e8768735337, type: 3}
   break02Prefab: {fileID: 6527145333783162085, guid: d2be65300a6fd62419d5cacfdd279929, type: 3}
   blocker01Prefab: {fileID: 1127882633959337833, guid: 152ce459b2662cb4b9b7a02396b53827, type: 3}
   blocker02Prefab: {fileID: 1127882633959337833, guid: bd38daa07bf95f8499f65d29809cfdb9, type: 3}
-  expand01Prefab: {fileID: 0}
-  locker01Prefab: {fileID: 0}
   minMatchForBomb: 4
 --- !u!4 &1186150553
 Transform:
@@ -10486,9 +10483,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38ba52b10b964504196ac4a984d84cb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCanvas: {fileID: 1181253250}
   panelTop: {fileID: 1767525162}
   panelCenter: {fileID: 2013411362}
   panelBottom: {fileID: 0}
+  panelLevelButtons: {fileID: 0}
   paddingPanels: 0
 --- !u!4 &1240553498
 Transform:
@@ -10586,7 +10585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.022249905, g: 0.099063486, b: 0.18867922, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -11532,7 +11531,6 @@ MonoBehaviour:
   goalGameParent: {fileID: 2129415754}
   finalTextPanel: {fileID: 791312052}
   finalText: {fileID: 1473632216}
-  panelsAnimator: {fileID: 1467380697}
 --- !u!1 &1386983663
 GameObject:
   m_ObjectHideFlags: 0
@@ -14124,6 +14122,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1339523974, guid: 8211b8b07a12ec44ebadb579bfdc3b11, type: 3}
+    - target: {fileID: 6243024207450926389, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7188586234186477361, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
       propertyPath: bonusNumber
       value: 5
@@ -14842,8 +14844,6 @@ MonoBehaviour:
   EndGameReqClass:
     gameType: 0
     counterValue: 0
-  scoreManagerClass: {fileID: 0}
-  soundManagerClass: {fileID: 0}
   winPanel: {fileID: 1529300995}
   tryPanel: {fileID: 2043405463}
   confirmPanel: {fileID: 1248074643}
@@ -18405,7 +18405,6 @@ MonoBehaviour:
     musicVolume: 0
     savedTime: 
   fileName: lm_player_saves.json
-  bonusCount: 6
 --- !u!4 &2074709310
 Transform:
   m_ObjectHideFlags: 0
@@ -19330,6 +19329,7 @@ GameObject:
   - component: {fileID: 2129415758}
   - component: {fileID: 2129415757}
   - component: {fileID: 2129415756}
+  - component: {fileID: 2129415759}
   m_Layer: 5
   m_Name: ItemsPanel
   m_TagString: Untagged
@@ -19420,6 +19420,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2129415754}
   m_CullTransparentMesh: 1
+--- !u!223 &2129415759
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129415754}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 914660801
+  m_SortingOrder: 5
+  m_TargetDisplay: 0
 --- !u!1001 &696908405941821901
 PrefabInstance:
   m_ObjectHideFlags: 0

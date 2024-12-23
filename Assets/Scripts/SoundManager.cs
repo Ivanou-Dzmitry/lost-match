@@ -12,6 +12,8 @@ public class SoundManager : MonoBehaviour
 
     private AudioClip aClip;
 
+    private AudioClip lastPlayedClip;
+
     private GameData gameDataClass;
     private SettingsManager settingsManagerClass;
 
@@ -102,11 +104,18 @@ public class SoundManager : MonoBehaviour
 
     public void PlaySound(AudioClip clip)
     {
-        if (gameDataClass.saveData.soundToggle == true)
+        if (gameDataClass.saveData.soundToggle == true && clip != lastPlayedClip)
         {
             effectsSource.PlayOneShot(clip);
-        }
-        
+            lastPlayedClip = clip;
+            StartCoroutine(ResetLastPlayedClip(clip.length));
+        }        
+    }
+
+    private IEnumerator ResetLastPlayedClip(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        lastPlayedClip = null;
     }
 
     public void PlayMusic(AudioClip clip)

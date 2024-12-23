@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.VisualScripting;
 using System.Xml.Linq;
 using TMPro;
+using UnityEngine.UIElements;
 
 
 public enum GameState
@@ -97,7 +98,7 @@ public class GameBoard : MonoBehaviour
     public int column;
     public int row;
 
-    public float refillDelay = 0.3f;
+    public float refillDelay = 0.1f;
     public float destroyDelay = 1f;
 
     [Header("Layout")]
@@ -486,8 +487,6 @@ public class GameBoard : MonoBehaviour
 
     private IEnumerator DecreaseRowCo()
     {
-        yield return new WaitForSeconds(refillDelay);
-
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
@@ -501,7 +500,7 @@ public class GameBoard : MonoBehaviour
                             // Move dot to the new position
                             allElements[i, k].GetComponent<ElementController>().row = j;
                             allElements[i, j] = allElements[i, k]; // Move reference to the new position
-                            allElements[i, k] = null; // Clear the old position                            
+                            allElements[i, k] = null; // Clear the old position                                                    
                             break;
                         }
                     }
@@ -509,25 +508,10 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(refillDelay);
+        yield return new WaitForSeconds(0.5f);
         //step 2 refill
         StartCoroutine(FillBoardCo());
     }
-
-    private void PlaySound(AudioClip sound)
-    {
-        //sound
-        if (soundManagerClass != null)
-        {
-            audioClip = sound;
-
-            if (SoundManager.soundManager != null)
-            {
-                SoundManager.soundManager.PlaySound(audioClip);
-            }
-        }
-    }
-
 
     private void RunParticles(ElementController element, int thisCol, int thisRow)
     {
@@ -536,6 +520,11 @@ public class GameBoard : MonoBehaviour
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
             //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
 
+            //particles limitation
+            SpriteMask spriteMask = elementParticle.GetComponentInChildren<SpriteMask>();
+            if (spriteMask != null)
+                SetSpriteMaskToScreenCenter(spriteMask);
+
             Destroy(elementParticle, 1.9f);
 
         }
@@ -543,8 +532,7 @@ public class GameBoard : MonoBehaviour
         if (element.isWrapBomb)
         {
             GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-
+            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();        
             Destroy(elementParticle, 1.9f);
         }
 
@@ -554,7 +542,12 @@ public class GameBoard : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(0, 0, 90);
             GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
             //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-     
+
+            //particles limitation
+            SpriteMask spriteMask = elementParticle.GetComponentInChildren<SpriteMask>();
+            if (spriteMask != null)
+                SetSpriteMaskToScreenCenter(spriteMask, 90);
+
             Destroy(elementParticle, 1.9f);
         }
 
@@ -566,6 +559,27 @@ public class GameBoard : MonoBehaviour
         }
 
     }
+
+    void SetSpriteMaskToScreenCenter(SpriteMask spriteMask, int angle = -1)
+    {
+        float yOffset = 1; //see public float yOffset = 1; in CameraManager
+
+        // Get the screen center in world space
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
+        Vector3 worldCenter = Camera.main.ScreenToWorldPoint(screenCenter);
+
+        // Set the Sprite Mask position (ensure the correct z-axis value)
+        worldCenter.z = 0f; // Adjust this depending on your scene setup
+        worldCenter.y -= yOffset;
+        spriteMask.transform.position = worldCenter;
+
+        spriteMask.transform.localScale = new Vector3(column, row, 0);
+
+        //rotate for horizontal
+        if (angle > 0)
+            spriteMask.transform.eulerAngles += new Vector3(0, 0, angle);
+    }
+
 
     public IEnumerator MyDelay(float delay)
     {
@@ -586,7 +600,7 @@ public class GameBoard : MonoBehaviour
                 // Play sound if available
                 if (currentBreak.elementSounds[hitPoints] != null)
                 {
-                    PlaySound(currentBreak.elementSounds[hitPoints]);
+                    soundManagerClass.PlaySound(currentBreak.elementSounds[hitPoints]);
                 }
 
                 // Run particles if available
@@ -619,57 +633,21 @@ public class GameBoard : MonoBehaviour
 
             //destroy breakable
             DestroyBreakableAt(thisColumn, thisRow);
-/*
-            SpecialElements currentBreak = breakableCells[thisColumn, thisRow];
-
-            //breakable tiles
-            if (breakableCells[thisColumn, thisRow] != null)
-            {
-                breakableCells[thisColumn, thisRow].TakeDamage(1); //damage here                
-
-
-                if (breakableCells[thisColumn, thisRow].hitPoints <= 0)
-                {
-                    //play sound
-                    if (currentBreak.elementSounds[0] != null)
-                    {
-                        PlaySound(currentBreak.elementSounds[0]);
-                    }
-
-                    //run particles
-                    RunSpecParticles(currentBreak.elementParticles[0], thisColumn, thisRow);
-
-                    //destroy cell
-                    breakableCells[thisColumn, thisRow] = null;
-                } 
-                else if (breakableCells[thisColumn, thisRow].hitPoints == 1)
-                {
-                    //play sound
-                    if (currentBreak.elementSounds[1] != null)
-                    {
-                        PlaySound(currentBreak.elementSounds[1]);
-                    }
-                    
-                    //run particles
-                    RunSpecParticles(currentBreak.elementParticles[1], thisColumn, thisRow);
-                }                
-            }*/
-
 
             //goal for dots
             if (goalManagerClass != null)
             {
                 if (currentElement.isRowBomb || currentElement.isColumnBomb)
                 {
-                    goalManagerClass.CompareGoal("LineBomb"); //for line bombs
+                    goalManagerClass.CompareGoal("LineBomb", thisColumn, thisRow); //for line bombs
                 }
                 else if (currentElement.isWrapBomb)
                 {
-                    goalManagerClass.CompareGoal("WrapBomb"); //for Wrap bombs                    
+                    goalManagerClass.CompareGoal("WrapBomb", thisColumn, thisRow); //for Wrap bombs                    
                 }
                 else
                 {
-                    goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString()); //for usual dots
+                    goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString(), thisColumn, thisRow); //for usual dots
                 }
 
                 goalManagerClass.UpdateGoals();
@@ -683,7 +661,7 @@ public class GameBoard : MonoBehaviour
             //sound
             if (currentElement.elementSound != null)
             {
-                PlaySound(currentElement.elementSound);
+                soundManagerClass.PlaySound(currentElement.elementSound);
             }
 
             //particles
@@ -778,7 +756,8 @@ public class GameBoard : MonoBehaviour
     //refill final step
     private IEnumerator FillBoardCo()
     {
-       
+        yield return new WaitForSeconds(refillDelay);
+
         RefillBoard(); //refil board
 
         yield return new WaitForSeconds(refillDelay);
@@ -987,7 +966,7 @@ public class GameBoard : MonoBehaviour
 
                     if (currentBlocker.elementSounds[index] != null)
                     {
-                        PlaySound(currentBlocker.elementSounds[index]);
+                        soundManagerClass.PlaySound(currentBlocker.elementSounds[index]);
                     }
 
                     if (currentBlocker.elementParticles[index] != null)

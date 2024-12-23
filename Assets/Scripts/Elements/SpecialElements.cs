@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpecialElements : MonoBehaviour
@@ -37,6 +38,9 @@ public class SpecialElements : MonoBehaviour
             {
                 string tagForCompare = this.gameObject.tag;
 
+                int Column = (int)this.gameObject.transform.position.x;
+                int Row = (int)this.gameObject.transform.position.y;
+
                 //hack for various breakable
                 if (this.gameObject.tag == "breakable_02" || this.gameObject.tag == "breakable_03" && this.gameObject.tag != null)
                 {
@@ -49,7 +53,7 @@ public class SpecialElements : MonoBehaviour
                     tagForCompare = "blocker_01";
                 }
 
-                goalManagerClass.CompareGoal(tagForCompare);
+                goalManagerClass.CompareGoal(tagForCompare, Column, Row);
 
                 goalManagerClass.UpdateGoals();
             }

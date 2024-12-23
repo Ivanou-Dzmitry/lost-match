@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Microsoft.Win32.SafeHandles;
+using UnityEngine.UI;
+using System.Net;
+using System.Xml.Linq;
+using Unity.VisualScripting;
+using System;
 
 
 [System.Serializable]
@@ -33,9 +38,12 @@ public class GoalManager : MonoBehaviour
     //public GameObject goalIntroParent;
     public GameObject goalGameParent;
 
+    private Canvas pnlGoalItems;
+
     //classes
     private GameBoard gameBoardClass;
     private EndGameManager endGameManagerClass;
+    private SoundManager soundManagerClass;
 
     [Header("Final Text")]
     public GameObject finalTextPanel;
@@ -43,16 +51,26 @@ public class GoalManager : MonoBehaviour
 
     private float waitingTime = 1f;
 
+    public GameObject flyParticles;
+
+    public AudioClip goalSound;
+
     // Start is called before the first frame update
     void Start()
     {
         //classes
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
+        soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+
+        //get canvas
+        pnlGoalItems = goalGameParent.GetComponent<Canvas>();
+        pnlGoalItems.overrideSorting = false;
 
         GetGoals();
         SetupIntroGoals();
     }
+
 
     void GetGoals()
     {
@@ -78,19 +96,11 @@ public class GoalManager : MonoBehaviour
     {
         for (int i = 0; i < levelGoals.Length; i++)
         {
-/*            //intro prefabs
-            GameObject introGoal = Instantiate(goalPrefab, goalIntroParent.transform.position, Quaternion.identity);
-            introGoal.transform.SetParent(goalIntroParent.transform);
-            introGoal.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-
-            GoalPanel introPanel = introGoal.GetComponent<GoalPanel>();
-            introPanel.thisSprite = levelGoals[i].goalSprite;
-            introPanel.thisString = "" + levelGoals[i].numberGoalsNeeded; //goals */
-
             //ingame
             GameObject ingameGoal = Instantiate(goalPrefab, goalGameParent.transform.position, Quaternion.identity);
             ingameGoal.transform.SetParent(goalGameParent.transform);
             ingameGoal.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            ingameGoal.name = "goalprefab_" + i;
 
             GoalPanel gamePanel = ingameGoal.GetComponent<GoalPanel>();
 
@@ -105,15 +115,14 @@ public class GoalManager : MonoBehaviour
     {
         int goalsCompleted = 0;
 
-        Canvas pnlC = goalGameParent.GetComponent<Canvas>();
-
-        pnlC.overrideSorting = false;
+        //hide and show goals        
+        pnlGoalItems.overrideSorting = false;
 
         for (int i = 0; i < levelGoals.Length; i++)
-        {           
+        {
             //count on item
             currentGoals[i].thisText.text = "" + (levelGoals[i].numberGoalsNeeded - levelGoals[i].numberCollectedGoals);
-
+            
             //turn on check mark
             if (levelGoals[i].numberCollectedGoals >= levelGoals[i].numberGoalsNeeded)
             {
@@ -142,12 +151,15 @@ public class GoalManager : MonoBehaviour
         //for end game: moves = 0, goals=no
         if (endGameManagerClass.curCounterVal <= 0 && goalsCompleted < levelGoals.Length && runState)
         {
-            pnlC.overrideSorting = true;
+            pnlGoalItems.overrideSorting = true;
             StartCoroutine(DelayedLose());
         }
     }
 
-    public void ShowInGameInfo(string infoText, bool showPanel)
+
+
+
+        public void ShowInGameInfo(string infoText, bool showPanel)
     {
         if (showPanel)
         {
@@ -206,14 +218,122 @@ public class GoalManager : MonoBehaviour
         finalTextPanel.SetActive(false); // Completely disable the panel
     }
 
-    public void CompareGoal(string goalToCompare)
+    public void CompareGoal(string goalToCompare, int Column = -1, int Row = -1)
     {
         for (int i = 0; i < levelGoals.Length; i++)
         {
             if (goalToCompare == levelGoals[i].matchValue)
             {
                 levelGoals[i].numberCollectedGoals++;
+
+                //play sound
+                if(goalSound != null)
+                    soundManagerClass.PlaySound(goalSound);
+
+                //run text animation
+                StartCoroutine(SmoothScaleText(currentGoals[i].thisText.transform));
+
+                //for vfx
+                InstantiateAndMove(i, Column, Row);
             }
         }
     }
+
+    public void InstantiateAndMove(int prefabNumber, int Column = -1, int Row = -1)
+    {
+        //Debug.Log(Column + "/" + Row);
+        
+        //get position
+        Vector3 startPoint = new Vector3(Column, Row, 0);
+        Vector3 endPoint = new Vector3(Column, 16, 0);
+
+        //generate empty object
+        GameObject flyingGoal = new GameObject("EmptyObject");
+        flyingGoal.transform.position = startPoint; // Set to origin
+        flyingGoal.name = "part_" + currentGoals[prefabNumber].name +"_"+ levelGoals[prefabNumber].numberCollectedGoals;
+        flyingGoal.layer = LayerMask.NameToLayer("Default");
+
+        //get and setup sprite
+        SpriteRenderer spriteRenderer = flyingGoal.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = currentGoals[prefabNumber].thisSprite;
+        spriteRenderer.sortingLayerName = "Elements"; // Replace with your sorting layer name
+        spriteRenderer.sortingOrder = 5;
+
+        //create particles
+        GameObject elementParticle = Instantiate(flyParticles, startPoint, Quaternion.identity);
+        elementParticle.name = flyingGoal.name + "flypart_";
+        elementParticle.transform.SetParent(flyingGoal.transform);
+
+
+        float arcHeight = 1f; // Height of the arc        
+
+        //start fly
+        StartCoroutine(MoveAlongArc(flyingGoal, elementParticle, startPoint, endPoint, arcHeight, 1.0f));
+    }
+
+
+    private IEnumerator MoveAlongArc(GameObject rootObject, GameObject particles, Vector3 startPoint, Vector3 endPoint, float arcHeight, float duration)
+    {
+        float time = 0;
+
+        // Set the target scale to 0 (start scale is 1)
+        Vector3 startScale = Vector3.one;  // Start with scale of (1, 1, 1)
+        Vector3 targetScale = Vector3.one * 0.5f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+
+            // Interpolation value
+            float t = time / duration;
+
+            // Horizontal interpolation (linear)
+            float x = Mathf.Lerp(startPoint.x, endPoint.x, t);
+
+            // Vertical interpolation (parabolic arc)
+            float y = Mathf.Lerp(startPoint.y, endPoint.y, t) + arcHeight * Mathf.Sin(Mathf.PI * t);
+
+            // Depth interpolation (linear)
+            float z = Mathf.Lerp(startPoint.z, endPoint.z, t);
+
+            // Interpolate scale from (1, 1, 1) to (0, 0, 0)
+            Vector3 currentScale = Vector3.Lerp(startScale, targetScale, t);
+
+            // Update the position
+            rootObject.transform.position = new Vector3(x, y, z);
+
+           // objectMy.transform.rotation = Quaternion.Euler(0, 0, currentRotation);  // Assuming you want to rotate around the Y-axis
+            rootObject.transform.localScale = currentScale;  // Apply scale
+
+            yield return null;
+        }
+
+        //Debug.Break();
+
+        Destroy(particles);
+        Destroy(rootObject);        
+    }
+
+    //for goals
+    private IEnumerator SmoothScaleText(Transform textTransform)
+    {
+        Vector3 startScale= new Vector3(1f, 1.5f, 1f);
+        
+        float elapsedTime = 0f;
+        Vector3 targetScale = new Vector3(1f, 1f, 1f);
+        float scaleDuration = 0.2f;  // Reduced duration for faster scaling
+
+        // Wait for 1 second before scaling back
+        yield return new WaitForSeconds(0.05f);
+
+        while (elapsedTime < scaleDuration)
+        {
+            textTransform.localScale = Vector3.Lerp(startScale, targetScale, elapsedTime / scaleDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        textTransform.localScale = new Vector3(1f, 1f, 1f);
+    }
+
 }

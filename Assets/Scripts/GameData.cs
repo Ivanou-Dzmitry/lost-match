@@ -178,7 +178,21 @@ public class GameData : MonoBehaviour
     public void DebugAddCredits()
     {
         saveData.credits = 10000;
+        SaveToFile();
     }
+
+    public void DebugZeroCredit()
+    {
+        saveData.credits = 13;
+        SaveToFile();
+    }
+
+    public void DebugZeroLife()
+    {
+        saveData.bonuses[5] = 1; //set lives bonus 0
+        SaveToFile();
+    }
+
 
     public void DebugOpenLevels()
     {
@@ -186,6 +200,7 @@ public class GameData : MonoBehaviour
         {
             saveData.isActive[i] = true;
         }
+        SaveToFile();
     }
 
 }

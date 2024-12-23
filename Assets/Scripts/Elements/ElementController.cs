@@ -112,7 +112,7 @@ public class ElementController : MonoBehaviour
     {
 
         //Debug.Log("Click on Element: " + bonusShopClass.bonusSelected + "/name: " + this.name);
-        //Debug.Log(bonusShopClass.bonusSelected);
+        Debug.Log(bonusShopClass.bonusSelected);
 
         switch (bonusShopClass.bonusSelected)
         {
@@ -341,11 +341,6 @@ public class ElementController : MonoBehaviour
         else
         {
             transform.position = targetPosition;
-
-/*            if (gameBoardClass.currentState == GameState.wait)
-            {
-                CallFunctionOncePerSecond();
-            }*/
         }
 
         if (gameBoardClass.allElements[column, row] != this.gameObject)
@@ -356,15 +351,6 @@ public class ElementController : MonoBehaviour
         }
     }
 
-    void CallFunctionOncePerSecond()
-    {
-        // Check if at least one second has passed since the last call
-        if (Time.time - lastCallTime >= 1.0f)
-        {
-            matchFinderClass.FindAllMatches();
-            lastCallTime = Time.time; // Update the last call time
-        }
-    }
 
     public void GenerateRowBomb()
     {
@@ -404,11 +390,13 @@ public class ElementController : MonoBehaviour
         if (!isColumnBomb && !isRowBomb && !isWrapBomb)
         {
             isColorBomb = true;
-
+            this.tag = "no_tag";
             this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite
             bombLayer.sprite = colorBombSprite;
+
+            
         }            
     }
 

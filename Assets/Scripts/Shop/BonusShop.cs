@@ -32,7 +32,7 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
-    private SoundManager soundManagerClass;
+    private SoundManager soundManagerClass;    
 
     [Header("End Game Class")]
     public EndGameManager endGameManagerClass;
@@ -69,6 +69,11 @@ public class BonusShop : MonoBehaviour
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
     private int timeLeft;
+
+    [Header("ClockIcons")]
+    public GameObject clockIconShop;
+    public GameObject clockIconPanel;
+
     public TMP_Text livesCount;
 
     //!important
@@ -97,7 +102,8 @@ public class BonusShop : MonoBehaviour
     {
         tempBonuses = new int[bonusCount];
         ordersCount = new int[bonusCount];
-        ZeroBonus();        
+        
+        ZeroBonus();
     }
 
 
@@ -117,7 +123,7 @@ public class BonusShop : MonoBehaviour
         //add default
         defInfoText.Add("Displays items that are available in the inventory, and purchased items");
         defInfoText.Add("Energy is needed to collect lost items");
-        defInfoText.Add("Buy the required number of moves to continue the game");
+        defInfoText.Add("Get the required number of moves to continue the game");       
     }
 
     public void SetupShop()
@@ -138,7 +144,6 @@ public class BonusShop : MonoBehaviour
         //main panel
         creditsCountPanelText.text = "" + creditsCount;
 
-
         //in shop
         if (creditsCountShopText != null)
         {
@@ -150,12 +155,20 @@ public class BonusShop : MonoBehaviour
                 creditsCountSlider.minValue = 0;
                 creditsCountSlider.value = tempCreditsCount;
             }
-
         }
 
-        if (timeManagerClass != null)
+        if (timeManagerClass != null && clockIconPanel != null)
         {
             timeLeft = timeManagerClass.CheckConditions();
+            
+            if(timeLeft != 0)
+            {
+                clockIconPanel.SetActive(true);
+            }
+            else
+            {
+                clockIconPanel.SetActive(false);
+            }                
         }
     }
 
@@ -219,10 +232,10 @@ public class BonusShop : MonoBehaviour
                 infoText.text = $"Not enough credits to purchase! {busterName} costs {value} credits";
                 break;
             case "MaxCount":
-                infoText.text = $"Maximum quantity of {busterName} purchased: {value} pcs";
+                infoText.text = $"Maximum quantity of {busterName} - {value} pcs";
                 break;
             case "NoLives":
-                infoText.text = "Need to buy batteries!";
+                infoText.text = "Need to refill energy!";
                 break;
             case "BuyBonus":
                 infoText.text = "The " + busterName + " was added to cart";
@@ -405,6 +418,16 @@ public class BonusShop : MonoBehaviour
 
         //if timer started
         if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+        {
             ShowInfo(timeLeft, "LifeWaiting");
+            if(clockIconShop != null)
+                clockIconShop.SetActive(true);
+        }
+        else
+        {
+            if (clockIconShop != null)
+                clockIconShop.SetActive(false);
+        }
+            
     }
 }

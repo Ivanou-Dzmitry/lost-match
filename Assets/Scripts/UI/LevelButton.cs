@@ -34,7 +34,7 @@ public class LevelButton : MonoBehaviour
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
 
-        myButton = GetComponent<Button>();
+        myButton = GetComponentInChildren<Button>();
 
         LoadData();
         ChooseSprite();

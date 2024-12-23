@@ -10,7 +10,7 @@ public class CameraManager : MonoBehaviour
     [Header("Camera Tuning Stuff")]
     public float cameraOffset;
     public float aspectRatio = 1.78f;
-    public float padding = 1;
+    //public float padding = 1;
     public float yOffset = 1;
 
     public float orthographicSize = 9.4f;

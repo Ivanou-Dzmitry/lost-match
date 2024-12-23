@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static BonusShop;
 
 [Serializable]
@@ -20,18 +21,33 @@ public class TimeManager : MonoBehaviour
     }
 
     public TimeState timeState;
-
+    public static TimeManager timeManger;
 
     //classes
     private GameData gameDataClass;
+    private BonusShop bonusShopClass;
 
     private int waitingTime = 5; //time for bonus waiting
+
+    private void Awake()
+    {
+        if (timeManger == null)
+        {
+            DontDestroyOnLoad(this.gameObject);
+            timeManger = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     void Start()
     {
         //classes        
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
-        
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+
         InvokeRepeating(nameof(CheckConditions), 0f, 60f);
     }
 
@@ -44,12 +60,16 @@ public class TimeManager : MonoBehaviour
     public int CheckConditions()
     {
         // Check if conditions are met
-        if (gameDataClass!= null && gameDataClass.saveData.bonuses[5] == 0 && gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5])
+        if (gameDataClass != null)
         {
-            timeState = TimeState.Waiting;
-            return CheckElapsedTime();
+            if (gameDataClass.saveData.bonuses[5] == 0 && gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5])
+            {
+                timeState = TimeState.Waiting;
+                                    
+                return CheckElapsedTime();
+            }
         }
-        
+
         return 0;
     }
 
@@ -63,7 +83,6 @@ public class TimeManager : MonoBehaviour
 
             int elapsedMinutes = (int)elapsed.TotalMinutes;
             int timeLeft = Math.Max(waitingTime - elapsedMinutes, 0);
-
 
             if (elapsed.TotalMinutes >= waitingTime)
             {
@@ -90,6 +109,15 @@ public class TimeManager : MonoBehaviour
         if(gameDataClass.saveData.bonuses[5] == 0)
             gameDataClass.saveData.bonuses[5] = 3;
 
-        timeState = TimeState.Idle;        
+        timeState = TimeState.Idle;
+        
+        //clock icon
+        if (bonusShopClass != null)
+        {
+            if(bonusShopClass.clockIconPanel != null)
+                bonusShopClass.clockIconPanel.SetActive(true);
+        }
     }
+
+
 }

@@ -625,7 +625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9019608, g: 0.7294118, b: 0.85882354, a: 1}
+  m_Color: {r: 0.37254903, g: 0.46666667, b: 0.5686275, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -740,7 +740,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 40
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2701,15 +2701,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.7294118
+      value: 0.85882354
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.g
-      value: 0.9019608
+      value: 0.7294118
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.7607843
+      value: 0.9019608
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Enabled
@@ -2913,15 +2913,15 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: ca573af39c569f947bc4c7a323d5b503, type: 3}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.37254903
-      objectReference: {fileID: 0}
-    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
-      propertyPath: m_Color.g
       value: 0.5686275
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.40784314
+      value: 0.37254903
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
@@ -4783,7 +4783,7 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -5606,7 +5606,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 40
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -5959,15 +5959,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.7294118
+      value: 0.85882354
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.g
-      value: 0.9019608
+      value: 0.7294118
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.7607843
+      value: 0.9019608
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Enabled
@@ -6167,15 +6167,15 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: ca573af39c569f947bc4c7a323d5b503, type: 3}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.37254903
-      objectReference: {fileID: 0}
-    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
-      propertyPath: m_Color.g
       value: 0.5686275
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.40784314
+      value: 0.37254903
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
@@ -6796,6 +6796,8 @@ MonoBehaviour:
   creditsCountSlider: {fileID: 0}
   buyButton: {fileID: 1462683349}
   fadeDuration: 6
+  clockIconShop: {fileID: 0}
+  clockIconPanel: {fileID: 0}
   livesCount: {fileID: 1022682711}
   buyParticles01: {fileID: 0}
   bonusSelected: 0
@@ -7440,8 +7442,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -8428,7 +8430,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraOffset: -1
   aspectRatio: 1.78
-  padding: 1
   yOffset: 1
   orthographicSize: 9.4
   backImage: {fileID: 553865568}
@@ -9734,7 +9735,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit Level
+  m_text: Quit level
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
   m_sharedMaterial: {fileID: 4117882282613613248, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
@@ -9767,7 +9768,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 40
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -11531,6 +11532,8 @@ MonoBehaviour:
   goalGameParent: {fileID: 2129415754}
   finalTextPanel: {fileID: 791312052}
   finalText: {fileID: 1473632216}
+  flyParticles: {fileID: 4517751419786261831, guid: a9e0bcb3840abc54b91b8f88e239268f, type: 3}
+  goalSound: {fileID: 8300000, guid: 3257324456799f94d84708e2151b38e2, type: 3}
 --- !u!1 &1386983663
 GameObject:
   m_ObjectHideFlags: 0
@@ -11836,7 +11839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.37254903, g: 0.46666667, b: 0.5686275, a: 1}
+  m_Color: {r: 0.9019608, g: 0.7294118, b: 0.85882354, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -12689,8 +12692,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 80
+  m_fontSizeBase: 80
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -12849,7 +12852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9019608, g: 0.7294118, b: 0.85882354, a: 1}
+  m_Color: {r: 0.37254903, g: 0.46666667, b: 0.5686275, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -13211,15 +13214,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.7294118
+      value: 0.85882354
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.g
-      value: 0.9019608
+      value: 0.7294118
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.7607843
+      value: 0.9019608
       objectReference: {fileID: 0}
     - target: {fileID: 1926788321706218572, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Enabled
@@ -13419,15 +13422,15 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: ca573af39c569f947bc4c7a323d5b503, type: 3}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.b
-      value: 0.37254903
-      objectReference: {fileID: 0}
-    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
-      propertyPath: m_Color.g
       value: 0.5686275
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
+      propertyPath: m_Color.g
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_Color.r
-      value: 0.40784314
+      value: 0.37254903
       objectReference: {fileID: 0}
     - target: {fileID: 6884618055015282091, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
@@ -14248,6 +14251,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1690637098}
+        m_TargetAssemblyTypeName: EndGameManager, Assembly-CSharp
+        m_MethodName: ReduceLives
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
       - m_Target: {fileID: 720297240}
         m_TargetAssemblyTypeName: BonusShop, Assembly-CSharp
         m_MethodName: CloseShop
@@ -14270,18 +14285,6 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: Levels
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1690637098}
-        m_TargetAssemblyTypeName: EndGameManager, Assembly-CSharp
-        m_MethodName: ReduceLives
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1600397112
@@ -14440,7 +14443,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -15748,7 +15751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7294118, g: 0.9019608, b: 0.8, a: 1}
+  m_Color: {r: 0.9019608, g: 0.7294118, b: 0.85882354, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -16336,7 +16339,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 40
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -17691,8 +17694,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

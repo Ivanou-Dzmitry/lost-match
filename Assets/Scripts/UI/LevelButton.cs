@@ -27,6 +27,9 @@ public class LevelButton : MonoBehaviour
     private LevelGoals levelGoalsClass;
     private BonusShop bonusShopClass;
 
+    [Header("Animation")]
+    private Animator animatorElement;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +38,7 @@ public class LevelButton : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
 
         myButton = GetComponentInChildren<Button>();
+        animatorElement = GetComponent<Animator>();
 
         LoadData();
         ChooseSprite();
@@ -49,10 +53,16 @@ public class LevelButton : MonoBehaviour
             if (gameDataClass.saveData.isActive[level - 1])
             {
                 isActive = true;
+                animatorElement.SetTrigger("LevelOn");
+                float randomSpeed = Random.Range(0.5f, 1f);
+                animatorElement.SetFloat("Speed", randomSpeed);
             }
             else
             {
                 isActive = false;
+                animatorElement.SetTrigger("LevelOff");
+                float randomSpeed = Random.Range(0.5f, 1f);
+                animatorElement.SetFloat("Speed", randomSpeed);
             }
         }
 

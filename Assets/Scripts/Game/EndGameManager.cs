@@ -63,7 +63,7 @@ public class EndGameManager : MonoBehaviour
     public Button retryLooseButton;
     public AudioClip loseMusic;
 
-    public int finalLevelNumber = 10;
+    public int finalLevelNumber = 10; //!Important
 
     // Start is called before the first frame update
     void Start()
@@ -82,6 +82,8 @@ public class EndGameManager : MonoBehaviour
         {
             levelStars[i].sprite = levelStarsSpite[1];
         }
+
+        finalLevelNumber = gameDataClass.saveData.isActive.Length;
     }
 
     public void SetGameType()
@@ -235,6 +237,7 @@ public class EndGameManager : MonoBehaviour
     {
         int nextLevelNumber = gameBoardClass.level + 1;
 
+       
         //get moves
         if (nextLevelNumber < finalLevelNumber)
         {

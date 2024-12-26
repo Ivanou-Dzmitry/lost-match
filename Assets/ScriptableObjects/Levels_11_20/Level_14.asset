@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
+  m_Name: Level_14
+  m_EditorClassIdentifier: 
+  columns: 8
+  rows: 7
+  boardLayout:
+  - columnX: 6
+    rowY: 0
+    tileKind: 5
+  - columnX: 6
+    rowY: 1
+    tileKind: 5
+  - columnX: 6
+    rowY: 2
+    tileKind: 5
+  - columnX: 6
+    rowY: 3
+    tileKind: 5
+  - columnX: 6
+    rowY: 4
+    tileKind: 5
+  - columnX: 6
+    rowY: 5
+    tileKind: 5
+  - columnX: 6
+    rowY: 6
+    tileKind: 5
+  - columnX: 7
+    rowY: 6
+    tileKind: 11
+  - columnX: 1
+    rowY: 0
+    tileKind: 6
+  - columnX: 3
+    rowY: 0
+    tileKind: 6
+  - columnX: 0
+    rowY: 1
+    tileKind: 6
+  - columnX: 2
+    rowY: 1
+    tileKind: 6
+  - columnX: 4
+    rowY: 1
+    tileKind: 6
+  - columnX: 1
+    rowY: 2
+    tileKind: 6
+  - columnX: 3
+    rowY: 2
+    tileKind: 6
+  - columnX: 5
+    rowY: 0
+    tileKind: 6
+  - columnX: 5
+    rowY: 2
+    tileKind: 6
+  - columnX: 0
+    rowY: 6
+    tileKind: 6
+  - columnX: 1
+    rowY: 6
+    tileKind: 6
+  - columnX: 2
+    rowY: 6
+    tileKind: 6
+  - columnX: 3
+    rowY: 6
+    tileKind: 6
+  - columnX: 4
+    rowY: 6
+    tileKind: 6
+  - columnX: 5
+    rowY: 6
+    tileKind: 6
+  - columnX: 0
+    rowY: 3
+    tileKind: 6
+  - columnX: 2
+    rowY: 3
+    tileKind: 6
+  - columnX: 4
+    rowY: 3
+    tileKind: 6
+  - columnX: 1
+    rowY: 4
+    tileKind: 6
+  - columnX: 3
+    rowY: 4
+    tileKind: 6
+  - columnX: 5
+    rowY: 4
+    tileKind: 6
+  - columnX: 7
+    rowY: 0
+    tileKind: 6
+  - columnX: 7
+    rowY: 2
+    tileKind: 6
+  - columnX: 7
+    rowY: 4
+    tileKind: 6
+  elementsBack:
+    gameBoardBackSprite: {fileID: 21300000, guid: 1eba05605e62f6140aa782c473ca0bb0, type: 3}
+  preloadBoardLayout: []
+  element:
+  - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
+  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
+  - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
+  scoreGoals: 3c0000005a00000078000000
+  goalsDescription: Destroy gum blockers
+  endGameRequrimentsForLevel:
+    gameType: 0
+    counterValue: 30
+  levelGoals:
+  - numberGoalsNeeded: 24
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
+    matchValue: blocker_01

@@ -19,14 +19,16 @@ public class LevelsSceneManager : MonoBehaviour
     public GameObject levelButtonPrefab; // Assign the prefab in the Inspector
     public Transform parentTransform;   // Assign the parent transform for layout in the Inspector
     public GameObject panelWithButtons;
-    public GameObject confirmPanel;     // Assign the ConfirmPanel from the scene in the Inspector
+
+    [Header("Panels")]  
+    public GameObject[] allPanelsList;
 
     private int elementsPadding;
 
     //for swipe
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
-    private float swipeThreshold = 1.0f; // Minimum distance for a swipe
+    private float swipeThreshold = 2.0f; // Minimum distance for a swipe
     private bool swipeDetected = false; // Prevent repeated triggers
 
     [Header("Center Panel")]
@@ -34,7 +36,7 @@ public class LevelsSceneManager : MonoBehaviour
     public Sprite[] centerPanelImages;
     private Image backSprite;
 
-    public Button[] centerPanelButtons;
+    //public Button[] centerPanelButtons;
 
     [Header("DEbug")]
     public TMP_Text levelTxt;
@@ -88,7 +90,7 @@ public class LevelsSceneManager : MonoBehaviour
 
         InstantiateLevelButtons(startNumber, endNumber);
 
-        levelTxt.text = "Screen: " + currentScreenNumber;
+        levelTxt.text = "Map " + currentScreenNumber;
     }
 
     int GetRoundedValue(int numerator, int denominator)
@@ -182,7 +184,7 @@ public class LevelsSceneManager : MonoBehaviour
                 levelButtonScript.level = i;
 
                 // Set the ConfirmPanel reference
-                levelButtonScript.confirmPanel = confirmPanel;
+                levelButtonScript.confirmPanel = allPanelsList[0];
 
                 //get final button
                 Button buttonComponent = newButton.GetComponentInChildren<Button>();
@@ -223,31 +225,14 @@ public class LevelsSceneManager : MonoBehaviour
        
     }
 
-    void ArrangeButtonsInSinusoid(Button[] buttons, RectTransform rootPanel, float amplitude, float frequency)
-    {
-        float rootWidth = rootPanel.rect.width;
-        float buttonSpacing = rootWidth / (buttons.Length + 1); // Divide the width for even spacing
-
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            RectTransform buttonTransform = buttons[i].GetComponent<RectTransform>();
-            if (buttonTransform != null)
-            {
-                // Calculate horizontal position
-                float xPos = buttonSpacing * (i + 1); // Ensure evenly spaced buttons
-
-                // Calculate vertical offset using a sinusoidal function
-                float yOffset = Mathf.Sin(i * frequency) * amplitude;
-
-                // Set the button's position
-                buttonTransform.anchoredPosition = new Vector2(xPos, yOffset);
-            }
-        }
-    }
 
     void Update()
     {
-        SwipeDetector();        
+        bool panelsActivity = true;
+        panelsActivity = PanelActivity();
+        
+        if (panelsActivity == false)
+            SwipeDetector();        
     }
 
     private void SwipeDetector()
@@ -294,6 +279,22 @@ public class LevelsSceneManager : MonoBehaviour
         }
     }
 
+    private bool PanelActivity()
+    {
+        bool pnlAct = false;
+
+        for(int i = 0; i < allPanelsList.Length; i++)
+        {
+            if (allPanelsList[i].activeSelf == true)
+            {
+                pnlAct = true;
+            }
+        }
+
+        return pnlAct;
+    }
+
+
     private void HandleSwipe()
     {
         float verticalSwipeDistance = endTouchPosition.y - startTouchPosition.y;
@@ -303,11 +304,11 @@ public class LevelsSceneManager : MonoBehaviour
         {
             if (verticalSwipeDistance > 0)
             {
-                SwipeUp();
+                    SwipeUp();
             }
             else
             {
-                SwipeDown();
+                    SwipeDown();
             }
         }
     }

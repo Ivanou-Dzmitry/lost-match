@@ -23,8 +23,8 @@ public class UIManager : MonoBehaviour
 
     private float panelCenterHeight;
 
-    private int topPanelHeight = 190;
-    private int panelBottomHeight = 150;
+    private int topPanelHeight = 235; //!Important
+    private int panelBottomHeight = 0;
     private int controlButtonsHeight = 64;
 
     void Start()
@@ -81,7 +81,7 @@ public class UIManager : MonoBehaviour
         {
             //change size
             Vector2 currentSize = panelCenter.sizeDelta;
-            currentSize.y = canvasDimension.y - panelTopHeight - (paddingPanels*2) - panelBottomHeight;
+            currentSize.y = canvasDimension.y - panelTopHeight - (paddingPanels) - panelBottomHeight;
 
             panelCenterHeight = currentSize.y;            
 

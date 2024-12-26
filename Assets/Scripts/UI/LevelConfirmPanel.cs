@@ -77,7 +77,7 @@ public class LevelConfirmPanel : MonoBehaviour
         //confirmPanel.SetActive(true);
 
         //set text
-        highScoreText.text = "Collected: " + highScore;
+        highScoreText.text = "Records: " + highScore + " items, " + activeStars + " stars";
         headerText.text = "LEVEL " + level;
 
         //stars turn on
@@ -98,6 +98,9 @@ public class LevelConfirmPanel : MonoBehaviour
             introGoal.transform.SetParent(goalIntroParent.transform);
             introGoal.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
             introGoal.name = "LevelGoal-" + i;
+
+            Canvas goalCanvas = introGoal.GetComponentInChildren<Canvas>();
+            goalCanvas.sortingLayerName = "UI";
 
             GoalPanel introPanel = introGoal.GetComponent<GoalPanel>();
             introPanel.thisSprite = levelGoalsClass.levelGoals[i].goalSprite;

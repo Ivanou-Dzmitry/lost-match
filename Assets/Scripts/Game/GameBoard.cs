@@ -98,7 +98,7 @@ public class GameBoard : MonoBehaviour
     public int column;
     public int row;
 
-    public float refillDelay = 0.1f;
+    public float refillDelay = 0.2f;
     public float destroyDelay = 1f;
 
     [Header("Layout")]
@@ -153,12 +153,8 @@ public class GameBoard : MonoBehaviour
     //for breakables
     public SpecialElements[,] breakableCells;
 
-
     //for bombs
     public ElementController[,] bombsCells;
-
-
-    private AudioClip audioClip;
 
     //bombs values    
     private int minMatchCount = 3;
@@ -464,6 +460,9 @@ public class GameBoard : MonoBehaviour
     //step 9     
     public void DestroyMatches()
     {
+        //condition
+        bool condition = false;
+
         //bomb gen - part 1 based on slide
         if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
         {
@@ -479,14 +478,22 @@ public class GameBoard : MonoBehaviour
                     DestroyMatchesAt(i, j);
                 }
             }
+
+            condition = true;
         }
 
         // here start refill
-        StartCoroutine(DecreaseRowCo());
+        if (condition)
+            StartCoroutine(DecreaseRowCo());
     }
 
+    //Important!
     private IEnumerator DecreaseRowCo()
     {
+
+        //condition
+        bool condition = false;
+
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
@@ -506,11 +513,15 @@ public class GameBoard : MonoBehaviour
                     }
                 }
             }
+
+            condition = true;
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
+
         //step 2 refill
-        StartCoroutine(FillBoardCo());
+        if (condition)
+            StartCoroutine(FillBoardCo());
     }
 
     private void RunParticles(ElementController element, int thisCol, int thisRow)
@@ -756,6 +767,7 @@ public class GameBoard : MonoBehaviour
     //refill final step
     private IEnumerator FillBoardCo()
     {
+        //need to avoid bugs
         yield return new WaitForSeconds(refillDelay);
 
         RefillBoard(); //refil board
@@ -766,7 +778,7 @@ public class GameBoard : MonoBehaviour
         {
             streakValue++; //for score                                 
             matchState = GameState.matching_inprogress;
-            DestroyMatches();            
+            DestroyMatches();     //run decrease columns       
             yield break;
         }
 
@@ -781,7 +793,7 @@ public class GameBoard : MonoBehaviour
         if (currentState != GameState.pause)
             currentState = GameState.move;
 
-        //stop
+        //stop matching
         matchState = GameState.matching_stop;
 
         goalManagerClass.UpdateGoals();

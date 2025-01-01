@@ -44,16 +44,13 @@ public class GoalManager : MonoBehaviour
     private GameBoard gameBoardClass;
     private EndGameManager endGameManagerClass;
     private SoundManager soundManagerClass;
-
-    [Header("Final Text")]
-    public GameObject finalTextPanel;
-    public TMP_Text finalText;
-
-    private float waitingTime = 1f;
+    private UIManager uiManagerClass;
 
     public GameObject flyParticles;
 
     public AudioClip goalSound;
+
+    private float waitingTime = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -62,6 +59,7 @@ public class GoalManager : MonoBehaviour
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
+        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 
         //get canvas
         pnlGoalItems = goalGameParent.GetComponent<Canvas>();
@@ -156,42 +154,12 @@ public class GoalManager : MonoBehaviour
         }
     }
 
-
-
-
-        public void ShowInGameInfo(string infoText, bool showPanel)
-    {
-        if (showPanel)
-        {
-            finalTextPanel.SetActive(true);
-            finalText.text = infoText;
-        }
-        else
-        {
-            finalTextPanel.SetActive(false);
-            finalText.text = "";
-        }
-
-        //hide panel
-        if (finalTextPanel != null && finalTextPanel.activeSelf)
-        {
-            StartCoroutine(HidePanelCoroutine(waitingTime));
-        }
-    }
-
-    private IEnumerator HidePanelCoroutine(float delay)
-    {
-        yield return new WaitForSeconds(delay); // Wait for the specified delay        
-
-        finalTextPanel.SetActive(false); // Hide the panel
-    }
-
     private IEnumerator DelayedWin()
     {
         // Code to run before WinGame
         gameBoardClass.currentState = GameState.win;
 
-        ShowInGameInfo("Level Completed!", true);
+        uiManagerClass.ShowInGameInfo("Level Completed!", true, ColorPalette.Colors["GreenMed"]);
 
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 
@@ -205,17 +173,12 @@ public class GoalManager : MonoBehaviour
         // Code to run before LoseGame
         gameBoardClass.currentState = GameState.lose;
 
-        ShowInGameInfo("Out of moves!", true);
+        uiManagerClass.ShowInGameInfo("Out of moves!", true, ColorPalette.Colors["VioletMed"]);
 
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 
         // Call LoseGame after delay
         endGameManagerClass.LoseGame();        
-    }
-
-    private void PanelActivator()
-    {
-        finalTextPanel.SetActive(false); // Completely disable the panel
     }
 
     public void CompareGoal(string goalToCompare, int Column = -1, int Row = -1)

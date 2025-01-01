@@ -245,6 +245,7 @@ MonoBehaviour:
   destroyParticle: {fileID: 7008526993925193625, guid: f9321d6d8d601ad41a5e322d1312b756, type: 3}
   lineBombParticle: {fileID: 3413543184670853712, guid: 95e48f46ebe23174b8d7f6bd43edf594, type: 3}
   wrapBombParticle: {fileID: 3413543184670853712, guid: ee26daa44d7a3db49bc6d756faf29cd1, type: 3}
+  colorBombParticle: {fileID: 5804476535608525528, guid: 653b9bb6d0156944a9566fc6b9c3e1cd, type: 3}
 --- !u!95 &2610371774272987936
 Animator:
   serializedVersion: 5

@@ -3018,7 +3018,7 @@ MonoBehaviour:
   - Touch a Lost item and swipe it with your finger. Match 3 items of the same color
     to clear them.
   - Match 4 or 5 items in different formations to generate busters!
-  - text #3
+  - Combine busters by switching them with each other for enhance the effect
   helpImg:
   - {fileID: 21300000, guid: ef71a6aa7ae7a6046b33e9e8030feeac, type: 3}
   - {fileID: 21300000, guid: 11fa902bf13e2dc4193338ba1c2ff8d3, type: 3}

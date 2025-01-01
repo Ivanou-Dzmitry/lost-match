@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ public class ElementController : MonoBehaviour
     private BonusShop bonusShopClass;
     private HintManager hintManagerClass;
     private GoalManager goalManagerClass;
+    private UIManager uiManagerClass;
 
     private float movementSpeed = 20.0f;
 
@@ -59,9 +61,15 @@ public class ElementController : MonoBehaviour
     public GameObject destroyParticle;
     public GameObject lineBombParticle;
     public GameObject wrapBombParticle;
+    public GameObject colorBombParticle;
 
     [Header("Animation")]
     private Animator animatorElement;
+
+    //for color bomb
+    private List<Vector2> colorBombElements;    
+
+    //public Vector2 comboPosition;
 
     private float lastCallTime; // Track the last time the function was called
 
@@ -76,6 +84,7 @@ public class ElementController : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         hintManagerClass = GameObject.FindWithTag("HintManager").GetComponent<HintManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
+        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 
         animatorElement = GetComponent<Animator>();
     }
@@ -110,35 +119,37 @@ public class ElementController : MonoBehaviour
     //use selected bonus
     private void UseBonus()
     {
-
-        //Debug.Log("Click on Element: " + bonusShopClass.bonusSelected + "/name: " + this.name);
-        Debug.Log(bonusShopClass.bonusSelected);
-
         switch (bonusShopClass.bonusSelected)
         {
             case 0:
                 gameBoardClass.ShuffleBoard();
-                goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
+                uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
                 break;
-
-            case 1:
+/*            case 1:
                 this.isColorBomb = true;
                 GenerateColorBomb();
-                break;
+                this.isMatched = true;
+                break;*/
 
             case 2:
                 this.isWrapBomb = true;
+                matchFinderClass.MatchWrapPieces(column, row);
                 GenerateWrapBomb();
+                this.isMatched = true;
                 break;
 
             case 3:
-                this.isRowBomb = true;
+                this.isRowBomb = true;                
+                matchFinderClass.MatchRowPieces(row);                
                 GenerateRowBomb();
+                this.isMatched = true;
                 break;
 
             case 4:
-                this.isColumnBomb = true;
+                this.isColumnBomb = true;                
+                matchFinderClass.MatchColPieces(column);
                 GenerateColumnBomb();
+                this.isMatched = true;
                 break;
 
             default:
@@ -149,7 +160,10 @@ public class ElementController : MonoBehaviour
         bonusShopClass.bonusSelected = -1;
         bonusShopClass.bonusDescPanel.SetActive(false);
 
-        bonusShopClass.shopState = BonusShop.ShopState.Game;        
+        bonusShopClass.shopState = BonusShop.ShopState.Game;
+
+        gameBoardClass.currentState = GameState.wait;
+        gameBoardClass.DestroyMatches();
     }
 
 
@@ -244,46 +258,95 @@ public class ElementController : MonoBehaviour
         }
     }
 
+    private void ColorBombRaysCooker(Vector2 startPoint)
+    {
+        if (colorBombElements.Count > 0)
+        {
+            for (int i = 0; i < colorBombElements.Count; i++)
+            {
+                gameBoardClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
+            }
+        }
+    }
+
     //setp 7
     public IEnumerator CheckMoveCo()
     {
+        //for color bomb
+        Vector2 startPoint = new Vector2(this.column, this.row);
+        gameBoardClass.createdLines.Clear();
+
+        //get other element
+        ElementController otherElem = otherElement.GetComponent<ElementController>();
+        ElementController thisElement = this.GetComponent<ElementController>();
+
         //for color bobmb 1
-        if (isColorBomb)
+        if (isColorBomb && !(otherElem.isRowBomb || otherElem.isColumnBomb || otherElem.isWrapBomb || otherElem.isColorBomb))
         {
-            matchFinderClass.MatchColorPieces(otherElement.tag);
+            colorBombElements = matchFinderClass.MatchColorPieces(otherElement.tag); //for colorbomb
             isMatched = true;
+
+            //color bomb rays
+            ColorBombRaysCooker(startPoint);                       
         }
-        else if (otherElement.GetComponent<ElementController>().isColorBomb)
+        else if (otherElem.isColorBomb && !(isRowBomb || isColumnBomb || isWrapBomb || isColorBomb))
         {
-            matchFinderClass.MatchColorPieces(this.gameObject.tag);
-            otherElement.GetComponent<ElementController>().isMatched = true;
+            colorBombElements = matchFinderClass.MatchColorPieces(this.gameObject.tag); //for colorbomb
+            otherElem.isMatched = true;
+
+            //color bomb rays
+            ColorBombRaysCooker(startPoint);
         }
 
-        //new simple logic
-        if(isRowBomb)
+        //row
+        if (isRowBomb && !otherElem.isRowBomb)
         {
             matchFinderClass.MatchRowPieces(row);
             isMatched = true;
         }
-
-        if (isColumnBomb)
+ 
+        //column
+        if (isColumnBomb && !otherElem.isColumnBomb)
         {
             matchFinderClass.MatchColPieces(column);
             isMatched = true;
         }
 
-        if (isWrapBomb)
+        //wrap
+        if (isWrapBomb && !otherElem.isWrapBomb)
         {
             matchFinderClass.MatchWrapPieces(column, row);
-            isMatched = true;
-        }
-
+            isMatched = true;            
+        }         
+  
+        //check combos
+        CheckBombCombinations(thisElement, otherElem);
 
         yield return new WaitForSeconds(.1f);
 
         //for all elements
         if (otherElement != null)
         {
+
+            //for other element if this bomb         
+            if(otherElem.isRowBomb && !isRowBomb)
+            {                
+                matchFinderClass.MatchRowPieces(row);
+                otherElem.isMatched = true;
+            }
+
+            if (otherElem.isColumnBomb && !isColumnBomb)
+            {
+                matchFinderClass.MatchColPieces(column);
+                otherElem.isMatched = true;
+            }
+
+            if (otherElem.isWrapBomb && !isWrapBomb)
+            {
+                matchFinderClass.MatchWrapPieces(column, row);
+                otherElem.isMatched = true;
+            } 
+
             if (!isMatched && !otherElement.GetComponent<ElementController>().isMatched)
             {
                 //get column and row
@@ -307,10 +370,228 @@ public class ElementController : MonoBehaviour
                     {                        
                         endGameManagerClass.DecreaseCounterVal();
                     }
-                }                
-                gameBoardClass.DestroyMatches();  //destroy 2  -- step 8            
-            }
+                }
 
+                gameBoardClass.DestroyMatches();  //destroy 2  -- step 8                                                  
+            }
+        }
+    }
+
+    private void DoubleRow(int[,] directions, int infoIndex = -1)
+    {
+        // Define a HashSet to store processed columns
+        HashSet<int> processedRows = new HashSet<int>();
+
+        // Loop through each direction
+        for (int i = 0; i < directions.GetLength(0); i++)
+        {
+            int newRow = row + directions[i, 1];
+
+             if (newRow >= 0 && newRow <= gameBoardClass.row-1)
+                {
+                // Check bounds and call the method if valid
+                if (!processedRows.Contains(newRow))
+                {
+                    processedRows.Add(newRow);
+                    matchFinderClass.MatchRowPieces(newRow);
+                }
+            }
+        }
+
+        isMatched = true;
+
+        foreach (int row in processedRows)
+        {
+            Debug.Log(row); // or Console.WriteLine(column) if not using Unity
+        }
+
+        Debug.Log(this.row);
+
+        if (infoIndex == -1)
+            uiManagerClass.ShowInGameInfo("Double row!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+    }
+
+    //combos
+    private void DoubleColumn(int[,] directions, int infoIndex = -1)
+    {
+        // Define a HashSet to store processed columns
+        HashSet<int> processedColumns = new HashSet<int>();
+
+        // Loop through each direction
+        for (int i = 0; i < directions.GetLength(0); i++)
+        {
+            int newColumn = column + directions[i, 0];
+
+            // If the column has not been processed yet
+             if (newColumn >= 0 && newColumn <= gameBoardClass.column-1)
+             {                
+                if (!processedColumns.Contains(newColumn))
+                {
+                    // Add the column to the HashSet
+                    processedColumns.Add(newColumn);
+
+                    // Call the method
+                    matchFinderClass.MatchColPieces(newColumn);
+                }
+            }
+        }
+
+        isMatched = true;
+
+        foreach (int column in processedColumns)
+        {
+            Debug.Log(column); // or Console.WriteLine(column) if not using Unity
+        }
+
+        Debug.Log(this.column);
+
+        if (infoIndex == -1)
+            uiManagerClass.ShowInGameInfo("Double column!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+    }
+
+    private void DoubleWrap(int[,] directions, int infoIndex = -1)
+    {
+        // HashSet to track visited positions
+        HashSet<(int, int)> visitedPositions = new HashSet<(int, int)>();
+
+        // Loop through each direction
+        for (int i = 0; i < directions.GetLength(0); i++)
+        {
+            int newColumn = column + directions[i, 0];
+            int newRow = row + directions[i, 1];
+
+            // Check bounds and call the method if valid
+            if (newColumn >= 0 && newColumn <= gameBoardClass.column - 1 && newRow >= 0 && newRow <= gameBoardClass.row - 1)
+            {
+                // Check if this position has already been processed
+                if (!visitedPositions.Contains((newColumn, newRow)))
+                {
+                    // Add the position to the HashSet
+                    visitedPositions.Add((newColumn, newRow));
+
+                    // Call the method
+                    matchFinderClass.MatchWrapPieces(newColumn, newRow);
+                }
+            }
+        }
+
+        isMatched = true;
+        
+        if (infoIndex == -1)
+            uiManagerClass.ShowInGameInfo("Double Wrap!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+    }
+
+    void CheckBombCombinations(ElementController thisElem, ElementController otherElem)
+    {
+        // HashSet to track executed combinations
+        HashSet<string> executedCombinations = new HashSet<string>();
+
+        // Mapping of bomb types to their property names
+        Dictionary<string, Func<ElementController, bool>> bombTypes = new Dictionary<string, Func<ElementController, bool>>()
+    {
+        { "isRowBomb", e => e.isRowBomb },
+        { "isColumnBomb", e => e.isColumnBomb },
+        { "isWrapBomb", e => e.isWrapBomb },
+        { "isColorBomb", e => e.isColorBomb }
+    };
+
+        // Iterate over all combinations of thisElem and otherElem properties
+        foreach (var thisBomb in bombTypes)
+        {
+            foreach (var otherBomb in bombTypes)
+            {
+                // Check if both bomb types are true
+                if (thisBomb.Value(thisElem) && otherBomb.Value(otherElem))
+                {
+                    // Normalize the combination by sorting the keys alphabetically
+                    string combination = string.Compare(thisBomb.Key, otherBomb.Key) <= 0
+                        ? $"{thisBomb.Key}/{otherBomb.Key}"
+                        : $"{otherBomb.Key}/{thisBomb.Key}";
+
+                    // Check if this combination has already been processed
+                    if (!executedCombinations.Contains(combination))
+                    {
+                        // Add the combination to the HashSet
+                        executedCombinations.Add(combination);
+
+                        // Output the combination
+                        Debug.Log(combination);
+
+                        // Call the desired function
+                        ExecuteBombAction(combination);
+                    }
+                }
+            }
+        }
+    }
+
+    void ExecuteBombAction(string combination)
+    {
+        //directions
+        int[,] directions = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+
+        //support for combo
+        int randomIndex = UnityEngine.Random.Range(0, gameBoardClass.elements.Length);
+        var randomElement = gameBoardClass.elements[randomIndex];
+        string randomTag = randomElement.tag;
+        Vector2 startPoint = new Vector2(this.column, this.row);
+
+        // Add logic based on the combination string
+        switch (combination)
+        {
+            case "isRowBomb/isRowBomb":         //row-row 1
+                DoubleRow(directions);
+                break;
+            case "isColumnBomb/isRowBomb":      //col-row 2
+                DoubleRow(directions);
+                DoubleColumn(directions);
+                break;
+            case "isRowBomb/isWrapBomb":        //row-wrap 3
+                DoubleRow(directions);
+                DoubleWrap(directions);
+                break;
+            case "isColumnBomb/isWrapBomb":     //col-wrap 4
+                DoubleColumn(directions);
+                DoubleWrap(directions);
+                break;
+            case "isColumnBomb/isColumnBomb":   //col-col 5
+                DoubleColumn(directions);
+                break;
+            case "isWrapBomb/isWrapBomb":       //wrap-wrap 6
+                DoubleWrap(directions);
+                break;
+            case "isColorBomb/isColumnBomb":    //color-col 7
+                DoubleColumn(directions,0);
+                colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
+                ColorBombRaysCooker(startPoint);
+                uiManagerClass.ShowInGameInfo("Great!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                break;
+            case "isColorBomb/isRowBomb":       //color-row 8
+                DoubleRow(directions, 0);
+                colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
+                ColorBombRaysCooker(startPoint);
+                uiManagerClass.ShowInGameInfo("Gorgeous!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                break;
+            case "isColorBomb/isWrapBomb":      //color-wrap 9
+                DoubleWrap(directions, 0);
+                colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
+                ColorBombRaysCooker(startPoint);
+                uiManagerClass.ShowInGameInfo("Impressive!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                break;
+            case "isColorBomb/isColorBomb":      //color-color 10
+                colorBombElements = matchFinderClass.MatchColorPieces(randomTag);
+                ColorBombRaysCooker(startPoint);
+
+                DoubleColumn(directions,0);
+                DoubleWrap(directions,0);
+                DoubleRow(directions,0);
+
+                uiManagerClass.ShowInGameInfo("Fantastic!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                break;
+            // Add other cases as needed
+            default:
+                Debug.Log("Executing Default Combination Logic");
+                break;
         }
     }
 
@@ -318,16 +599,6 @@ public class ElementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            //
-        }
-
         targetX = column;
         targetY = row;        
 
@@ -365,7 +636,7 @@ public class ElementController : MonoBehaviour
             //add sprite
             bombLayer.sprite = lineBombSprite;
 
-
+            this.GetComponent<ElementController>().otherElement = null;
         }            
     }
 
@@ -380,7 +651,9 @@ public class ElementController : MonoBehaviour
             this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite
-            bombLayer.sprite = columnBombSprite;           
+            bombLayer.sprite = columnBombSprite;
+
+            this.GetComponent<ElementController>().otherElement = null;
         }            
     }
 
@@ -396,7 +669,7 @@ public class ElementController : MonoBehaviour
             //add sprite
             bombLayer.sprite = colorBombSprite;
 
-            
+            this.GetComponent<ElementController>().otherElement = null;
         }            
     }
 
@@ -412,6 +685,8 @@ public class ElementController : MonoBehaviour
 
             //add sprite
             bombLayer.sprite = wrapBombSprite;
+
+            this.GetComponent<ElementController>().otherElement = null;
         }            
     }
 
@@ -422,5 +697,6 @@ public class ElementController : MonoBehaviour
             animatorElement.SetBool("Destroy", true);
         }
     }
+
 
 }

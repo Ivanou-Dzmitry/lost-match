@@ -377,7 +377,7 @@ public class BonusShop : MonoBehaviour
         if (type == ShopType.Busters)
         {
             shopPanel[0].SetActive(true);
-            shopName[0].text = "SHOP";
+            shopName[0].text = "BUSTERS";
             shopType = ShopType.Busters;
         }
         //for lives shop

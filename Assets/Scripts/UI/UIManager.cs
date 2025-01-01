@@ -1,8 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class ColorPalette
+{
+    public static readonly Dictionary<string, Color> Colors = new Dictionary<string, Color>
+    {
+        { "DarkBlue", new Color(0.196f, 0.231f, 0.4f) }, // 323B66
+        { "DarkTeal", new Color(0.372f, 0.466f, 0.569f) }, // 5F7791
+        { "VioletMed", new Color(0.831f, 0.729f, 0.902f) }, // D4BAE6
+        { "LightTeal", new Color(0.729f, 0.812f, 0.902f) }, // BACFE6
+        { "LightGreen", new Color(0.760f, 0.902f, 0.729f) },  // C2E6BA
+        { "DarkViolet", new Color(0.3176f, 0.1961f, 0.4f) },
+        { "GreenMed", new Color(0.5137f, 0.6078f, 0.4902f) }  // A1BF9A// 513266
+    };
+}
 
 public class UIManager : MonoBehaviour
 {
@@ -27,6 +42,15 @@ public class UIManager : MonoBehaviour
     private int panelBottomHeight = 0;
     private int controlButtonsHeight = 64;
 
+    private float waitingTime = 1f;
+
+    [Header("Final Text")]
+    public GameObject finalTextPanel;
+    public GameObject infoPanel;
+    public TMP_Text finalText;
+    private Image infoPanelImage;
+
+
     void Start()
     {
         RectTransform canvasRect = mainCanvas.GetComponent<RectTransform>();
@@ -34,6 +58,10 @@ public class UIManager : MonoBehaviour
         canvasDimension.x = canvasRect.rect.width;
 
         AdjustPanelPosition();
+
+        //get color from panel
+        if(infoPanel != null )
+            infoPanelImage = infoPanel.GetComponent<Image>();
     }
 
     void AdjustPanelPosition()
@@ -106,6 +134,48 @@ public class UIManager : MonoBehaviour
     public float LevelButtonsPanelSize()
     {
         return panelLevelButtons.sizeDelta.y;
+    }
+
+    public void ShowInGameInfo(string infoText, bool showPanel, Color pnlColor = default)
+    {
+        if (pnlColor == default)
+        {
+            infoPanelImage.color = ColorPalette.Colors["DarkTeal"];
+        }
+        else
+        {
+            infoPanelImage.color = pnlColor;
+        }
+            
+
+        if (showPanel)
+        {
+            finalTextPanel.SetActive(true);
+            finalText.text = infoText;
+        }
+        else
+        {
+            finalTextPanel.SetActive(false);
+            finalText.text = "";
+        }
+
+        //hide panel
+        if (finalTextPanel != null && finalTextPanel.activeSelf)
+        {
+            StartCoroutine(HidePanelCoroutine(waitingTime));
+        }
+    }
+
+    private IEnumerator HidePanelCoroutine(float delay)
+    {
+        yield return new WaitForSeconds(delay); // Wait for the specified delay        
+
+        finalTextPanel.SetActive(false); // Hide the panel
+    }
+
+    private void PanelActivator()
+    {
+        finalTextPanel.SetActive(false); // Completely disable the panel
     }
 
 }

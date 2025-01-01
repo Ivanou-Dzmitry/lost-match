@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6036815987697792929}
   - component: {fileID: 8892321458488118669}
   - component: {fileID: -1864245619884399920}
+  - component: {fileID: 2295458061672940303}
   m_Layer: 0
   m_Name: breakable_01
   m_TagString: breakable_01
@@ -98,14 +99,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitPoints: 1
-  elementSound01: {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
-  elementSound02: {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
   elementSounds:
   - {fileID: 8300000, guid: f9fc231b61bf0c748b34799cf605c8db, type: 3}
-  destroyParticle01: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
-  destroyParticle02: {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
   elementParticles:
   - {fileID: 6634894383000490887, guid: ba9835224e6709a4bb0ece0a7a16e431, type: 3}
-  objLayer02: {fileID: 0}
-  objLayer03: {fileID: 0}
   elementLayers: []
+--- !u!58 &2295458061672940303
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6527145333783162085}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

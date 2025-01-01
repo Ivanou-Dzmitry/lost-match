@@ -7,6 +7,9 @@ public class SpecialElements : MonoBehaviour
 {
 
     private GoalManager goalManagerClass;
+    private GameBoard gameBoardClass;
+    private BonusShop bonusShopClass;
+    private UIManager uiManagerClass;
 
     public int hitPoints;
 
@@ -26,7 +29,40 @@ public class SpecialElements : MonoBehaviour
     {
         //classes
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
+        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
     }
+
+    private void OnMouseDown()
+    {
+        //run using bonus
+        if (bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
+        {
+            UseBonus();
+        }
+    }
+
+    private void UseBonus()
+    {
+        switch (bonusShopClass.bonusSelected)
+        {
+            case 0:
+                gameBoardClass.ShuffleBoard();
+                uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+
+                bonusShopClass.bonusSelected = -1;
+                bonusShopClass.bonusDescPanel.SetActive(false);
+
+                bonusShopClass.shopState = BonusShop.ShopState.Game;
+                break;
+
+            default:
+                Debug.LogWarning("Click on Special element!");
+                break;
+        }
+    }
+
 
     // Update is called once per frame
     void Update()

@@ -4,6 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public static class GameObjectUtils
+{
+    public static List<GameObject> RemoveDuplicatesByName(List<GameObject> objects)
+    {
+        // Remove null objects first
+        objects = objects.Where(obj => obj != null).ToList();
+
+        // Remove duplicates by name
+        return objects
+            .GroupBy(obj => obj.name)
+            .Select(group => group.First())
+            .ToList();
+    }
+}
+
 public class MatchFinder : MonoBehaviour
 {
     //classes
@@ -12,11 +27,17 @@ public class MatchFinder : MonoBehaviour
     //List for match
     public List<GameObject> currentMatch = new List<GameObject>();
 
+    //list for color
+    private List<Vector2> colorBombElements; // Declare a List of Vector2
+
     // Start is called before the first frame update
     void Start()
     {
         //classes
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
+
+        //list for color bomb
+        colorBombElements = new List<Vector2>();
     }
 
     //for match - step 1 - run coroutine
@@ -416,8 +437,10 @@ public class MatchFinder : MonoBehaviour
     }
 
     //color bobmb part 2
-    public void MatchColorPieces(string color)
+    public List<Vector2> MatchColorPieces(string color)
     {
+        colorBombElements.Clear();
+
         for (int i = 0; i < gameBoardClass.column; i++)
         {
             for (int j = 0; j < gameBoardClass.row; j++)
@@ -426,10 +449,19 @@ public class MatchFinder : MonoBehaviour
                 {
                     if (gameBoardClass.allElements[i, j].tag == color)
                     {
-                        gameBoardClass.allElements[i, j].GetComponent<ElementController>().isMatched = true;
+                        ElementController elemControl = gameBoardClass.allElements[i, j].GetComponent<ElementController>();
+
+                        elemControl.isMatched = true;
+
+                        Vector2 endPoint = new Vector2(elemControl.column, elemControl.row);                        
+                        
+                        //add to list
+                        colorBombElements.Add(endPoint);                        
                     }
                 }
             }
         }
+
+        return colorBombElements; // Return the list
     }
 }

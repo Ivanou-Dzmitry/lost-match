@@ -61,6 +61,7 @@
     <Compile Include="Assets\Scripts\UI\LevelButton.cs" />
     <Compile Include="Assets\Scripts\Elements\SpecialElements.cs" />
     <Compile Include="Assets\Scripts\GameData.cs" />
+    <Compile Include="Assets\Scripts\UI\HelpManager.cs" />
     <Compile Include="Assets\Scripts\Shop\BonusShop.cs" />
     <Compile Include="Assets\Scripts\LevelsSceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\LevelConfirmPanel.cs" />

@@ -116,6 +116,7 @@ public class GameBoard : MonoBehaviour
     private GoalManager goalManagerClass;
     private MatchFinder matchFinderClass;
     private ScoreManager scoreManagerClass;
+    private UIManager uiManagerClass;
 
     //arrays
     public GameObject[] elements;
@@ -159,6 +160,7 @@ public class GameBoard : MonoBehaviour
     //bombs values    
     private int minMatchCount = 3;
     public int minMatchForBomb = 4;
+    private int matchLimit = 81; //awoid match bomb bugs
 
     private int matchForLineBomb = 4;
     private int matchForWrapBomb = 2;
@@ -168,6 +170,24 @@ public class GameBoard : MonoBehaviour
     private Dictionary<TileKind, int> preloadDict;
     private Dictionary<TileKind, GameObject> breacableDict;
     private Dictionary<TileKind, GameObject> blockersDict;
+
+    [Header("ColorBomb Staff")]
+    //for colorbomb
+    public List<GameObject> createdLines = new List<GameObject>();
+
+    //add rainbow
+    private List<Color> rayColors = new List<Color>()
+    {
+        Color.red,              // Red
+        new Color(1f, 0.647f, 0f), // Orange
+        Color.yellow,           // Yellow
+        Color.green,            // Green
+        Color.blue,             // Blue
+        new Color(0.294f, 0f, 0.51f), // Indigo
+        new Color(0.56f, 0f, 1f) // Violet
+    };
+
+    public Material colorBombRayMat;
 
     private void Awake()
     {
@@ -239,6 +259,7 @@ public class GameBoard : MonoBehaviour
         matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
+        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 
         //all dots on board
         allElements = new GameObject[column, row];
@@ -276,6 +297,8 @@ public class GameBoard : MonoBehaviour
         matchState = GameState.matching_stop;
 
         levelNumberTxt.text = "Level " + (level + 1);
+
+        createdLines.Clear();
     }
 
     //empty cells
@@ -462,9 +485,14 @@ public class GameBoard : MonoBehaviour
     {
         //condition
         bool condition = false;
+        
+        //remove doubles
+        matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
 
-        //bomb gen - part 1 based on slide
-        if (matchFinderClass.currentMatch.Count >= minMatchForBomb)
+        Debug.Log("Count: " + matchFinderClass.currentMatch.Count);
+
+        //bomb gen - part 1 based on slide Awoid generate bomb on mass destruction.
+        if (matchFinderClass.currentMatch.Count >= minMatchForBomb && matchFinderClass.currentMatch.Count < matchLimit)
         {
             CheckToGenerateBombs();            
         }
@@ -517,7 +545,7 @@ public class GameBoard : MonoBehaviour
             condition = true;
         }
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
 
         //step 2 refill
         if (condition)
@@ -526,9 +554,12 @@ public class GameBoard : MonoBehaviour
 
     private void RunParticles(ElementController element, int thisCol, int thisRow)
     {
+        Vector3 elementPosition = allElements[thisCol, thisRow].transform.position;
+
+        //column part
         if (element.isColumnBomb)
         {
-            GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+            GameObject elementParticle = Instantiate(element.lineBombParticle, elementPosition, Quaternion.identity);
             //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
 
             //particles limitation
@@ -537,21 +568,22 @@ public class GameBoard : MonoBehaviour
                 SetSpriteMaskToScreenCenter(spriteMask);
 
             Destroy(elementParticle, 1.9f);
-
         }
 
+        //wrap part
         if (element.isWrapBomb)
         {
-            GameObject elementParticle = Instantiate(element.wrapBombParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
+            GameObject elementParticle = Instantiate(element.wrapBombParticle, elementPosition, Quaternion.identity);
             //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();        
             Destroy(elementParticle, 1.9f);
         }
 
+        //row part
         if (element.isRowBomb)
         {
             // Set rotation to 90 degrees around the Z axis
             Quaternion rotation = Quaternion.Euler(0, 0, 90);
-            GameObject elementParticle = Instantiate(element.lineBombParticle, allElements[thisCol, thisRow].transform.position, rotation);
+            GameObject elementParticle = Instantiate(element.lineBombParticle, elementPosition, rotation);
             //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
 
             //particles limitation
@@ -562,13 +594,19 @@ public class GameBoard : MonoBehaviour
             Destroy(elementParticle, 1.9f);
         }
 
-            if (element.destroyParticle != null)
+        //color part
+        if (element.isColorBomb)
         {
-            GameObject elementParticle = Instantiate(element.destroyParticle, allElements[thisCol, thisRow].transform.position, Quaternion.identity);
-
-            Destroy(elementParticle, .9f);
+            GameObject elementParticle = Instantiate(element.colorBombParticle, elementPosition, Quaternion.identity);         
+            Destroy(elementParticle, 1.9f);
         }
 
+        //std element
+        if (element.destroyParticle != null)
+        {
+            GameObject elementParticle = Instantiate(element.destroyParticle, elementPosition, Quaternion.identity);
+            Destroy(elementParticle, .9f);
+        }
     }
 
     void SetSpriteMaskToScreenCenter(SpriteMask spriteMask, int angle = -1)
@@ -692,18 +730,22 @@ public class GameBoard : MonoBehaviour
             currentElement.DestroyAnimation();
 
             //main destroy
-            Destroy(allElements[thisColumn, thisRow], .5f);
+            Destroy(allElements[thisColumn, thisRow], .4f); //!Important
             allElements[thisColumn, thisRow] = null;
 
             //clear match list
-            matchFinderClass.currentMatch.Clear();          
+            matchFinderClass.currentMatch.Clear();
+
+            //for colorbomb
+            if(createdLines.Count > 0)
+                StartCoroutine(DeleteColorBombLines(.3f));
         }       
     }
 
     private void RefillBoard()
     {
         int counter = 0;
-        string currentTime = DateTime.Now.ToString("mmss");
+        string currentTime = DateTime.Now.ToString("ssfff");
 
         for (int i = 0; i < column; i++)
         {
@@ -735,7 +777,7 @@ public class GameBoard : MonoBehaviour
                     counter++;
 
                     //element.name = $"{element.tag}_{currentTime}_{counter}";
-                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime;
+                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;
                 }
             }
         }
@@ -787,7 +829,7 @@ public class GameBoard : MonoBehaviour
         if (IsDeadLock())
         {            
             ShuffleBoard();
-            goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
+            uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
         }
 
         if (currentState != GameState.pause)
@@ -803,8 +845,12 @@ public class GameBoard : MonoBehaviour
     //gen bombs part 3
     private MatchType ColumnOrRow()
     {
-        // Copy of the current match
+        // Copy of the current match remove double
+        
         List<GameObject> matchCopy = new List<GameObject>(matchFinderClass.currentMatch);
+
+        //remove double
+        ///matchCopy = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
 
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
@@ -886,8 +932,8 @@ public class GameBoard : MonoBehaviour
 
     //gen bomb part 2
     public void CheckToGenerateBombs()
-    {
-        if (matchFinderClass.currentMatch.Count > minMatchCount)
+    {       
+        if (matchFinderClass.currentMatch.Count > minMatchCount && matchFinderClass.currentMatch.Count < matchLimit)
         {
             // Determine match type
             MatchType typeOfMatch = ColumnOrRow();
@@ -981,6 +1027,7 @@ public class GameBoard : MonoBehaviour
                         soundManagerClass.PlaySound(currentBlocker.elementSounds[index]);
                     }
 
+                    //particles
                     if (currentBlocker.elementParticles[index] != null)
                     {
                         GameObject blockerParticle = Instantiate(
@@ -1272,9 +1319,180 @@ public class GameBoard : MonoBehaviour
 
         if (IsDeadLock())
         {
-            ShuffleBoard();
-            goalManagerClass.ShowInGameInfo("Mixed up", true); //show panel with text
+            ShuffleBoard();            
+            uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
         }
+    }
+
+    // Coroutine to fade out and delete color bomb lines after a delay
+    private IEnumerator DeleteColorBombLines(float delay)
+    {
+        // Wait for the specified delay before starting the fade-out process
+        yield return new WaitForSeconds(delay);
+
+        // Fade out each line and then destroy it
+        foreach (GameObject line in createdLines)
+        {
+            if (line != null)
+            {
+                LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
+                if (lineRenderer != null)
+                {
+                    // Start fading out the line before destroying it
+                    StartCoroutine(FadeAndDestroyLine(lineRenderer, line));
+                }
+            }
+        }
+
+        // Clear the list after deletion (all lines will be destroyed by now)
+        createdLines.Clear();
+    }
+
+    public void CreateColorBombLines(Vector2 startPoint, Vector2 endPoint, Color color, float width)
+    {
+        // Create a new GameObject for the LineRenderer
+        GameObject lineObject = new GameObject("DynamicLine");
+        LineRenderer lineRenderer = lineObject.AddComponent<LineRenderer>();
+
+        lineRenderer.name = "colorbomb_line_" + endPoint.x + "_" + endPoint.y;
+
+        // Set the material
+        lineRenderer.material = colorBombRayMat;
+
+        //width = 0.5f;
+
+        // Divide the line into 8 segments
+        int segments = 12;
+        lineRenderer.positionCount = segments + 1; // 9 points for 8 segments      
+
+        // Convert Vector2 to Vector3 (z = 0 for 2D lines)
+        //Vector3 startPoint3D = new Vector3(startPoint.x, startPoint.y, 0f);
+        //Vector3 endPoint3D = new Vector3(endPoint.x, endPoint.y, 0f);
+
+        // Calculate the total distance between start and end points
+        float lineLength = Vector2.Distance(startPoint, endPoint);
+
+        //Debug.Log(lineRenderer.name + "=" + lineLength);
+
+        // Set the positions for the start and end points
+        lineRenderer.SetPosition(0, startPoint);
+        lineRenderer.SetPosition(segments, endPoint);
+
+        // Determine the maxShift based on the line length
+        ///float maxShift = (lineLength < 2f) ? 0.01f : 0.2f; // Use 0.1f for short lines, 0.5f for long lines
+
+        if (lineLength < 1.5f)
+        {
+            // For short lines, set only start and end points
+            lineRenderer.positionCount = 2; // Only 2 points for start and end
+            lineRenderer.SetPosition(0, new Vector3(startPoint.x, startPoint.y, 0f));
+            lineRenderer.SetPosition(1, new Vector3(endPoint.x, endPoint.y, 0f));
+        }
+        else
+        {
+            // For longer lines, divide into segments and apply sawtooth pattern
+            //int segments = 16;
+            lineRenderer.positionCount = segments + 1; // 17 points for 16 segments
+
+            // Convert Vector2 to Vector3 (z = 0 for 2D lines)
+            Vector3 startPoint3D = new Vector3(startPoint.x, startPoint.y, 0f);
+            Vector3 endPoint3D = new Vector3(endPoint.x, endPoint.y, 0f);
+
+            // Calculate the normalized direction vector
+            Vector3 direction = (endPoint3D - startPoint3D).normalized;
+
+            // Calculate and apply the sawtooth pattern
+            float segmentLength = lineLength / segments; // Uniform length for each segment
+            float maxShift = (Mathf.Abs(endPoint.x - startPoint.x) > 2f && Mathf.Abs(endPoint.y - startPoint.y) > 2f) ? 0.4f : 0.2f; // Larger shift for longer diagonals
+
+            for (int i = 0; i <= segments; i++) // Include both endpoints
+            {
+                Vector3 point = startPoint3D + direction * (i * segmentLength);
+
+                // Calculate shift factor that decreases as we get closer to the end point
+                float t = (float)i / segments; // Interpolation value between 0 and 1
+                float shiftFactor = maxShift * (1 - t); // Gradually decrease shift as we approach the end
+
+                // Create the sawtooth effect by shifting odd points along x and y
+                if (i % 2 != 0) // Check if the index is odd
+                {
+                    // Apply alternating shifts for the sawtooth effect
+                    float shift = shiftFactor * (i % 2 == 1 ? 1 : -1); // Alternating direction for each odd point
+
+                    // Apply the shift to both X and Y axes
+                    point.x += shift;
+                    point.y += shift;
+                }
+
+                lineRenderer.SetPosition(i, point);
+            }
+        }
+
+        int randStart = UnityEngine.Random.Range(0, rayColors.Count);
+        //int randEnd = UnityEngine.Random.Range(0, rayColors.Count);
+
+        Color startRayColor = rayColors[randStart];
+        Color endRayColor = rayColors[randStart];
+
+        // Set the color
+        lineRenderer.startColor = startRayColor;
+        lineRenderer.endColor = endRayColor;
+
+        // Set the width
+        lineRenderer.startWidth = width;
+        lineRenderer.endWidth = width;
+
+        // Set additional properties (optional)
+        lineRenderer.useWorldSpace = true; // Use world coordinates
+        lineRenderer.sortingOrder = 1;    // Ensure visibility
+
+        //sorting
+        lineRenderer.sortingLayerName = "Elements";
+        lineRenderer.sortingOrder = 3;
+
+
+        //set parent
+        lineObject.transform.parent = gameArea.transform;
+
+        createdLines.Add(lineObject);
+    }
+
+
+    // Coroutine to fade out the line's opacity and destroy it
+    private IEnumerator FadeAndDestroyLine(LineRenderer lineRenderer, GameObject lineObject)
+    {
+        float fadeDuration = 0.5f; // Time in seconds to fade out
+        float startTime = Time.time;
+        Color startColor = lineRenderer.startColor;
+
+        //get width
+        float startWidth = lineRenderer.startWidth;
+
+        // Gradually decrease opacity over time
+        while (Time.time < startTime + fadeDuration)
+        {
+            float t = (Time.time - startTime) / fadeDuration; // Calculate the time factor
+            float alpha = Mathf.Lerp(1f, 0f, t); // Lerp from 1 to 0 for opacity
+
+            float lineWidth = Mathf.Lerp(startWidth, 0f, t); // Lerp from 1 to 0 for opacity
+
+            // Set the color with the new alpha
+            Color fadedColor = new Color(startColor.r, startColor.g, startColor.b, alpha);
+            lineRenderer.startColor = fadedColor;
+            lineRenderer.endColor = fadedColor;
+
+            lineRenderer.startWidth = lineWidth;
+            lineRenderer.endWidth = lineWidth;
+
+            yield return null; // Wait until the next frame
+        }
+
+        // Ensure the final opacity is 0
+        lineRenderer.startColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+        lineRenderer.endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+
+        // Destroy the line object after fading
+        Destroy(lineObject);
     }
 
 }

@@ -15,7 +15,11 @@ public enum GameState
     move,
     win,
     lose,
-    pause,
+    pause
+}
+
+public enum MatchState
+{
     matching_stop,
     matching_inprogress
 }
@@ -92,7 +96,7 @@ public class GameBoard : MonoBehaviour
     public AudioClip levelMusic;
 
     public GameState currentState;
-    public GameState matchState;
+    public MatchState matchState;
 
     [Header("Size")]
     public int column;
@@ -294,7 +298,7 @@ public class GameBoard : MonoBehaviour
         }
 
         //stop 1
-        matchState = GameState.matching_stop;
+        matchState = MatchState.matching_stop;
 
         levelNumberTxt.text = "Level " + (level + 1);
 
@@ -445,7 +449,7 @@ public class GameBoard : MonoBehaviour
             GenPreloadLayout();
         }
 
-        matchState = GameState.matching_stop;
+        matchState = MatchState.matching_stop;
     }
 
     //check for matching
@@ -478,7 +482,13 @@ public class GameBoard : MonoBehaviour
         return false;
     }
 
+    private void CongratInfo(int matchCount)
+    {
+        if (matchCount > 20)
+            uiManagerClass.ShowInGameInfo("Great!", true, ColorPalette.Colors["VioletMed"]); //show panel with text
 
+        Debug.Log("matchCount: " + matchCount);
+    }
 
     //step 9     
     public void DestroyMatches()
@@ -489,7 +499,7 @@ public class GameBoard : MonoBehaviour
         //remove doubles
         matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
 
-        Debug.Log("Count: " + matchFinderClass.currentMatch.Count);
+        CongratInfo(matchFinderClass.currentMatch.Count);
 
         //bomb gen - part 1 based on slide Awoid generate bomb on mass destruction.
         if (matchFinderClass.currentMatch.Count >= minMatchForBomb && matchFinderClass.currentMatch.Count < matchLimit)
@@ -518,7 +528,6 @@ public class GameBoard : MonoBehaviour
     //Important!
     private IEnumerator DecreaseRowCo()
     {
-
         //condition
         bool condition = false;
 
@@ -545,8 +554,8 @@ public class GameBoard : MonoBehaviour
             condition = true;
         }
 
-        yield return new WaitForSeconds(0.3f);
-
+        yield return new WaitForSeconds(0.4f);
+       
         //step 2 refill
         if (condition)
             StartCoroutine(FillBoardCo());
@@ -556,48 +565,71 @@ public class GameBoard : MonoBehaviour
     {
         Vector3 elementPosition = allElements[thisCol, thisRow].transform.position;
 
-        //column part
-        if (element.isColumnBomb)
+        if (element.isColumnBomb || element.isRowBomb)
         {
-            GameObject elementParticle = Instantiate(element.lineBombParticle, elementPosition, Quaternion.identity);
-            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
+            Quaternion rotation = element.isRowBomb ? Quaternion.Euler(0, 0, 90) : Quaternion.identity;
+            Vector3 particlePosition = elementPosition;
+            InstantiateAndConfigureParticle(element, particlePosition, rotation);
 
-            //particles limitation
-            SpriteMask spriteMask = elementParticle.GetComponentInChildren<SpriteMask>();
+            // Handle combo particles
+            if (element.isCombo)
+            {
+                if (element.comboE1 != -1)
+                {
+                    particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE1);
+                    InstantiateAndConfigureParticle(element, particlePosition, rotation);
+                }
+
+                if (element.comboE2 != -1)
+                {
+                    particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE2);
+                    InstantiateAndConfigureParticle(element, particlePosition, rotation);
+                }
+            }
+        }
+
+        // Helper to instantiate and configure a particle
+        void InstantiateAndConfigureParticle(ElementController element, Vector3 position, Quaternion rotation)
+        {
+            GameObject particle = Instantiate(element.lineBombParticle, position, rotation);
+            SpriteMask spriteMask = particle.GetComponentInChildren<SpriteMask>();
             if (spriteMask != null)
-                SetSpriteMaskToScreenCenter(spriteMask);
+                SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
+            Destroy(particle, 1.9f);
+        }
 
-            Destroy(elementParticle, 1.9f);
+        // Helper to update position based on bomb type
+        Vector3 UpdatePosition(Vector3 originalPosition, bool isRowBomb, int comboValue)
+        {
+            if (isRowBomb)
+                originalPosition.y = comboValue;
+            else
+                originalPosition.x = comboValue;
+            return originalPosition;
         }
 
         //wrap part
         if (element.isWrapBomb)
         {
             GameObject elementParticle = Instantiate(element.wrapBombParticle, elementPosition, Quaternion.identity);
-            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();        
-            Destroy(elementParticle, 1.9f);
-        }
-
-        //row part
-        if (element.isRowBomb)
-        {
-            // Set rotation to 90 degrees around the Z axis
-            Quaternion rotation = Quaternion.Euler(0, 0, 90);
-            GameObject elementParticle = Instantiate(element.lineBombParticle, elementPosition, rotation);
-            //ParticleSystem[] particleSystems = elementParticle.GetComponentsInChildren<ParticleSystem>();
-
-            //particles limitation
-            SpriteMask spriteMask = elementParticle.GetComponentInChildren<SpriteMask>();
-            if (spriteMask != null)
-                SetSpriteMaskToScreenCenter(spriteMask, 90);
-
+            elementParticle.name = "wrap_part_" + "_" + thisCol + "_" + thisRow;
+            elementParticle.transform.parent = gameArea.transform;
+            
+            if (element.isCombo)
+            {            
+                Transform wrapBombComboPart = elementParticle.transform.Find("wrapbomb_combo_part");
+                wrapBombComboPart.gameObject.SetActive(true);
+            }
+            
             Destroy(elementParticle, 1.9f);
         }
 
         //color part
         if (element.isColorBomb)
         {
-            GameObject elementParticle = Instantiate(element.colorBombParticle, elementPosition, Quaternion.identity);         
+            GameObject elementParticle = Instantiate(element.colorBombParticle, elementPosition, Quaternion.identity);
+            elementParticle.name = "color_part_" + "_" + thisCol + "_" + thisRow;
+            elementParticle.transform.parent = gameArea.transform;
             Destroy(elementParticle, 1.9f);
         }
 
@@ -605,6 +637,8 @@ public class GameBoard : MonoBehaviour
         if (element.destroyParticle != null)
         {
             GameObject elementParticle = Instantiate(element.destroyParticle, elementPosition, Quaternion.identity);
+            elementParticle.name = "part_" + element.name +"_"+ thisCol + "_" + thisRow;
+            elementParticle.transform.parent = gameArea.transform;
             Destroy(elementParticle, .9f);
         }
     }
@@ -629,11 +663,6 @@ public class GameBoard : MonoBehaviour
             spriteMask.transform.eulerAngles += new Vector3(0, 0, angle);
     }
 
-
-    public IEnumerator MyDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-    }
 
     private void DestroyBreakableAt(int thisColumn, int thisRow)
     {
@@ -782,7 +811,7 @@ public class GameBoard : MonoBehaviour
             }
         }
         
-        matchState = GameState.matching_inprogress;
+        matchState = MatchState.matching_inprogress;
 
         matchFinderClass.FindAllMatches(); //find match 2
     }
@@ -819,7 +848,7 @@ public class GameBoard : MonoBehaviour
         while (MatchesOnBoard())
         {
             streakValue++; //for score                                 
-            matchState = GameState.matching_inprogress;
+            matchState = MatchState.matching_inprogress;
             DestroyMatches();     //run decrease columns       
             yield break;
         }
@@ -836,7 +865,7 @@ public class GameBoard : MonoBehaviour
             currentState = GameState.move;
 
         //stop matching
-        matchState = GameState.matching_stop;
+        matchState = MatchState.matching_stop;
 
         goalManagerClass.UpdateGoals();
     }
@@ -848,9 +877,6 @@ public class GameBoard : MonoBehaviour
         // Copy of the current match remove double
         
         List<GameObject> matchCopy = new List<GameObject>(matchFinderClass.currentMatch);
-
-        //remove double
-        ///matchCopy = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
 
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
@@ -1035,6 +1061,10 @@ public class GameBoard : MonoBehaviour
                             blockerCells[thisColumn, thisRow].transform.position,
                             Quaternion.identity
                         );
+
+                        blockerParticle.name = "blocker_part_" + thisColumn + "_" + thisRow + "_"+ index;
+                        blockerParticle.transform.parent = gameArea.transform;
+
                         Destroy(blockerParticle, 1.9f); // Particle delay
                     }
 

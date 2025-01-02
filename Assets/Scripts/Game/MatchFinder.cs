@@ -82,7 +82,7 @@ public class MatchFinder : MonoBehaviour
     {
         yield return null;
 
-        gameBoardClass.matchState = GameState.matching_inprogress;
+        gameBoardClass.matchState = MatchState.matching_inprogress;
 
         for (int i = 0; i < gameBoardClass.column; i++)
         {
@@ -456,11 +456,15 @@ public class MatchFinder : MonoBehaviour
                         Vector2 endPoint = new Vector2(elemControl.column, elemControl.row);                        
                         
                         //add to list
-                        colorBombElements.Add(endPoint);                        
+                        colorBombElements.Add(endPoint);
+
+                        AddToListMatch(gameBoardClass.allElements[i, j].gameObject);
                     }
                 }
             }
         }
+
+        //Debug.Log(colorBombElements.Count);
 
         return colorBombElements; // Return the list
     }

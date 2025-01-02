@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,6 +42,11 @@ public class ElementController : MonoBehaviour
     public bool isColorBomb;
     public bool isWrapBomb;
 
+    [Header("Combo")]
+    public bool isCombo;
+    public int comboE1;
+    public int comboE2;
+
     [Header("Color")]
     public Color elementColor; //for colorize wrap
 
@@ -69,8 +76,6 @@ public class ElementController : MonoBehaviour
     //for color bomb
     private List<Vector2> colorBombElements;    
 
-    //public Vector2 comboPosition;
-
     private float lastCallTime; // Track the last time the function was called
 
 
@@ -87,6 +92,11 @@ public class ElementController : MonoBehaviour
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 
         animatorElement = GetComponent<Animator>();
+
+        //combo stuff
+        isCombo = false;
+        comboE1 = -1;
+        comboE2 = -1;
     }
 
     //step 1
@@ -113,7 +123,8 @@ public class ElementController : MonoBehaviour
         if(bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
         {
             UseBonus();
-        }         
+        }
+        
     }
 
     //use selected bonus
@@ -165,7 +176,6 @@ public class ElementController : MonoBehaviour
         gameBoardClass.currentState = GameState.wait;
         gameBoardClass.DestroyMatches();
     }
-
 
 
     //step 2
@@ -276,6 +286,10 @@ public class ElementController : MonoBehaviour
         Vector2 startPoint = new Vector2(this.column, this.row);
         gameBoardClass.createdLines.Clear();
 
+        isCombo = false;
+        comboE1 = -1;
+        comboE2 = -1;
+
         //get other element
         ElementController otherElem = otherElement.GetComponent<ElementController>();
         ElementController thisElement = this.GetComponent<ElementController>();
@@ -287,7 +301,7 @@ public class ElementController : MonoBehaviour
             isMatched = true;
 
             //color bomb rays
-            ColorBombRaysCooker(startPoint);                       
+            ColorBombRaysCooker(startPoint);
         }
         else if (otherElem.isColorBomb && !(isRowBomb || isColumnBomb || isWrapBomb || isColorBomb))
         {
@@ -327,7 +341,6 @@ public class ElementController : MonoBehaviour
         //for all elements
         if (otherElement != null)
         {
-
             //for other element if this bomb         
             if(otherElem.isRowBomb && !isRowBomb)
             {                
@@ -356,7 +369,7 @@ public class ElementController : MonoBehaviour
                 row = previousRow;
                 column = previousColumn;
 
-                yield return new WaitForSeconds(.1f);
+                //yield return new WaitForSeconds(.1f);
 
                 gameBoardClass.currentElement = null; // current 2
                 gameBoardClass.currentState = GameState.move;
@@ -377,7 +390,7 @@ public class ElementController : MonoBehaviour
         }
     }
 
-    private void DoubleRow(int[,] directions, int infoIndex = -1)
+    private void RowCombo(int[,] directions, int infoIndex = -1)
     {
         // Define a HashSet to store processed columns
         HashSet<int> processedRows = new HashSet<int>();
@@ -400,19 +413,22 @@ public class ElementController : MonoBehaviour
 
         isMatched = true;
 
-        foreach (int row in processedRows)
-        {
-            Debug.Log(row); // or Console.WriteLine(column) if not using Unity
-        }
+        //combo stuff
+        processedRows.Remove(this.row);
 
-        Debug.Log(this.row);
+        // Convert HashSet to List
+        List<int> processedRowsList = processedRows.ToList();
 
-        if (infoIndex == -1)
-            uiManagerClass.ShowInGameInfo("Double row!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+        if(processedRows.Count>0)
+            isCombo = true;
+
+        // Assign values to variables by index
+        comboE1 = processedRowsList.Count > 0 ? processedRowsList[0] : -1; // Default value if empty
+        comboE2 = processedRowsList.Count > 1 ? processedRowsList[1] : -1; // Default value if empty
     }
 
     //combos
-    private void DoubleColumn(int[,] directions, int infoIndex = -1)
+    private void ColumnCombo(int[,] directions, int infoIndex = -1)
     {
         // Define a HashSet to store processed columns
         HashSet<int> processedColumns = new HashSet<int>();
@@ -438,18 +454,20 @@ public class ElementController : MonoBehaviour
 
         isMatched = true;
 
-        foreach (int column in processedColumns)
-        {
-            Debug.Log(column); // or Console.WriteLine(column) if not using Unity
-        }
+        processedColumns.Remove(this.column);
 
-        Debug.Log(this.column);
+        // Convert HashSet to List
+        List<int> processedColumnsList = processedColumns.ToList();
 
-        if (infoIndex == -1)
-            uiManagerClass.ShowInGameInfo("Double column!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+        if (processedColumns.Count > 0)
+            isCombo = true;
+
+        // Assign values to variables by index
+        comboE1 = processedColumnsList.Count > 0 ? processedColumnsList[0] : -1; // Default value if empty
+        comboE2 = processedColumnsList.Count > 1 ? processedColumnsList[1] : -1; // Default value if empty
     }
 
-    private void DoubleWrap(int[,] directions, int infoIndex = -1)
+    private void WrapCombo(int[,] directions, int infoIndex = -1)
     {
         // HashSet to track visited positions
         HashSet<(int, int)> visitedPositions = new HashSet<(int, int)>();
@@ -476,9 +494,9 @@ public class ElementController : MonoBehaviour
         }
 
         isMatched = true;
-        
-        if (infoIndex == -1)
-            uiManagerClass.ShowInGameInfo("Double Wrap!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+
+        if (visitedPositions.Count > 0)
+            isCombo = true;
     }
 
     void CheckBombCombinations(ElementController thisElem, ElementController otherElem)
@@ -513,19 +531,15 @@ public class ElementController : MonoBehaviour
                     {
                         // Add the combination to the HashSet
                         executedCombinations.Add(combination);
-
-                        // Output the combination
-                        Debug.Log(combination);
-
                         // Call the desired function
-                        ExecuteBombAction(combination);
+                        ExecuteComboAction(combination);
                     }
                 }
             }
         }
     }
 
-    void ExecuteBombAction(string combination)
+    void ExecuteComboAction(string combination)
     {
         //directions
         int[,] directions = new int[,] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
@@ -540,53 +554,48 @@ public class ElementController : MonoBehaviour
         switch (combination)
         {
             case "isRowBomb/isRowBomb":         //row-row 1
-                DoubleRow(directions);
+                RowCombo(directions);
                 break;
             case "isColumnBomb/isRowBomb":      //col-row 2
-                DoubleRow(directions);
-                DoubleColumn(directions);
+                RowCombo(directions);
+                ColumnCombo(directions);
                 break;
             case "isRowBomb/isWrapBomb":        //row-wrap 3
-                DoubleRow(directions);
-                DoubleWrap(directions);
+                RowCombo(directions);
+                WrapCombo(directions);
                 break;
             case "isColumnBomb/isWrapBomb":     //col-wrap 4
-                DoubleColumn(directions);
-                DoubleWrap(directions);
+                ColumnCombo(directions);
+                WrapCombo(directions);
                 break;
             case "isColumnBomb/isColumnBomb":   //col-col 5
-                DoubleColumn(directions);
+                ColumnCombo(directions);
                 break;
             case "isWrapBomb/isWrapBomb":       //wrap-wrap 6
-                DoubleWrap(directions);
+                WrapCombo(directions);
                 break;
             case "isColorBomb/isColumnBomb":    //color-col 7
-                DoubleColumn(directions,0);
+                ColumnCombo(directions,0);
                 colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
-                ColorBombRaysCooker(startPoint);
-                uiManagerClass.ShowInGameInfo("Great!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                ColorBombRaysCooker(startPoint);                
                 break;
             case "isColorBomb/isRowBomb":       //color-row 8
-                DoubleRow(directions, 0);
+                RowCombo(directions, 0);
                 colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
                 ColorBombRaysCooker(startPoint);
-                uiManagerClass.ShowInGameInfo("Gorgeous!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
                 break;
             case "isColorBomb/isWrapBomb":      //color-wrap 9
-                DoubleWrap(directions, 0);
+                WrapCombo(directions, 0);
                 colorBombElements = matchFinderClass.MatchColorPieces(randomTag); //for colorbomb
                 ColorBombRaysCooker(startPoint);
-                uiManagerClass.ShowInGameInfo("Impressive!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
                 break;
             case "isColorBomb/isColorBomb":      //color-color 10
                 colorBombElements = matchFinderClass.MatchColorPieces(randomTag);
                 ColorBombRaysCooker(startPoint);
 
-                DoubleColumn(directions,0);
-                DoubleWrap(directions,0);
-                DoubleRow(directions,0);
-
-                uiManagerClass.ShowInGameInfo("Fantastic!", true, ColorPalette.Colors["DarkViolet"]); //show panel with text
+                ColumnCombo(directions,0);
+                WrapCombo(directions,0);
+                RowCombo(directions,0);
                 break;
             // Add other cases as needed
             default:

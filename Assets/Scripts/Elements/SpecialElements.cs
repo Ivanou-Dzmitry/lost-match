@@ -36,33 +36,22 @@ public class SpecialElements : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //run using bonus
-        if (bonusShopClass.bonusSelected != -1 && gameBoardClass.currentState == GameState.move)
+        if(bonusShopClass.bonusSelected == 0)
         {
-            UseBonus();
+            UseShuffle();
         }
     }
 
-    private void UseBonus()
+    private void UseShuffle()
     {
-        switch (bonusShopClass.bonusSelected)
-        {
-            case 0:
-                gameBoardClass.ShuffleBoard();
-                uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+        gameBoardClass.ShuffleBoard();
+        uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
 
-                bonusShopClass.bonusSelected = -1;
-                bonusShopClass.bonusDescPanel.SetActive(false);
+        bonusShopClass.bonusSelected = -1;
+        bonusShopClass.bonusDescPanel.SetActive(false);
 
-                bonusShopClass.shopState = BonusShop.ShopState.Game;
-                break;
-
-            default:
-                Debug.LogWarning("Click on Special element!");
-                break;
-        }
+        bonusShopClass.shopState = BonusShop.ShopState.Game;
     }
-
 
     // Update is called once per frame
     void Update()

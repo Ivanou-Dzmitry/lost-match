@@ -24,7 +24,7 @@ public class HintManager : MonoBehaviour
 
         if (hintDelaySec <= 0 && currentHint == null)
         {
-            if (gameBoardClass.matchState == GameState.matching_stop)
+            if (gameBoardClass.matchState == MatchState.matching_stop && gameBoardClass.currentState == GameState.move)
             {
                 MarkHint();
                 hintDelaySec = hintDelay;
@@ -79,10 +79,10 @@ public class HintManager : MonoBehaviour
 
         possibleMoves.Clear();
 
-        if (gameBoardClass.matchState == GameState.matching_stop)
+        if (gameBoardClass.matchState == MatchState.matching_stop)
             possibleMoves = FindAllMatches();
 
-        if (possibleMoves.Count > 0 && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == GameState.matching_stop)
+        if (possibleMoves.Count > 0 && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop)
         {
             int pieceToUse = UnityEngine.Random.Range(0, possibleMoves.Count);
 
@@ -99,7 +99,7 @@ public class HintManager : MonoBehaviour
 
         string currentTime = DateTime.Now.ToString("mmss");
 
-        if (move != null && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == GameState.matching_stop)
+        if (move != null && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop)
         {
             currentHint = Instantiate(hintParticle, move.transform.position, Quaternion.identity);
 

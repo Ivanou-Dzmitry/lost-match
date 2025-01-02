@@ -133,7 +133,7 @@ public class GoalManager : MonoBehaviour
         //state for run
         bool runState = false;
 
-        if (gameBoardClass.matchState == GameState.matching_stop && gameBoardClass.currentState != GameState.wait)
+        if (gameBoardClass.matchState == MatchState.matching_stop && gameBoardClass.currentState != GameState.wait)
             runState = true;
 
 
@@ -159,7 +159,7 @@ public class GoalManager : MonoBehaviour
         // Code to run before WinGame
         gameBoardClass.currentState = GameState.win;
 
-        uiManagerClass.ShowInGameInfo("Level Completed!", true, ColorPalette.Colors["GreenMed"]);
+        uiManagerClass.ShowInGameInfo("Level Completed!", true, ColorPalette.Colors["GreenSaturate"]);
 
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 

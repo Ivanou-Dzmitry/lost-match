@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2859487466329141168}
   - component: {fileID: 8750538071663120739}
   - component: {fileID: 7872292480572824187}
-  - component: {fileID: 6815580172677514558}
+  - component: {fileID: 7772061198187914405}
   m_Layer: 0
   m_Name: blocker_01
   m_TagString: blocker_01
@@ -104,7 +104,7 @@ MonoBehaviour:
   elementParticles:
   - {fileID: 5804476535608525528, guid: 776cde81936a4544192e88c6bc553b8a, type: 3}
   elementLayers: []
---- !u!58 &6815580172677514558
+--- !u!58 &7772061198187914405
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

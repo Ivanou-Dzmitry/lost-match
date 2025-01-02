@@ -14,8 +14,8 @@ public class ColorPalette
         { "VioletMed", new Color(0.831f, 0.729f, 0.902f) }, // D4BAE6
         { "LightTeal", new Color(0.729f, 0.812f, 0.902f) }, // BACFE6
         { "LightGreen", new Color(0.760f, 0.902f, 0.729f) },  // C2E6BA
-        { "DarkViolet", new Color(0.3176f, 0.1961f, 0.4f) },
-        { "GreenMed", new Color(0.5137f, 0.6078f, 0.4902f) }  // A1BF9A// 513266
+        { "DarkViolet", new Color(0.3176f, 0.1961f, 0.4f) },    // 513266
+        { "GreenSaturate", new Color(0.533f, 0.902f, 0.451f) }  // 88E673
     };
 }
 

@@ -17,10 +17,10 @@ MonoBehaviour:
   boardLayout:
   - columnX: 3
     rowY: 4
-    tileKind: 10
+    tileKind: 9
   - columnX: 3
     rowY: 3
-    tileKind: 10
+    tileKind: 8
   elementsBack:
     gameBoardBackSprite: {fileID: 21300000, guid: 7c73b5836ce7a2f49814f7d419819c7d, type: 3}
   preloadBoardLayout: []
@@ -36,6 +36,6 @@ MonoBehaviour:
     counterValue: 14
   levelGoals:
   - numberGoalsNeeded: 15
-    numberCollectedGoals: 8
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: cb8c41659b9f4b840a02b66a497cf4b2, type: 3}
     matchValue: element_04

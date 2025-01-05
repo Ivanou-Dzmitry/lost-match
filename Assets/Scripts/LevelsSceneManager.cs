@@ -9,7 +9,7 @@ public class LevelsSceneManager : MonoBehaviour
     private GameData gameDataClass;
     private int lastLevel;
     private int levelsCount;
-    private int currentScreenNumber;
+    public int currentScreenNumber;
 
     [Header("Music")]
     private SoundManager soundManagerClass;
@@ -29,6 +29,8 @@ public class LevelsSceneManager : MonoBehaviour
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
     private float swipeThreshold = 2.0f; // Minimum distance for a swipe
+    private float maxSwipeLenght = 100.0f;
+
     private bool swipeDetected = false; // Prevent repeated triggers
 
     [Header("Center Panel")]
@@ -37,6 +39,9 @@ public class LevelsSceneManager : MonoBehaviour
     private Image backSprite;
 
     //public Button[] centerPanelButtons;
+
+    [Header("Particles")]
+    public GameObject swipeParticles;
 
     [Header("DEbug")]
     public TMP_Text levelTxt;
@@ -83,7 +88,7 @@ public class LevelsSceneManager : MonoBehaviour
         backSprite.sprite = centerPanelImages[currentScreenNumber-1];
     }
 
-    void LoadLevelButtons(int currentScreenNumber)
+    public void LoadLevelButtons(int currentScreenNumber)
     {
         int startNumber = currentScreenNumber * 10;      // Upper bound
         int endNumber = startNumber - 9;                // Lower bound
@@ -122,6 +127,7 @@ public class LevelsSceneManager : MonoBehaviour
             LoadLevelButtons(currentScreenNumber);
 
             backSprite.sprite = centerPanelImages[currentScreenNumber - 1];
+            SwipeParticlesRun();
         }
         else
         {
@@ -134,7 +140,11 @@ public class LevelsSceneManager : MonoBehaviour
         DeleteCurrentLevelButtons();
 
         if (currentScreenNumber > 1)
+        {
             currentScreenNumber -= 1;
+            SwipeParticlesRun();
+        }
+            
 
         backSprite.sprite = centerPanelImages[currentScreenNumber - 1];
 
@@ -196,15 +206,16 @@ public class LevelsSceneManager : MonoBehaviour
                 Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
 
                 // Generate a random value between 0 and 64
-                float randomValue = UnityEngine.Random.Range(-16f, 16f);
+                //float randomValue = UnityEngine.Random.Range(-16f, 16f);
 
+                //important - distance from center
                 if (i % 2 == 0)  // Even index
                 {
-                    anchoredPosition.x += elementDimension;  // Add 10 to the x position
+                    anchoredPosition.x += elementDimension/2;  // Add 10 to the x position
                 }
                 else  // Odd index
                 {
-                    anchoredPosition.x -= elementDimension;  // Subtract 10 from the x position
+                    anchoredPosition.x -= elementDimension/2;  // Subtract 10 from the x position
                 }
 
                 //distribution
@@ -236,12 +247,11 @@ public class LevelsSceneManager : MonoBehaviour
     }
 
     private void SwipeDetector()
-    {
+    {        
         // Touch Input
         if (Input.touchCount > 0)
         {
-            Touch touch = Input.GetTouch(0);
-
+            Touch touch = Input.GetTouch(0);            
             switch (touch.phase)
             {
                 case TouchPhase.Began:
@@ -268,15 +278,6 @@ public class LevelsSceneManager : MonoBehaviour
             swipeDetected = false; // Reset for a new swipe
         }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (!swipeDetected)
-            {
-                endTouchPosition = Input.mousePosition;
-                HandleSwipe();
-                swipeDetected = true; // Mark swipe as detected
-            }
-        }
     }
 
     private bool PanelActivity()
@@ -299,8 +300,8 @@ public class LevelsSceneManager : MonoBehaviour
     {
         float verticalSwipeDistance = endTouchPosition.y - startTouchPosition.y;
 
-        // Check if the swipe distance exceeds the threshold
-        if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold)
+        // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
+        if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold && Mathf.Abs(verticalSwipeDistance) < maxSwipeLenght)
         {
             if (verticalSwipeDistance > 0)
             {
@@ -310,7 +311,24 @@ public class LevelsSceneManager : MonoBehaviour
             {
                     SwipeDown();
             }
+            
         }
+    }
+
+    private void SwipeParticlesRun()
+    {
+        // Get the mouse position in world coordinates
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = 11f; // Set a z-axis value (distance from the camera)
+        Vector3 particlePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        // Instantiate the particle effect
+        GameObject particleEffect = Instantiate(swipeParticles, particlePosition, Quaternion.identity);
+        // Optionally, ensure the particle system starts playing
+        ParticleSystem particleSystem = particleEffect.GetComponent<ParticleSystem>();
+        particleSystem.Play();
+        //Debug.Break();
+        Destroy(particleEffect, 1.9f);
     }
 
     private void SwipeUp()

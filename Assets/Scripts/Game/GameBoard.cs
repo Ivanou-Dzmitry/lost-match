@@ -121,6 +121,7 @@ public class GameBoard : MonoBehaviour
     private MatchFinder matchFinderClass;
     private ScoreManager scoreManagerClass;
     private UIManager uiManagerClass;
+    private BonusShop bonusShopClass;
 
     //arrays
     public GameObject[] elements;
@@ -264,6 +265,7 @@ public class GameBoard : MonoBehaviour
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
         //all dots on board
         allElements = new GameObject[column, row];
@@ -393,7 +395,7 @@ public class GameBoard : MonoBehaviour
         GenerateBreakable();
 
         //for naming
-        int namingCounter = 0;
+        int namingCounter = 0;      
 
         //fill board with elements
         for (int i = 0; i < column; i++)
@@ -435,11 +437,12 @@ public class GameBoard : MonoBehaviour
                     element.name = element.tag + "_c" + i + "_r" + j + "_" + namingCounter;
                                         
                     //add elements to array
-                    allElements[i, j] = element;
+                    allElements[i, j] = element;                    
                 }
             }
         }
 
+       
         //bonus cells bombs and etc.
         GenBonusCells();
 
@@ -449,7 +452,63 @@ public class GameBoard : MonoBehaviour
             GenPreloadLayout();
         }
 
+        //like color bomb
+        if(bonusShopClass.colorBusterInUse)
+            SetTimlessBuster();
+
         matchState = MatchState.matching_stop;
+    }
+
+    private void SetTimlessBuster()
+    {
+        //list for elements
+        List<ElementController> validElements = new List<ElementController>();
+
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (!emptyElement[i, j] && !blockerCells[i, j])
+                {
+                    foreach (Transform child in gameArea.transform)
+                    {
+                        // Optionally, check child position or name to match specific cells
+                        Vector3 childPosition = child.transform.position;
+
+                        // Example condition: Check if child's position matches (i, j)
+                        if (Mathf.RoundToInt(childPosition.x) == i &&
+                            Mathf.RoundToInt(childPosition.y) == j)
+                        {
+                            ElementController elemControl = child.gameObject.GetComponent<ElementController>();
+
+                            if (elemControl != null)
+                            {
+                                if (elemControl.tag != "no_tag")
+                                {
+                                    validElements.Add(elemControl);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // Randomly select one valid element to change its tag
+        if (validElements.Count > 0 && bonusShopClass.colorBusterInUse)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, validElements.Count);
+            ElementController randomElement = validElements[randomIndex];
+            
+            randomElement.GenerateColorBomb();
+
+            Debug.Log($"Convert {randomElement.gameObject.name} to ColorBomb");
+        }
+        else
+        {
+            Debug.Log("No valid elements found to change tag.");
+        }
     }
 
     //check for matching
@@ -806,7 +865,7 @@ public class GameBoard : MonoBehaviour
                     counter++;
 
                     //element.name = $"{element.tag}_{currentTime}_{counter}";
-                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;
+                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;                    
                 }
             }
         }

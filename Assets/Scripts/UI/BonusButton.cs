@@ -12,6 +12,11 @@ public class BonusButton : MonoBehaviour
     private BonusShop bonusShopClass;
     private SoundManager soundManagerClass;
 
+    [Header("Options")]
+    public bool colorizeUI = true;
+    public bool interactibleUI = true;
+    public bool maxSignUI = true;
+
     //number
     [Header("Busters")]
     public int bonusNumber;
@@ -32,8 +37,12 @@ public class BonusButton : MonoBehaviour
     private int tempBonusCount;
 
     private int bonusPrice;
-
+    
+    [Header("Count")]
     public TMP_Text bonusCountText;
+    public GameObject busterCountPanel;
+
+    [Header("Price")]
     public TMP_Text bonusPriceText;
 
     //popup
@@ -53,6 +62,12 @@ public class BonusButton : MonoBehaviour
     [Header("Particles")]
     public ParticleSystem bonusPart01;
     public ParticleSystem bonusPart02;
+
+    [Header("Time")]
+    public GameObject clockIcon;
+    public GameObject busterTimePanel;
+    public TMP_Text busterTimeText;
+
 
 
     public static readonly Color beforeBuyColor = new Color(0.902f, 0.729f, 0.859f, 1f); //default
@@ -109,13 +124,15 @@ public class BonusButton : MonoBehaviour
         {
             UpdateBonusCount();
            
-            this.GetComponent<Image>().color = beforeBuyColor;
+            //set color for button
+            if(colorizeUI)
+                this.GetComponent<Image>().color = beforeBuyColor;
 
             //max sign
             if (this.maxSign != null)
                 this.maxSign.enabled = false;
 
-            if (gameDataClass.saveData.bonuses[bonusNumber] == 0)
+            if (gameDataClass.saveData.bonuses[bonusNumber] == 0 && interactibleUI)
                 this.bonusButtonShop.GetComponent<Button>().interactable = false;
 
             //counter
@@ -166,7 +183,7 @@ public class BonusButton : MonoBehaviour
         }
 
         //turn on sign
-        if (this.maxSign != null)
+        if (this.maxSign != null && maxSignUI)
         {
             this.maxSign.enabled = (currentCount == maxCount);
         }

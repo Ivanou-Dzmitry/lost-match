@@ -21,7 +21,8 @@ public class SaveData
     public bool musicToggle;
     public float soundVolume;
     public float musicVolume;
-    public string savedTime;
+    public string lifeRecoveryTime;
+    public string colorBusterRecoveryTime;
 }
 
 public class GameData : MonoBehaviour
@@ -112,12 +113,13 @@ public class GameData : MonoBehaviour
 
         
         //set prices
-        saveData.bonusesPrice[0] = 15; //refresh
-        saveData.bonusesPrice[1] = 50; //color
-        saveData.bonusesPrice[2] = 35; //wrap
-        saveData.bonusesPrice[3] = 25; //line
-        saveData.bonusesPrice[4] = 25; //line
+        saveData.bonusesPrice[0] = 150; //refresh
+        saveData.bonusesPrice[1] = 1500; //color
+        saveData.bonusesPrice[2] = 350; //wrap
+        saveData.bonusesPrice[3] = 250; //line
+        saveData.bonusesPrice[4] = 250; //line
 
+        //for game
         saveData.bonusesPrice[5] = 100; //energy battery 1
         saveData.bonusesPrice[6] = 160; //move 1
 
@@ -131,11 +133,11 @@ public class GameData : MonoBehaviour
 
 
         //set max count
-        saveData.maxBonusCount[0] = 3;
-        saveData.maxBonusCount[1] = 5;
-        saveData.maxBonusCount[2] = 5;
-        saveData.maxBonusCount[3] = 10;
-        saveData.maxBonusCount[4] = 10;
+        saveData.maxBonusCount[0] = 2; //refresh
+        saveData.maxBonusCount[1] = 1; //color
+        saveData.maxBonusCount[2] = 3; //wrap
+        saveData.maxBonusCount[3] = 3; //line
+        saveData.maxBonusCount[4] = 3; //line
 
         saveData.maxBonusCount[5] = 5; //energy battery 1
         saveData.maxBonusCount[6] = 20; //move 1
@@ -150,7 +152,7 @@ public class GameData : MonoBehaviour
 
 
         //start=0
-        saveData.credits = 1000;
+        saveData.credits = 10000;
 
         //saveData.lives = 3;
         saveData.bonuses[5] = 5; //set lives bonus #5
@@ -162,8 +164,9 @@ public class GameData : MonoBehaviour
         saveData.musicVolume = 0.5f;
         
         //time for battery
-        saveData.savedTime = "";
-    }
+        saveData.lifeRecoveryTime = "";
+        saveData.colorBusterRecoveryTime = "";
+}
 
     private void OnDisable()
     {

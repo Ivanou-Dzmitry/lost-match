@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 
 public class BonusShop : MonoBehaviour
@@ -32,7 +33,7 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
-    private SoundManager soundManagerClass;    
+    private SoundManager soundManagerClass;   
 
     [Header("End Game Class")]
     public EndGameManager endGameManagerClass;
@@ -42,7 +43,6 @@ public class BonusShop : MonoBehaviour
     public int tempCreditsCount;
 
     private int creditsCount;
-    //private int livesCount;
     public int[] ordersCount;
 
     [Header("Shop Panel")]
@@ -69,10 +69,18 @@ public class BonusShop : MonoBehaviour
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
     private int timeLeft;
+    
+    //update 1 per sec
+    private Coroutine updateCoroutine;
+    public bool conditionLife = false;  // The condition to toggle the icon
+
 
     [Header("ClockIcons")]
-    public GameObject clockIconShop;
-    public GameObject clockIconPanel;
+    public GameObject livesBusterOnPanel;
+    public GameObject livesBusterShop;
+
+    //public GameObject timePanel;
+    //public TMP_Text timeLeftText;
 
     public TMP_Text livesCount;
 
@@ -93,6 +101,9 @@ public class BonusShop : MonoBehaviour
     public string[] bonusNameString;
     public string[] bonusDescString;
 
+    [Header("Busters")]
+    public bool colorBusterInUse;
+    private List<float> busterTime = new List<float>();
 
     private List<string> defInfoText = new List<string>();
     
@@ -104,10 +115,19 @@ public class BonusShop : MonoBehaviour
         ordersCount = new int[bonusCount];
         
         ZeroBonus();
+
+        //time for busters
+        busterTime.Add(0.2f);
+    }
+
+    void OnEnable()
+    {
+        // Start the coroutine to update once per second
+        updateCoroutine = StartCoroutine(UpdatePerSec());
     }
 
 
-        // Start is called before the first frame update
+    // Start is called before the first frame update
     void Start()
     {
         //classes        
@@ -123,8 +143,83 @@ public class BonusShop : MonoBehaviour
         //add default
         defInfoText.Add("Displays items that are available in the inventory, and purchased items");
         defInfoText.Add("Energy is needed to collect lost items");
-        defInfoText.Add("Get the required number of moves to continue the game");       
+        defInfoText.Add("Get the required number of moves to continue the game");
     }
+
+    private void RunTimlessBuster()
+    {        
+        string time = gameDataClass.saveData.colorBusterRecoveryTime;
+        colorBusterInUse = false;
+
+        if (!string.IsNullOrEmpty(time))
+        {
+            GetBusterTime(time, 1);
+        }
+
+        if (string.IsNullOrEmpty(time))
+        {
+            StartBusterTimer(1);            
+        }
+    }
+
+    public string GetBusterTime(string time, int buster)
+    {
+
+        int busterCount = gameDataClass.saveData.bonuses[buster];
+
+        DateTime recoveryEndTime;
+
+        if (DateTime.TryParse(time, out recoveryEndTime))
+        {
+            TimeSpan remainingTime = recoveryEndTime - DateTime.Now;
+
+            for(int i = 0; i<busterTime.Count; i++)
+            {
+                Debug.Log(busterTime[i]);
+            }
+
+            if (remainingTime.TotalMinutes > 0 && remainingTime.TotalMinutes < busterTime[0] && busterCount == 1)
+            {
+                colorBusterInUse = true;
+                string timeLeft = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}"; //{remainingTime.Seconds:D2}               
+                Debug.Log($"Buster in use. Time left: {timeLeft}");
+                return timeLeft;                
+            }
+            else
+            {
+                colorBusterInUse = false;
+                // Reset the colorBuster and recovery time after 30 minutes
+                gameDataClass.saveData.bonuses[buster] = 0;
+                gameDataClass.saveData.colorBusterRecoveryTime = "";                
+                gameDataClass.SaveToFile();
+                Debug.Log("Buster timer finished. Bonus reset.");
+
+                return "00:00"; // Return "00:00" if no valid time is available
+            }
+        }
+
+        return "00:00"; // Return "00:00" if no valid time is available
+    }
+
+
+    private void StartBusterTimer(int buster)
+    {
+        if (gameDataClass.saveData.bonuses[buster] == 1)
+        {
+            // Set the recovery time to 30 minutes from now
+            colorBusterInUse = true;
+            DateTime recoveryEndTime = DateTime.Now.AddMinutes(busterTime[0]);
+            gameDataClass.saveData.colorBusterRecoveryTime = recoveryEndTime.ToString();
+            gameDataClass.SaveToFile();
+
+            Debug.Log("Buster timer started");
+        }
+        else
+        {
+            Debug.Log("No buster");
+        }
+    }
+
 
     public void SetupShop()
     {
@@ -157,7 +252,13 @@ public class BonusShop : MonoBehaviour
             }
         }
 
-        if (timeManagerClass != null && clockIconPanel != null)
+        if (timeManagerClass != null)
+        {
+            string timeLeft = timeManagerClass.CheckFreeLifeConditions();
+            Debug.Log(timeLeft);
+        }
+
+   /*     if (timeManagerClass != null && clockIconPanel != null)
         {
             timeLeft = timeManagerClass.CheckConditions();
             
@@ -169,7 +270,9 @@ public class BonusShop : MonoBehaviour
             {
                 clockIconPanel.SetActive(false);
             }                
-        }
+        }*/
+
+        RunTimlessBuster();
     }
 
     public void ZeroBonus()
@@ -216,6 +319,10 @@ public class BonusShop : MonoBehaviour
         creditsCountPanelText.text = "" + gameDataClass.saveData.credits;
        
         ZeroBonus();
+
+        //timless bosters
+        if (gameDataClass.saveData.bonuses[1] > 0)
+            RunTimlessBuster();
     }
 
     public void BuyEffects()
@@ -244,7 +351,7 @@ public class BonusShop : MonoBehaviour
                 infoText.text = "The " + busterName + " was removed from the cart";
                 break;
             case "LifeWaiting":
-                infoText.text = $"{value} minutes until your energy is refilled";
+                infoText.text = $"Wait until your energy is refilled";
                 break;
             default:
                 infoText.text = "";
@@ -318,12 +425,12 @@ public class BonusShop : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (buyButton != null)
+/*        if (buyButton != null)
         {
             BuyButtonLogic();
         }
 
-        UpdateCredits(tempCreditsCount);
+        UpdateCredits(tempCreditsCount);*/
     }
 
     public void LivesClick()
@@ -419,15 +526,91 @@ public class BonusShop : MonoBehaviour
         //if timer started
         if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
         {
-            ShowInfo(timeLeft, "LifeWaiting");
-            if(clockIconShop != null)
-                clockIconShop.SetActive(true);
+            ShowInfo(0, "LifeWaiting");
         }
-        else
+
+    }
+
+
+    void OnDisable()
+    {
+        if (fadeOutCoroutine != null)
         {
-            if (clockIconShop != null)
-                clockIconShop.SetActive(false);
+            StopCoroutine(fadeOutCoroutine);
         }
+
+        // Stop the coroutine when the object is disabled
+        if (updateCoroutine != null)
+        {
+            StopCoroutine(updateCoroutine);
+        }
+    }
+
+    private IEnumerator UpdatePerSec()
+    {
+        while (true)
+        {
+
+            if (buyButton != null)
+            {
+                BuyButtonLogic();
+            }
+
+            UpdateCredits(tempCreditsCount);
             
+            if (timeManagerClass != null)
+            {
+                //get time
+                string timer = timeManagerClass.CheckFreeLifeConditions();
+
+                if (livesBusterShop != null)
+                {
+
+                    BonusButton livesBuster01 = livesBusterShop.GetComponent<BonusButton>();
+
+                    if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+                    {
+                        conditionLife = true;
+                        livesBuster01.clockIcon.SetActive(conditionLife);
+                        //livesBuster.busterCountPanel.SetActive(false);
+                        livesBuster01.busterTimePanel.SetActive(conditionLife);
+                        livesBuster01.busterTimeText.text = timer;
+                    }
+                    else
+                    {
+                        conditionLife = false;
+                        livesBuster01.clockIcon.SetActive(conditionLife);
+                        //livesBuster.busterCountPanel.SetActive(true);
+                        livesBuster01.busterTimePanel.SetActive(conditionLife);
+                        livesCount.text = "" + gameDataClass.saveData.bonuses[5];
+                    }
+                }
+
+
+                //icon on panel
+                if (livesBusterOnPanel != null)
+                {
+                    BonusButton livesBuster02 = livesBusterOnPanel.GetComponent<BonusButton>();
+
+                    if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+                    {
+                        conditionLife = true;
+                        livesBuster02.clockIcon.SetActive(conditionLife);
+                        livesBuster02.busterCountPanel.SetActive(false);
+                        livesBuster02.busterTimePanel.SetActive(conditionLife);
+                        livesBuster02.busterTimeText.text = timer;
+                    }
+                    else
+                    {
+                        livesBuster02.clockIcon.SetActive(conditionLife);
+                        livesBuster02.busterCountPanel.SetActive(true);
+                        livesBuster02.busterTimePanel.SetActive(conditionLife);
+                    }
+                }
+
+            }
+
+            yield return new WaitForSeconds(1f); // Wait for 1 second
+        }
     }
 }

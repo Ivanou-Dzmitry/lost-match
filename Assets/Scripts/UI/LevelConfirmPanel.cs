@@ -1,3 +1,5 @@
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -24,6 +26,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
     private GameData gameDataClass;
     private LevelGoals levelGoalsClass;
+    private BonusShop bonusShopClass;
 
     public List<GoalPanel> currentGoals = new List<GoalPanel>();
     public GameObject goalPrefab;
@@ -34,6 +37,11 @@ public class LevelConfirmPanel : MonoBehaviour
     [Header("GUI")]
     public GameObject confirmPanel;
 
+    [Header("Bonuses")]    
+    public GameObject buster01Prefab;
+
+    private Coroutine updateCoroutine;
+
 
     void OnEnable()
     {
@@ -42,6 +50,7 @@ public class LevelConfirmPanel : MonoBehaviour
         //classes
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
         //stars off
         for (int i = 0; i < 3; i++)
@@ -54,6 +63,51 @@ public class LevelConfirmPanel : MonoBehaviour
 
         if (levelGoalsClass != null)
             SetupIntroGoals();
+
+        // Start the coroutine when the object is enabled
+        updateCoroutine = StartCoroutine(UpdateBusterTime());
+    }
+
+    void OnDisable()
+    {
+        // Stop the coroutine when the object is disabled
+        if (updateCoroutine != null)
+        {
+            StopCoroutine(updateCoroutine);
+        }
+    }
+
+    private IEnumerator UpdateBusterTime()
+    {
+        while (true)
+        {
+            // Update the UI text once per second
+            if (bonusShopClass != null)
+            {
+                string time = gameDataClass.saveData.colorBusterRecoveryTime;
+                string buster01Time = bonusShopClass.GetBusterTime(time, 1);
+
+                if (buster01Prefab != null)
+                {
+                    BonusButton buster01 = buster01Prefab.GetComponent<BonusButton>();
+
+                    if (time != "")
+                    {
+                        buster01.busterTimePanel.SetActive(true);
+                        buster01.busterTimeText.text = "" + buster01Time;
+                        buster01.busterCountPanel.SetActive(false);
+                    }
+                    else
+                    {
+                        buster01.busterTimePanel.SetActive(false);
+                        buster01.busterCountPanel.SetActive(false);
+                    }
+
+                }
+
+            }
+            yield return new WaitForSeconds(1f); // Wait for 1 second
+        }
     }
 
     void LoadData()
@@ -85,6 +139,11 @@ public class LevelConfirmPanel : MonoBehaviour
         {
             stars[i].sprite = starOnSprite;
         }
+       
+    }
+
+    private void Update()
+    {
         
     }
 

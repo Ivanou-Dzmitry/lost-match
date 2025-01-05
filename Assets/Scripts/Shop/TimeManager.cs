@@ -26,8 +26,11 @@ public class TimeManager : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private BonusShop bonusShopClass;
+    private DateTime recoveryEndTime;
 
-    private int waitingTime = 5; //time for bonus waiting
+    private float waitingTime = 5.0f; //time for bonus waiting
+
+    public bool addLifeBonus;
 
     private void Awake()
     {
@@ -48,58 +51,62 @@ public class TimeManager : MonoBehaviour
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
-        InvokeRepeating(nameof(CheckConditions), 0f, 60f);
+        InvokeRepeating(nameof(CheckFreeLifeConditions), 0f, 1f);
     }
 
-    void SaveCurrentTime()
-    {
-        gameDataClass.saveData.savedTime = DateTime.Now.ToString("o"); // ISO 8601 format
-        gameDataClass.SaveToFile();
-    }
-
-    public int CheckConditions()
+    public string CheckFreeLifeConditions()
     {
         // Check if conditions are met
         if (gameDataClass != null)
         {
-            if (gameDataClass.saveData.bonuses[5] == 0 && gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5])
+            bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
+            int buster5Count = gameDataClass.saveData.bonuses[5];
+
+            if (buster5Count == 0 && fundsForBooster5)
             {
-                timeState = TimeState.Waiting;
+                //save time
+                if (timeState == TimeState.Idle && gameDataClass.saveData.lifeRecoveryTime == "")
+                {
+                    gameDataClass.saveData.lifeRecoveryTime = DateTime.Now.ToString();
+                }
                                     
+                timeState = TimeState.Waiting;                
                 return CheckElapsedTime();
             }
         }
 
-        return 0;
+        return "0";
     }
 
-    int CheckElapsedTime()
+    string CheckElapsedTime()
     {
-
-        if (!string.IsNullOrEmpty(gameDataClass.saveData.savedTime))
-        {
-            DateTime savedTime = DateTime.Parse(gameDataClass.saveData.savedTime);
+        string time = gameDataClass.saveData.lifeRecoveryTime;
+        
+        if (!string.IsNullOrEmpty(time))
+        {            
+            DateTime savedTime = DateTime.Parse(gameDataClass.saveData.lifeRecoveryTime);
             TimeSpan elapsed = DateTime.Now - savedTime;
 
-            int elapsedMinutes = (int)elapsed.TotalMinutes;
-            int timeLeft = Math.Max(waitingTime - elapsedMinutes, 0);
+            TimeSpan totalWaitDuration = TimeSpan.FromMinutes(waitingTime);
+            TimeSpan remainingTime = totalWaitDuration - elapsed;
+
+            string formattedTime = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";            
 
             if (elapsed.TotalMinutes >= waitingTime)
             {
                 PerformAction();
-                SaveCurrentTime(); // Reset the time after the action
             }
             else
             {
-                Debug.Log($"Not enough time has passed. Elapsed: {(int)elapsed.TotalMinutes} minutes.");                
+                Debug.Log($"Time LIFE left: {formattedTime}");
             }
 
-            return timeLeft; // Return elapsed minutes as an integer
+            return formattedTime; // Return elapsed minutes as an integer
         }
         else
         {
-            SaveCurrentTime(); // Initialize saved time if it's missing            
-            return 0;
+            gameDataClass.saveData.lifeRecoveryTime = "";
+            return "0";
         }        
     }
 
@@ -109,14 +116,12 @@ public class TimeManager : MonoBehaviour
         if(gameDataClass.saveData.bonuses[5] == 0)
             gameDataClass.saveData.bonuses[5] = 3;
 
+        //set time state
         timeState = TimeState.Idle;
         
-        //clock icon
-        if (bonusShopClass != null)
-        {
-            if(bonusShopClass.clockIconPanel != null)
-                bonusShopClass.clockIconPanel.SetActive(true);
-        }
+        //zero time
+        gameDataClass.saveData.lifeRecoveryTime = "";
+        gameDataClass.SaveToFile();
     }
 
 

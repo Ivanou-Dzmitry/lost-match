@@ -73,7 +73,7 @@ public class EndGameManager : MonoBehaviour
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
-        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
 
         SetGameType();
         SetupGame();
@@ -196,6 +196,7 @@ public class EndGameManager : MonoBehaviour
 
     public void LoseGame()
     {
+        //open moves shop
         if (tryPanel.activeSelf == false)
         {
             bonusShopClass.IntToShopType(2);
@@ -222,13 +223,13 @@ public class EndGameManager : MonoBehaviour
 
     public void ReduceLives()
     {
-        //reduce lives
-        int currentLives = gameDataClass.saveData.bonuses[5];
-
-        if (currentLives > 0)
+        int livesCount = gameDataClass.saveData.bonuses[5];
+      
+        if (livesCount > 0 && gameDataClass != null)
         {
-            currentLives = currentLives - 1;
-            gameDataClass.saveData.bonuses[5] = currentLives;
+            livesCount -= 1;
+            gameDataClass.saveData.bonuses[5] = livesCount; //minus 1 life
+            gameDataClass.SaveToFile();
         }
     }
 
@@ -252,11 +253,7 @@ public class EndGameManager : MonoBehaviour
 
             confirmPanel.SetActive(true);
 
-           // gameDataClass.saveData.levelToLoad = (gameBoardClass.level + 1);
-           // gameDataClass.SaveToFile();
-
-            SaveCredits();
-            //SceneManager.LoadScene("GameBoard");            
+            SaveCredits();          
         }
         else
         {
@@ -284,11 +281,6 @@ public class EndGameManager : MonoBehaviour
         gameDataClass.SaveToFile();
     }
 
-    private void Update()
-    {
- 
-    }
-
     public void BuyMoves()
     {
         curCounterVal = gameDataClass.saveData.bonuses[6];
@@ -300,13 +292,13 @@ public class EndGameManager : MonoBehaviour
     }
 
 
-    public void QuitAndLooseLife()
+/*    public void QuitAndLooseLife()
     {
         if (gameDataClass.saveData.bonuses[5] > 0)
         {
             gameDataClass.saveData.bonuses[5] -= 1; //minus 1 life
             gameDataClass.SaveToFile();
         }
-    }
+    }*/
 
 }

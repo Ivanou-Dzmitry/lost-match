@@ -9,7 +9,7 @@ public class ColorPalette
 {
     public static readonly Dictionary<string, Color> Colors = new Dictionary<string, Color>
     {
-        { "DarkBlue", new Color(0.196f, 0.231f, 0.4f) }, // 323B66
+        { "DarkBlue", new Color(0.196f, 0.231f, 0.4f, 1.0f) }, // 323B66
         { "DarkTeal", new Color(0.372f, 0.466f, 0.569f) }, // 5F7791
         { "VioletMed", new Color(0.831f, 0.729f, 0.902f) }, // D4BAE6
         { "LightTeal", new Color(0.729f, 0.812f, 0.902f) }, // BACFE6

@@ -835,6 +835,8 @@ public class GameBoard : MonoBehaviour
         int counter = 0;
         string currentTime = DateTime.Now.ToString("ssfff");
 
+        Debug.Log("inuse"+ bonusShopClass.colorBusterInUse);
+
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)

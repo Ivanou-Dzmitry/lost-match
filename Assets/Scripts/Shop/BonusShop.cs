@@ -59,7 +59,7 @@ public class BonusShop : MonoBehaviour
     
     public TMP_Text[] creditsCountText;
 
-    public TMP_Text creditsCountShopText; //credits in shop
+    //public TMP_Text creditsCountShopText; //credits in shop
 
     public Slider creditsCountSlider; //slider
     public Button buyButton;
@@ -85,7 +85,7 @@ public class BonusShop : MonoBehaviour
     public TMP_Text livesCount;
 
     //!important
-    int bonusCount = 11;
+    int bonusCount = 12;
 
     public ParticleSystem buyParticles01;
 
@@ -103,7 +103,10 @@ public class BonusShop : MonoBehaviour
 
     [Header("Busters")]
     public bool colorBusterInUse;
-    private List<float> busterTime = new List<float>();
+    private List<int> bustersTime = new List<int>();
+
+    public bool lineBusterInUse;
+    //private List<float> busterLineTime = new List<float>();
 
     private List<string> defInfoText = new List<string>();
     
@@ -116,8 +119,10 @@ public class BonusShop : MonoBehaviour
         
         ZeroBonus();
 
-        //time for busters
-        busterTime.Add(0.2f);
+        //time for busters and life
+        bustersTime.Add(300); //life sec
+        bustersTime.Add(300); //color sec
+        bustersTime.Add(240); //line sec
     }
 
     void OnEnable()
@@ -141,84 +146,221 @@ public class BonusShop : MonoBehaviour
         shopType = ShopType.Closed;
 
         //add default
-        defInfoText.Add("Displays items that are available in the inventory, and purchased items");
+        defInfoText.Add("Busters allow you to collect lost items faster");
         defInfoText.Add("Energy is needed to collect lost items");
         defInfoText.Add("Get the required number of moves to continue the game");
+
+        //run life timer
+        int livesCount = gameDataClass.saveData.bonuses[5];
+        bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
+        if (livesCount == 0 && fundsForBooster5)
+        {
+            timeManagerClass.CreateTimer("lifeRecovery", bustersTime[0], TimerStart, TimerEnd);            
+        }
     }
 
-    private void RunTimlessBuster()
-    {        
-        string time = gameDataClass.saveData.colorBusterRecoveryTime;
+    private void TimerStart()
+    {
+        //here
+        Debug.Log("colorBusterInUse" + colorBusterInUse);
+        Debug.Log("lineBusterInUse" + lineBusterInUse);
+    }
+
+    private void TimerEnd()
+    {
+        //for lives
+
+        string lifeTime = timeManagerClass.GetRemainingTime("lifeRecovery");
+
+        if(lifeTime != "")
+        {
+            int livesCount = gameDataClass.saveData.bonuses[5];
+            bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
+            if (livesCount == 0 && fundsForBooster5)
+            {
+                gameDataClass.saveData.bonuses[5] = 1;
+                gameDataClass.SaveToFile();
+            }
+        }
+
+        string colorTime = timeManagerClass.GetRemainingTime("colorBuster");
+        if(colorTime != "")
+        {
+            gameDataClass.saveData.bonuses[1] = 0;
+            Debug.Log("color end");
+        }
+
+
+        string lineTime = timeManagerClass.GetRemainingTime("lineBuster");
+        if(lineTime != "")
+        {
+            gameDataClass.saveData.bonuses[11] = 0;
+            Debug.Log("line end");
+        }
+
+        Debug.Log("colorBusterInUse" + colorBusterInUse);
+        Debug.Log("lineBusterInUse" + lineBusterInUse);
+    }
+
+
+    public void UseTimeBuster(string busterName)
+    {
+
+        int colorBusterCount = gameDataClass.saveData.bonuses[1];
+        if (busterName == "colorBuster" && colorBusterCount > 0)
+        {
+            timeManagerClass.CreateTimer("colorBuster", bustersTime[1], TimerStart, TimerEnd);
+            colorBusterInUse = true;
+        }
+
+        int lineBusterCount = gameDataClass.saveData.bonuses[11];
+        if (busterName == "lineBuster" && lineBusterCount > 0)
+        {
+            timeManagerClass.CreateTimer("lineBuster", bustersTime[2], TimerStart, TimerEnd);
+            lineBusterInUse = true;
+        }
+        
+    }
+
+ /*   private void RunTimlessBuster(int busterNum)
+    {
+        //color buster
+        string timeColor = gameDataClass.saveData.colorBusterRecoveryTime;
         colorBusterInUse = false;
 
-        if (!string.IsNullOrEmpty(time))
+        if (!string.IsNullOrEmpty(timeColor))
         {
-            GetBusterTime(time, 1);
+            GetBusterTime(timeColor, busterNum);
         }
 
-        if (string.IsNullOrEmpty(time))
+        if (string.IsNullOrEmpty(timeColor))
         {
-            StartBusterTimer(1);            
+            StartBusterTimer(busterNum);            
         }
-    }
 
-    public string GetBusterTime(string time, int buster)
+        //line buster
+        string timeLine = gameDataClass.saveData.lineBusterRecoveryTime;
+        lineBusterInUse = false;
+
+        if (!string.IsNullOrEmpty(timeLine))
+        {
+            GetBusterTime(timeLine, busterNum);
+        }
+
+        if (string.IsNullOrEmpty(timeLine))
+        {
+            StartBusterTimer(busterNum);
+        }
+    }*/
+
+/*    public string GetBusterTime(string time, int buster)
     {
 
         int busterCount = gameDataClass.saveData.bonuses[buster];
+        float busterTime = 0f;
 
-        DateTime recoveryEndTime;
+        if (buster == 1)
+            busterTime = bustersTime[0];
 
-        if (DateTime.TryParse(time, out recoveryEndTime))
+        if (buster == 11)
+            busterTime = bustersTime[1];
+
+        DateTime recoveryEndTime1;
+        
+
+        if (DateTime.TryParse(time, out recoveryEndTime1))
         {
-            TimeSpan remainingTime = recoveryEndTime - DateTime.Now;
+            TimeSpan remainingTime1 = recoveryEndTime1 - DateTime.Now;
 
-            for(int i = 0; i<busterTime.Count; i++)
+            if (remainingTime1.TotalMinutes > 0 && remainingTime1.TotalMinutes < busterTime && busterCount == 1)
             {
-                Debug.Log(busterTime[i]);
-            }
-
-            if (remainingTime.TotalMinutes > 0 && remainingTime.TotalMinutes < busterTime[0] && busterCount == 1)
-            {
-                colorBusterInUse = true;
-                string timeLeft = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}"; //{remainingTime.Seconds:D2}               
-                Debug.Log($"Buster in use. Time left: {timeLeft}");
+                if (buster == 1)
+                    colorBusterInUse = true;
+                
+                string timeLeft = $"{remainingTime1.Minutes:D2}:{remainingTime1.Seconds:D2}"; //{remainingTime.Seconds:D2}               
+                Debug.Log($"Buster {buster} in use. Time left: {timeLeft}");
                 return timeLeft;                
             }
             else
             {
-                colorBusterInUse = false;
-                // Reset the colorBuster and recovery time after 30 minutes
+                if (buster == 1)
+                {
+                    colorBusterInUse = false;                    
+                    gameDataClass.saveData.colorBusterRecoveryTime = "";
+                }
+
+                // Reset the colorBuster and recovery time after XXX minutes
                 gameDataClass.saveData.bonuses[buster] = 0;
-                gameDataClass.saveData.colorBusterRecoveryTime = "";                
                 gameDataClass.SaveToFile();
-                Debug.Log("Buster timer finished. Bonus reset.");
+                
+                Debug.Log($"Buster used: {buster}");
 
                 return "00:00"; // Return "00:00" if no valid time is available
             }
         }
 
+        DateTime recoveryEndTime11;
+
+        if (DateTime.TryParse(time, out recoveryEndTime11))
+        {
+            TimeSpan remainingTime11 = recoveryEndTime11 - DateTime.Now;
+
+            if (remainingTime11.TotalMinutes > 0 && remainingTime11.TotalMinutes < busterTime && busterCount == 1)
+            {
+                if (buster == 11)
+                    lineBusterInUse = true;
+
+                string timeLeft = $"{remainingTime11.Minutes:D2}:{remainingTime11.Seconds:D2}"; //{remainingTime.Seconds:D2}               
+                Debug.Log($"Buster {buster} in use. Time left: {timeLeft}");
+                return timeLeft;
+            }
+            else
+            {
+                if (buster == 11)
+                {
+                    lineBusterInUse = false;
+                    gameDataClass.saveData.lineBusterRecoveryTime = "";
+                }
+
+                // Reset the colorBuster and recovery time after XXX minutes
+                gameDataClass.saveData.bonuses[buster] = 0;
+                gameDataClass.SaveToFile();
+
+                Debug.Log($"Buster used: {buster}");
+
+                return "00:00"; // Return "00:00" if no valid time is available
+            }
+        }
+        
         return "00:00"; // Return "00:00" if no valid time is available
-    }
+    }*/
 
 
-    private void StartBusterTimer(int buster)
+/*    private void StartBusterTimer(int buster)
     {
         if (gameDataClass.saveData.bonuses[buster] == 1)
         {
-            // Set the recovery time to 30 minutes from now
-            colorBusterInUse = true;
-            DateTime recoveryEndTime = DateTime.Now.AddMinutes(busterTime[0]);
-            gameDataClass.saveData.colorBusterRecoveryTime = recoveryEndTime.ToString();
-            gameDataClass.SaveToFile();
+            if (buster == 1)
+            {
+                colorBusterInUse = true;
+                DateTime recoveryEndTime1 = DateTime.Now.AddMinutes(bustersTime[0]);
+                gameDataClass.saveData.colorBusterRecoveryTime = recoveryEndTime1.ToString();
+            }
 
-            Debug.Log("Buster timer started");
+            if (buster == 11)
+            {
+                lineBusterInUse = true;
+                DateTime recoveryEndTime11 = DateTime.Now.AddMinutes(bustersTime[1]);
+                gameDataClass.saveData.lineBusterRecoveryTime = recoveryEndTime11.ToString();
+            }
+
+            gameDataClass.SaveToFile();
         }
         else
         {
             Debug.Log("No buster");
         }
-    }
+    }*/
 
 
     public void SetupShop()
@@ -239,40 +381,28 @@ public class BonusShop : MonoBehaviour
         //main panel
         creditsCountPanelText.text = "" + creditsCount;
 
+
+        for (int i = 0; i < creditsCountText.Length; i++)
+        {
+            if (creditsCountText[i] != null)
+                creditsCountText[i].text = "" + tempCreditsCount;
+        }
+
         //in shop
-        if (creditsCountShopText != null)
+/*        if (creditsCountShopText != null)
         {
             creditsCountShopText.text = "" + tempCreditsCount;
 
-            if(creditsCountSlider != null)
-            {
-                creditsCountSlider.maxValue = tempCreditsCount;
-                creditsCountSlider.minValue = 0;
-                creditsCountSlider.value = tempCreditsCount;
-            }
-        }
-
-        if (timeManagerClass != null)
-        {
-            string timeLeft = timeManagerClass.CheckFreeLifeConditions();
-            Debug.Log(timeLeft);
-        }
-
-   /*     if (timeManagerClass != null && clockIconPanel != null)
-        {
-            timeLeft = timeManagerClass.CheckConditions();
             
-            if(timeLeft != 0)
-            {
-                clockIconPanel.SetActive(true);
-            }
-            else
-            {
-                clockIconPanel.SetActive(false);
-            }                
         }*/
 
-        RunTimlessBuster();
+        if (creditsCountSlider != null)
+        {
+            creditsCountSlider.maxValue = tempCreditsCount;
+            creditsCountSlider.minValue = 0;
+            creditsCountSlider.value = tempCreditsCount;
+        }
+
     }
 
     public void ZeroBonus()
@@ -309,20 +439,13 @@ public class BonusShop : MonoBehaviour
             }                
         }
 
-        //lives
-        //gameDataClass.saveData.lives += tempBonuses[5]; 
-
         //set credits
         gameDataClass.saveData.credits = tempCreditsCount;
 
         //update text on panel
         creditsCountPanelText.text = "" + gameDataClass.saveData.credits;
        
-        ZeroBonus();
-
-        //timless bosters
-        if (gameDataClass.saveData.bonuses[1] > 0)
-            RunTimlessBuster();
+        ZeroBonus();        
     }
 
     public void BuyEffects()
@@ -371,7 +494,7 @@ public class BonusShop : MonoBehaviour
 
     IEnumerator FadeOutText()
     {
-        Color originalColor = infoText.color;
+        Color originalColor = ColorPalette.Colors["DarkBlue"];
         float timer = 0f;
 
         while (timer < fadeDuration)
@@ -383,7 +506,15 @@ public class BonusShop : MonoBehaviour
         }
 
         // After fading out, you can hide or disable the text if needed
-        infoText.text = defInfoText[1];
+        if (shopType == ShopType.Busters)
+            infoText.text = defInfoText[0];
+
+        if (shopType == ShopType.Lives)
+            infoText.text = defInfoText[1];
+
+        if (shopType == ShopType.Moves)
+            infoText.text = defInfoText[2];
+       
         infoText.color = originalColor;
     }
 
@@ -420,17 +551,6 @@ public class BonusShop : MonoBehaviour
             }
         }
             
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-/*        if (buyButton != null)
-        {
-            BuyButtonLogic();
-        }
-
-        UpdateCredits(tempCreditsCount);*/
     }
 
     public void LivesClick()
@@ -509,6 +629,7 @@ public class BonusShop : MonoBehaviour
         GameObject infoTextObject = GameObject.FindGameObjectWithTag("ShopInfoText");
         infoText = infoTextObject.GetComponent<TMP_Text>();
 
+        //set intro text
         if (infoText != null)
         {
             if (type == ShopType.Busters)
@@ -521,12 +642,6 @@ public class BonusShop : MonoBehaviour
                 infoText.text = defInfoText[2];
 
             infoText.color = defaultInfoTextColor;
-        }
-
-        //if timer started
-        if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
-        {
-            ShowInfo(0, "LifeWaiting");
         }
 
     }
@@ -557,30 +672,30 @@ public class BonusShop : MonoBehaviour
             }
 
             UpdateCredits(tempCreditsCount);
+
+
+
             
             if (timeManagerClass != null)
             {
-                //get time
-                string timer = timeManagerClass.CheckFreeLifeConditions();
+                string lifeTime = timeManagerClass.GetRemainingTime("lifeRecovery");
 
+                //icon in shop
                 if (livesBusterShop != null)
                 {
-
                     BonusButton livesBuster01 = livesBusterShop.GetComponent<BonusButton>();
-
-                    if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+                    
+                    if (lifeTime != "")
                     {
                         conditionLife = true;
-                        livesBuster01.clockIcon.SetActive(conditionLife);
-                        //livesBuster.busterCountPanel.SetActive(false);
+                        livesBuster01.clockIcon.SetActive(conditionLife);                        
                         livesBuster01.busterTimePanel.SetActive(conditionLife);
-                        livesBuster01.busterTimeText.text = timer;
+                        livesBuster01.busterTimeText.text = lifeTime;
                     }
                     else
                     {
                         conditionLife = false;
                         livesBuster01.clockIcon.SetActive(conditionLife);
-                        //livesBuster.busterCountPanel.SetActive(true);
                         livesBuster01.busterTimePanel.SetActive(conditionLife);
                         livesCount.text = "" + gameDataClass.saveData.bonuses[5];
                     }
@@ -592,20 +707,21 @@ public class BonusShop : MonoBehaviour
                 {
                     BonusButton livesBuster02 = livesBusterOnPanel.GetComponent<BonusButton>();
 
-                    if (timeManagerClass.timeState == TimeManager.TimeState.Waiting)
+                    if (lifeTime != "")
                     {
                         conditionLife = true;
                         livesBuster02.clockIcon.SetActive(conditionLife);
                         livesBuster02.busterCountPanel.SetActive(false);
                         livesBuster02.busterTimePanel.SetActive(conditionLife);
-                        livesBuster02.busterTimeText.text = timer;
+                        livesBuster02.busterTimeText.text = lifeTime;
                     }
                     else
                     {
+                        conditionLife = false;
                         livesBuster02.clockIcon.SetActive(conditionLife);
                         livesBuster02.busterCountPanel.SetActive(true);
                         livesBuster02.busterTimePanel.SetActive(conditionLife);
-                    }
+                    }                   
                 }
 
             }

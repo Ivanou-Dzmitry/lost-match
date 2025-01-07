@@ -3,16 +3,36 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
+using static BonusShop;
 
 
 public class BonusButton : MonoBehaviour
 {
+    public enum BusterType
+    {
+        Indefinite,
+        Timless,
+        Time,
+        Bundle
+    }
+
+    public enum BusterPlace
+    {
+        Indefinite,
+        ShopBefore,
+        ConfirmPanel,
+        InGame
+    }
+
+    public BusterType busterType;
+    public BusterPlace busterPlace;
+
     //classes
     private GameData gameDataClass;
     private BonusShop bonusShopClass;
     private SoundManager soundManagerClass;
 
-    [Header("Options")]
+    [Header("UI Options")]
     public bool colorizeUI = true;
     public bool interactibleUI = true;
     public bool maxSignUI = true;
@@ -33,7 +53,7 @@ public class BonusButton : MonoBehaviour
     //buttons
     public GameObject bonusButtonShop;
 
-    private int bonusCount;
+    public int bonusCount;
     private int tempBonusCount;
 
     private int bonusPrice;
@@ -41,6 +61,7 @@ public class BonusButton : MonoBehaviour
     [Header("Count")]
     public TMP_Text bonusCountText;
     public GameObject busterCountPanel;
+    public GameObject countPanel;
 
     [Header("Price")]
     public TMP_Text bonusPriceText;
@@ -68,9 +89,12 @@ public class BonusButton : MonoBehaviour
     public GameObject busterTimePanel;
     public TMP_Text busterTimeText;
 
+    [Header("ADD")]
+    public GameObject addBusterPanel;
+    public Button addBusterButton;
+    public GameObject useBusterPanel;
 
-
-    public static readonly Color beforeBuyColor = new Color(0.902f, 0.729f, 0.859f, 1f); //default
+    public static readonly Color beforeBuyColor = new Color(1.0f, 0.929f, 0.808f, 1.0f); //default
     public static readonly Color afterBuyColor = new Color(0.729f, 0.902f, 0.8f, 1f); //when buy
 
     private float timer = 1f; // Tracks time
@@ -91,7 +115,7 @@ public class BonusButton : MonoBehaviour
             this.bonusPrice = gameDataClass.saveData.bonusesPrice[bonusNumber];
         
 
-        //set bonuce price text
+            //set bonuce price text
         if (this.bonusPriceText != null)
             this.bonusPriceText.text = "" + this.bonusPrice;
 
@@ -99,6 +123,30 @@ public class BonusButton : MonoBehaviour
             this.counterPopUpText.text = string.Empty;
 
         updInfo = true;
+
+        //clock icon
+        if (busterType == BusterType.Time)
+        {
+            //for shop
+            if (busterPlace == BusterPlace.ShopBefore)
+                clockIcon.SetActive(true);
+            
+            if(busterCountPanel != null)
+                busterCountPanel.SetActive(false);
+
+            //for confirm
+            if(busterPlace == BusterPlace.ConfirmPanel && this.bonusCount > 0)
+            {              
+                useBusterPanel.SetActive(true);
+                addBusterPanel.SetActive(false);
+            }
+        }
+
+        //hide for bundle
+        if(busterType == BusterType.Bundle)
+        {
+            countPanel.SetActive(false);
+        }
     }
 
     private void Awake()
@@ -151,15 +199,28 @@ public class BonusButton : MonoBehaviour
         // Code to execute once per second
         if (bonusShopClass.shopState == BonusShop.ShopState.Levels)
         {
-            bonusShopClass.creditsCountShopText.text = "" + bonusShopClass.tempCreditsCount;
+
+            for (int i = 0; i < bonusShopClass.creditsCountText.Length; i++)
+            {
+                if (bonusShopClass.creditsCountText[i] != null)
+                    bonusShopClass.creditsCountText[i].text = "" + bonusShopClass.tempCreditsCount;
+            }
+
+
+            //bonusShopClass.creditsCountShopText.text = "" + bonusShopClass.tempCreditsCount;
             bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
         }
 
         // for Game
         if (bonusShopClass.shopState == BonusShop.ShopState.Game)
         {
-            bonusShopClass.creditsCountShopText.text = "" + bonusShopClass.tempCreditsCount;
-            //bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
+            for (int i = 0; i < bonusShopClass.creditsCountText.Length; i++)
+            {
+                if (bonusShopClass.creditsCountText[i] != null)
+                    bonusShopClass.creditsCountText[i].text = "" + bonusShopClass.tempCreditsCount;
+            }
+
+            bonusShopClass.creditsCountSlider.value = bonusShopClass.tempCreditsCount;
         }
 
         this.bonusCount = gameDataClass.saveData.bonuses[bonusNumber];
@@ -185,7 +246,8 @@ public class BonusButton : MonoBehaviour
         //turn on sign
         if (this.maxSign != null && maxSignUI)
         {
-            this.maxSign.enabled = (currentCount == maxCount);
+            if(this.busterType != BusterType.Time)
+                this.maxSign.enabled = (currentCount == maxCount);
         }
 
       
@@ -255,7 +317,8 @@ public class BonusButton : MonoBehaviour
             if (bonusCount >= maxCount)
             {
                 bonusShopClass.ShowInfo(maxCount, "MaxCount", thisBonusButton.busterName);
-                this.maxSign.enabled = true;
+                if(this.busterType != BusterType.Time)
+                    this.maxSign.enabled = true;
             }
         }
     }
@@ -301,7 +364,8 @@ public class BonusButton : MonoBehaviour
             //mac label
             if (bonusShopClass.tempBonuses[bonus] == maxCount)
             {
-                this.maxSign.enabled = true;
+                if (this.busterType != BusterType.Time)
+                    this.maxSign.enabled = true;
             }
         }
         else
@@ -313,7 +377,8 @@ public class BonusButton : MonoBehaviour
             if (bonusCount >= maxCount)
             {
                 bonusShopClass.ShowInfo(bonusCount, "MaxCount", this.busterName);
-                this.maxSign.enabled = true;
+                if (this.busterType != BusterType.Time)
+                    this.maxSign.enabled = true;
             }
         }
 
@@ -514,6 +579,31 @@ public class BonusButton : MonoBehaviour
         }
 
         counterPopUpText.text = string.Empty;
+    }
+
+    public void OpenShop()
+    {
+        bonusShopClass.IntToShopType(0);
+    }
+
+    public void UseBuster(string busterName)
+    {
+        if (busterName == "colorBuster")
+        {
+            bonusShopClass.UseTimeBuster("colorBuster");
+        }
+
+
+        if (busterName == "lineBuster")
+        {
+            bonusShopClass.UseTimeBuster("lineBuster");
+        }
+
+        if (busterName == "null")
+        {
+            Debug.Log("Buster is not assigned");
+        }
+
     }
 
 }

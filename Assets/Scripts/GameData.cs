@@ -23,6 +23,7 @@ public class SaveData
     public float musicVolume;
     public string lifeRecoveryTime;
     public string colorBusterRecoveryTime;
+    public string lineBusterRecoveryTime;
 }
 
 public class GameData : MonoBehaviour
@@ -31,7 +32,7 @@ public class GameData : MonoBehaviour
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
 
-    private int bonusCount = 11;
+    private int bonusCount = 12;
     private int levelsCount = 21;
 
 
@@ -114,7 +115,7 @@ public class GameData : MonoBehaviour
         
         //set prices
         saveData.bonusesPrice[0] = 150; //refresh
-        saveData.bonusesPrice[1] = 1500; //color
+        saveData.bonusesPrice[1] = 1500; //color buster
         saveData.bonusesPrice[2] = 350; //wrap
         saveData.bonusesPrice[3] = 250; //line
         saveData.bonusesPrice[4] = 250; //line
@@ -131,8 +132,10 @@ public class GameData : MonoBehaviour
         saveData.bonusesPrice[9] = 270; //move x
         saveData.bonusesPrice[10] = 430; //move xx
 
+        saveData.bonusesPrice[11] = 1300; //line buster
 
-        //set max count
+
+        //set MAX COUNT
         saveData.maxBonusCount[0] = 2; //refresh
         saveData.maxBonusCount[1] = 1; //color
         saveData.maxBonusCount[2] = 3; //wrap
@@ -150,6 +153,8 @@ public class GameData : MonoBehaviour
         saveData.maxBonusCount[9] = 1; //move x
         saveData.maxBonusCount[10] = 1; //move xx
 
+        saveData.maxBonusCount[11] = 1; //line buster
+
 
         //start=0
         saveData.credits = 10000;
@@ -166,7 +171,8 @@ public class GameData : MonoBehaviour
         //time for battery
         saveData.lifeRecoveryTime = "";
         saveData.colorBusterRecoveryTime = "";
-}
+        saveData.lineBusterRecoveryTime = "";
+    }
 
     private void OnDisable()
     {

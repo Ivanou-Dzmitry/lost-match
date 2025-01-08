@@ -194,6 +194,12 @@ public class GameBoard : MonoBehaviour
 
     public Material colorBombRayMat;
 
+    [Header("Busters")]
+    public bool colorBusterInUse;
+    public bool lineBusterInUse;
+
+    private Coroutine updateCoroutine;
+
     private void Awake()
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
@@ -256,6 +262,21 @@ public class GameBoard : MonoBehaviour
 
     }
 
+    void OnEnable()
+    {
+        // Start the coroutine to update once per second
+        updateCoroutine = StartCoroutine(UpdatePerSec());
+    }
+
+    void OnDisable()
+    {
+        // Stop the coroutine when the object is disabled
+        if (updateCoroutine != null)
+        {
+            StopCoroutine(updateCoroutine);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -304,6 +325,7 @@ public class GameBoard : MonoBehaviour
 
         levelNumberTxt.text = "Level " + (level + 1);
 
+        //color bomb
         createdLines.Clear();
     }
 
@@ -452,8 +474,9 @@ public class GameBoard : MonoBehaviour
             GenPreloadLayout();
         }
 
+
         //like color bomb
-        if(bonusShopClass.colorBusterInUse)
+        if (colorBusterInUse)
             SetTimlessBuster();
 
         matchState = MatchState.matching_stop;
@@ -496,7 +519,7 @@ public class GameBoard : MonoBehaviour
 
 
         // Randomly select one valid element to change its tag
-        if (validElements.Count > 0 && bonusShopClass.colorBusterInUse)
+        if (validElements.Count > 0 && colorBusterInUse)
         {
             int randomIndex = UnityEngine.Random.Range(0, validElements.Count);
             ElementController randomElement = validElements[randomIndex];
@@ -834,8 +857,6 @@ public class GameBoard : MonoBehaviour
     {
         int counter = 0;
         string currentTime = DateTime.Now.ToString("ssfff");
-
-        Debug.Log("inuse"+ bonusShopClass.colorBusterInUse);
 
         for (int i = 0; i < column; i++)
         {
@@ -1585,5 +1606,21 @@ public class GameBoard : MonoBehaviour
         // Destroy the line object after fading
         Destroy(lineObject);
     }
+
+    private IEnumerator UpdatePerSec()
+    {
+        while (true)
+        {
+            //for busters
+            if (gameDataClass != null)
+            {
+                colorBusterInUse = gameDataClass.saveData.colorBusterRecoveryTime != "";
+                lineBusterInUse = gameDataClass.saveData.lineBusterRecoveryTime != "";
+            }
+
+            yield return new WaitForSeconds(1f); // Wait for 1 second
+        }        
+    }
+
 
 }

@@ -43,6 +43,10 @@ public class LevelsSceneManager : MonoBehaviour
     [Header("Particles")]
     public GameObject swipeParticles;
 
+    [Header("Scroll")]
+    public ScrollRect scrollRect;
+    private float previousScrollValue = 0f;
+
     [Header("DEbug")]
     public TMP_Text levelTxt;
 
@@ -305,11 +309,11 @@ public class LevelsSceneManager : MonoBehaviour
         {
             if (verticalSwipeDistance > 0)
             {
-                    SwipeUp();
+                   // SwipeUp();
             }
             else
             {
-                    SwipeDown();
+                   // SwipeDown();
             }
             
         }
@@ -334,13 +338,32 @@ public class LevelsSceneManager : MonoBehaviour
     private void SwipeUp()
     {
         
-        Previous10Levels();
+       // Previous10Levels();
     }
 
     private void SwipeDown()
     {
-        Next10Levels();
+        //Next10Levels();
     }
 
+
+    public void OnScroll()
+    {
+        float currentScrollValue = scrollRect.verticalNormalizedPosition;
+
+        if (currentScrollValue > previousScrollValue)
+        {
+            Previous10Levels();
+            // Run your "scrolling up" code here
+        }
+        else if (currentScrollValue < previousScrollValue)
+        {
+            Next10Levels();
+            // Run your "scrolling down" code here
+        }
+
+        // Update the previous scroll value
+        previousScrollValue = currentScrollValue;
+    }
 
 }

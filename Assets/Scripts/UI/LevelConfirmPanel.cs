@@ -42,6 +42,9 @@ public class LevelConfirmPanel : MonoBehaviour
     public GameObject buster01Prefab;
     public GameObject buster11Prefab;
 
+    private BonusButton buster01;
+    private BonusButton buster11;
+
     private Coroutine updateCoroutine;
 
 
@@ -67,6 +70,9 @@ public class LevelConfirmPanel : MonoBehaviour
         if (levelGoalsClass != null)
             SetupIntroGoals();
 
+        buster01 = buster01Prefab.GetComponent<BonusButton>();
+        buster11 = buster11Prefab.GetComponent<BonusButton>();
+
         // Start the coroutine when the object is enabled
         updateCoroutine = StartCoroutine(UpdateBusterTime());
     }
@@ -90,7 +96,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
                 if (buster01Prefab != null)
                 {
-                    BonusButton buster01 = buster01Prefab.GetComponent<BonusButton>();
+                    
                     string time1 = timeManagerClass.GetRemainingTime("colorBuster");
 
                     if (buster01.bonusCount > 0 && time1 == "")
@@ -109,12 +115,10 @@ public class LevelConfirmPanel : MonoBehaviour
                         buster01.busterTimeText.text = "" + time1;
                         buster01.addBusterPanel.SetActive(false);
                         buster01.clockIcon.SetActive(true);
-                        bonusShopClass.colorBusterInUse = true;
                     }
                     else
                     {
                         buster01.busterTimePanel.SetActive(false);
-                        bonusShopClass.colorBusterInUse = false;
                         if (buster01.bonusCount == 0)
                         {
                             buster01.addBusterPanel.SetActive(true);
@@ -129,8 +133,7 @@ public class LevelConfirmPanel : MonoBehaviour
                 }
 
                 if (buster11Prefab != null)
-                {
-                    BonusButton buster11 = buster11Prefab.GetComponent<BonusButton>();
+                {                    
                     string time11 = timeManagerClass.GetRemainingTime("lineBuster");
 
                     if (buster11.bonusCount > 0 && time11 == "")
@@ -149,12 +152,10 @@ public class LevelConfirmPanel : MonoBehaviour
                         buster11.busterTimeText.text = "" + time11;
                         buster11.addBusterPanel.SetActive(false);
                         buster11.clockIcon.SetActive(true);
-                        bonusShopClass.lineBusterInUse = true;
                     }
                     else
                     {
                         buster11.busterTimePanel.SetActive(false);
-                        bonusShopClass.lineBusterInUse = false;
 
                         if (buster11.bonusCount == 0)
                         {
@@ -168,53 +169,6 @@ public class LevelConfirmPanel : MonoBehaviour
                         buster11.clockIcon.SetActive(false);
                     }
                 }
-
-                //buster 1
-                    /*                string time = gameDataClass.saveData.colorBusterRecoveryTime;
-                                    string buster01Time = bonusShopClass.GetBusterTime(time, 1);
-
-                                    if (buster01Prefab != null)
-                                    {
-                                        BonusButton buster01 = buster01Prefab.GetComponent<BonusButton>();
-
-                                        if (time != "")
-                                        {
-                                            buster01.busterTimePanel.SetActive(true);
-                                            buster01.busterTimeText.text = "" + buster01Time;
-                                            buster01.busterCountPanel.SetActive(false);
-                                            buster01.addBusterPanel.SetActive(false);
-                                        }
-                                        else
-                                        {
-                                            buster01.busterTimePanel.SetActive(false);
-                                            buster01.busterCountPanel.SetActive(false);
-                                            buster01.addBusterPanel.SetActive(true);
-                                        }
-                                    }*/
-
-                    //buster 11
-                    /*                string time11 = gameDataClass.saveData.lineBusterRecoveryTime;
-                                    string buster11Time = bonusShopClass.GetBusterTime(time11, 11);
-
-                                    if (buster11Prefab != null)
-                                    {
-                                        BonusButton buster11 = buster11Prefab.GetComponent<BonusButton>();
-
-                                        if (time11 != "")
-                                        {
-                                            buster11.busterTimePanel.SetActive(true);
-                                            buster11.busterTimeText.text = "" + buster11Time;
-                                            buster11.busterCountPanel.SetActive(false);
-                                            buster11.addBusterPanel.SetActive(false);
-                                        }
-                                        else
-                                        {
-                                            buster11.busterTimePanel.SetActive(false);
-                                            buster11.busterCountPanel.SetActive(false);
-                                            buster11.addBusterPanel.SetActive(true);
-                                        }
-                                    }*/
-
             }
             yield return new WaitForSeconds(1f); // Wait for 1 second
         }

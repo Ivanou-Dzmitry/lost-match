@@ -61,55 +61,46 @@ public class TimeManager : MonoBehaviour
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
 
+        RestoreSavedTimers();
+
         InvokeRepeating(nameof(CheckTimers), 0f, 1f);
     }
 
     public void CreateTimer(string timerName, int durationInSeconds, Action onStart, Action onComplete)
     {
-        // Check if a timer with this name already exists
-        if (timers.ContainsKey(timerName))
+        if (!timers.ContainsKey(timerName))
         {
-            Debug.LogWarning($"Timer {timerName} already exists!");
-            return;
-        }
+            DateTime endTime = DateTime.Now.AddSeconds(durationInSeconds);
 
-        DateTime startTime;
+            timers[timerName] = new Timer
+            {
+                StartTime = DateTime.Now,
+                DurationInSeconds = durationInSeconds,
+                OnStart = onStart, // Optional
+                OnComplete = onComplete
+            };
 
-        // Check saved time in gameDataClass.saveData
-        string savedTime = GetSavedTimerTime(timerName);
-        if (!string.IsNullOrEmpty(savedTime) && DateTime.TryParse(savedTime, out startTime))
-        {
-            Debug.Log($"Restoring timer {timerName} with saved start time: {startTime}");
+            // Save the end time instead of the start time
+            if (timerName == "colorBuster")
+                gameDataClass.saveData.colorBusterRecoveryTime = endTime.ToString();
+            else if (timerName == "lineBuster")
+                gameDataClass.saveData.lineBusterRecoveryTime = endTime.ToString();
+            else if (timerName == "lifeRecovery")
+                gameDataClass.saveData.lifeRecoveryTime = endTime.ToString();
+
+            gameDataClass.SaveToFile(); // Persist changes
+            Debug.Log($"Created timer {timerName} with duration {durationInSeconds} seconds.");
         }
         else
         {
-            // Start a new timer if no valid saved time
-            startTime = DateTime.Now;
-            if(gameDataClass != null && timerName != null)
-                SaveTimerStartTime(timerName, startTime);
-            Debug.Log($"Creating new timer {timerName} starting at: {startTime}");
-        }
-
-        // Create and store the timer
-        Timer timer = new Timer
-        {
-            StartTime = startTime,
-            DurationInSeconds = durationInSeconds,
-            OnStart = onStart,
-            OnComplete = onComplete
-        };
-
-        timers[timerName] = timer;
-
-        // Execute OnStart action if it's a new timer
-        if (savedTime == "")
-        {
-            timer.OnStart?.Invoke();
+            Debug.LogWarning($"Timer {timerName} already exists.");
         }
     }
 
     private void CheckTimers()
     {
+        Debug.Log("Checking timers...");
+
         List<string> completedTimers = new List<string>();
 
         foreach (var timerEntry in timers)
@@ -130,8 +121,7 @@ public class TimeManager : MonoBehaviour
         foreach (string timerName in completedTimers)
         {
             timers.Remove(timerName);
-            if (gameDataClass != null && timerName != null)
-                ClearTimerStartTime(timerName);
+            ClearTimerStartTime(timerName);
             Debug.Log($"Timer {timerName} completed and removed.");
         }
     }
@@ -147,7 +137,8 @@ public class TimeManager : MonoBehaviour
             int minutes = remainingSeconds / 60;
             int seconds = remainingSeconds % 60;
 
-            return $"{minutes:D2}:{seconds:D2}";
+            if (remainingSeconds > 0)
+                return $"{minutes:D2}:{seconds:D2}";
         }
 
         return ""; // Default value if timer doesn't exist
@@ -171,11 +162,19 @@ public class TimeManager : MonoBehaviour
     private void ClearTimerStartTime(string timerName)
     {
         if (timerName == "colorBuster")
+        {
             gameDataClass.saveData.colorBusterRecoveryTime = "";
+            gameDataClass.saveData.bonuses[1] = 0;
+        }            
         else if (timerName == "lineBuster")
+        {
             gameDataClass.saveData.lineBusterRecoveryTime = "";
+            gameDataClass.saveData.bonuses[11] = 0;
+        }            
         else if (timerName == "lifeRecovery")
+        {
             gameDataClass.saveData.lifeRecoveryTime = "";
+        }            
 
         // Save data to file or persistent storage
         gameDataClass.SaveToFile();
@@ -193,75 +192,39 @@ public class TimeManager : MonoBehaviour
         return ""; // Default for unknown timer names
     }
 
-    /*    public string CheckFreeLifeConditions()
+    private void RestoreSavedTimers()
+    {
+        RestoreTimer("colorBuster", gameDataClass.saveData.colorBusterRecoveryTime, () => Debug.Log("Color Buster timer completed!"));
+        RestoreTimer("lineBuster", gameDataClass.saveData.lineBusterRecoveryTime, () => Debug.Log("Line Buster timer completed!"));
+        RestoreTimer("lifeRecovery", gameDataClass.saveData.lifeRecoveryTime, () => Debug.Log("Life Recovery timer completed!"));
+    }
+
+    private void RestoreTimer(string timerName, string savedEndTime, Action onComplete)
+    {
+        if (!string.IsNullOrEmpty(savedEndTime) && DateTime.TryParse(savedEndTime, out DateTime endTime))
         {
-            // Check if conditions are met
-            if (gameDataClass != null)
+            TimeSpan remainingTime = endTime - DateTime.Now;
+
+            if (remainingTime.TotalSeconds > 0)
             {
-                bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
-                int buster5Count = gameDataClass.saveData.bonuses[5];
-
-                if (buster5Count == 0 && fundsForBooster5)
+                timers[timerName] = new Timer
                 {
-                    //save time
-                    if (timeState == TimeState.Idle && gameDataClass.saveData.lifeRecoveryTime == "")
-                    {
-                        gameDataClass.saveData.lifeRecoveryTime = DateTime.Now.ToString();
-                    }
+                    StartTime = DateTime.Now, // The new start time for the timer
+                    DurationInSeconds = (int)remainingTime.TotalSeconds,
+                    OnStart = null, // Optional if you don't need OnStart here
+                    OnComplete = onComplete
+                };
 
-                    timeState = TimeState.Waiting;                
-                    return CheckElapsedTime();
-                }
-            }
-
-            return "0";
-        }
-
-        string CheckElapsedTime()
-        {
-            string time = gameDataClass.saveData.lifeRecoveryTime;
-
-            if (!string.IsNullOrEmpty(time))
-            {            
-                DateTime savedTime = DateTime.Parse(gameDataClass.saveData.lifeRecoveryTime);
-                TimeSpan elapsed = DateTime.Now - savedTime;
-
-                TimeSpan totalWaitDuration = TimeSpan.FromMinutes(waitingTime);
-                TimeSpan remainingTime = totalWaitDuration - elapsed;
-
-                string formattedTime = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";            
-
-                if (elapsed.TotalMinutes >= waitingTime)
-                {
-                    PerformAction();
-                }
-                else
-                {
-                    Debug.Log($"Time LIFE left: {formattedTime}");
-                }
-
-                return formattedTime; // Return elapsed minutes as an integer
+                Debug.Log($"Restored timer {timerName} with {remainingTime.TotalSeconds} seconds remaining.");
             }
             else
             {
-                gameDataClass.saveData.lifeRecoveryTime = "";
-                return "0";
-            }        
+                // Timer already expired
+                onComplete?.Invoke();
+                ClearTimerStartTime(timerName);
+                Debug.Log($"Timer {timerName} already expired.");
+            }
         }
-
-        void PerformAction()
-        {
-            //add life
-            if(gameDataClass.saveData.bonuses[5] == 0)
-                gameDataClass.saveData.bonuses[5] = 3;
-
-            //set time state
-            timeState = TimeState.Idle;
-
-            //zero time
-            gameDataClass.saveData.lifeRecoveryTime = "";
-            gameDataClass.SaveToFile();
-        }*/
-
+    }
 
 }

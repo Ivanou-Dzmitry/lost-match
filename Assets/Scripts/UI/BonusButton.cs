@@ -134,6 +134,9 @@ public class BonusButton : MonoBehaviour
             if(busterCountPanel != null)
                 busterCountPanel.SetActive(false);
 
+            if (isBundle)
+                countPanel.SetActive(false);
+
             //for confirm
             if(busterPlace == BusterPlace.ConfirmPanel && this.bonusCount > 0)
             {              
@@ -454,7 +457,6 @@ public class BonusButton : MonoBehaviour
             UpdateBonusCount();
             updInfo = false;  
         }
-
     }
 
     public void BonusParticleManager(bool mode)

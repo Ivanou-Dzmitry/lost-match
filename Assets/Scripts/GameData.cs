@@ -33,7 +33,7 @@ public class GameData : MonoBehaviour
     public string fileName = "lm_player_saves.json";
 
     private int bonusCount = 12;
-    private int levelsCount = 21;
+    private int levelsCount = 51; //important
 
 
     private void Awake()

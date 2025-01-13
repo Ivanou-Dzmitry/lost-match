@@ -116,7 +116,7 @@ public class BonusShop : MonoBehaviour
         ZeroBonus();
 
         //time for busters and life
-        bustersTime.Add(300); //life sec
+        bustersTime.Add(30); //life sec
         bustersTime.Add(300); //color sec
         bustersTime.Add(240); //line sec
     }
@@ -170,24 +170,21 @@ public class BonusShop : MonoBehaviour
             bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
             if (livesCount == 0 && fundsForBooster5)
             {
-                gameDataClass.saveData.bonuses[5] = 1;
-                gameDataClass.SaveToFile();
+                BusterUpdate(5);
             }
         }
 
         string colorTime = timeManagerClass.GetRemainingTime("colorBuster");
         if(colorTime == "")
         {
-            gameDataClass.saveData.bonuses[1] = 0;
-            gameDataClass.SaveToFile();
+            BusterUpdate(5);
         }
 
 
         string lineTime = timeManagerClass.GetRemainingTime("lineBuster");
         if(lineTime == "")
         {
-            gameDataClass.saveData.bonuses[11] = 0;
-            gameDataClass.SaveToFile();
+            BusterUpdate(11);
         }
      
     }
@@ -569,6 +566,30 @@ public class BonusShop : MonoBehaviour
             }
 
             yield return new WaitForSeconds(1f); // Wait for 1 second
+        }
+    }
+
+    public void BusterUpdate(int busterNumber)
+    {
+        switch (busterNumber)
+        {
+            case 1:
+                gameDataClass.saveData.bonuses[busterNumber] = 0;
+                gameDataClass.saveData.colorBusterRecoveryTime = "";
+                gameDataClass.SaveToFile();
+                break;
+            case 11:
+                gameDataClass.saveData.bonuses[11] = 0;
+                gameDataClass.saveData.lineBusterRecoveryTime = "";
+                gameDataClass.SaveToFile();
+                break;
+            case 5:
+                gameDataClass.saveData.bonuses[busterNumber] = 1;
+                gameDataClass.saveData.lifeRecoveryTime = "";
+                gameDataClass.SaveToFile();
+                break;
+            default:
+                break;
         }
     }
 }

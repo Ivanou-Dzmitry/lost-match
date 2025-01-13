@@ -8,7 +8,7 @@ public class LevelButton : MonoBehaviour
 {
     [Header("Stuff")]
     public bool isActive;
-    private Button myButton;
+   //private Button myButton;
     private int activeStars;
 
     [Header("Confirm Panel UI")]
@@ -21,6 +21,11 @@ public class LevelButton : MonoBehaviour
     [Header("Stars")]
     public Sprite starOffSprite;
     public Sprite starOnSprite;
+
+    [Header("Materials")]
+    public Material materialOn;
+    public Material materialOff;
+    public MeshRenderer buttonMesh;
 
     //classes
     private GameData gameDataClass;
@@ -37,7 +42,7 @@ public class LevelButton : MonoBehaviour
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
 
-        myButton = GetComponentInChildren<Button>();
+        //myButton = GetComponentInChildren<Button>();
         animatorElement = GetComponent<Animator>();
 
         LoadData();
@@ -53,16 +58,22 @@ public class LevelButton : MonoBehaviour
             if (gameDataClass.saveData.isActive[level - 1])
             {
                 isActive = true;
-                animatorElement.SetTrigger("LevelOn");
-                float randomSpeed = Random.Range(0.5f, 1f);
-                animatorElement.SetFloat("Speed", randomSpeed);
+                if(animatorElement != null)
+                {
+                    animatorElement.SetTrigger("LevelOn");
+                    float randomSpeed = Random.Range(0.5f, 1f);
+                    animatorElement.SetFloat("Speed", randomSpeed);
+                }
             }
             else
             {
                 isActive = false;
-                animatorElement.SetTrigger("LevelOff");
-                float randomSpeed = Random.Range(0.5f, 1f);
-                animatorElement.SetFloat("Speed", randomSpeed);
+                if (animatorElement != null)
+                {
+                    animatorElement.SetTrigger("LevelOff");
+                    float randomSpeed = Random.Range(0.5f, 1f);
+                    animatorElement.SetFloat("Speed", randomSpeed);
+                }
             }
         }
 
@@ -80,7 +91,8 @@ public class LevelButton : MonoBehaviour
             //show stars
             for (int i = 0; i < activeStars; i++)
             {
-                stars[i].sprite = starOnSprite;
+                if(stars[i] != null)
+                    stars[i].sprite = starOnSprite;
             }
         }
                
@@ -90,14 +102,24 @@ public class LevelButton : MonoBehaviour
     {
         if (isActive)
         {
-            myButton.interactable = true;
             levelText.enabled = true;
             levelText.text = "" + level;
         }
         else
-        {
-            myButton.interactable = false;
+        {         
             levelText.enabled = false;
+        }
+
+        Material[] materials = buttonMesh.materials;
+
+        if (materials.Length > 0)
+        {
+            materials[0] = isActive ? materialOn : materialOff;
+            buttonMesh.materials = materials; // Reassign the modified array back
+        }
+        else
+        {
+            Debug.LogWarning("No materials found on buttonMesh!");
         }
     }
 
@@ -106,7 +128,8 @@ public class LevelButton : MonoBehaviour
         //show stars
         for (int i = 0; i < activeStars; i++)
         {
-            stars[i].sprite = starOnSprite;
+            if (stars[i]!=null)
+                stars[i].sprite = starOnSprite;
         }
     }
 

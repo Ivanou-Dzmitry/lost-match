@@ -163,17 +163,15 @@ public class TimeManager : MonoBehaviour
     {
         if (timerName == "colorBuster")
         {
-            gameDataClass.saveData.colorBusterRecoveryTime = "";
-            gameDataClass.saveData.bonuses[1] = 0;
+            bonusShopClass.BusterUpdate(1);
         }            
         else if (timerName == "lineBuster")
         {
-            gameDataClass.saveData.lineBusterRecoveryTime = "";
-            gameDataClass.saveData.bonuses[11] = 0;
+            bonusShopClass.BusterUpdate(11);
         }            
         else if (timerName == "lifeRecovery")
         {
-            gameDataClass.saveData.lifeRecoveryTime = "";
+            bonusShopClass.BusterUpdate(5);            
         }            
 
         // Save data to file or persistent storage

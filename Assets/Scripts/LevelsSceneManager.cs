@@ -2,6 +2,11 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using Unity.VisualScripting;
+
 
 public class LevelsSceneManager : MonoBehaviour
 {
@@ -17,13 +22,17 @@ public class LevelsSceneManager : MonoBehaviour
 
     [Header("Load Levels")]
     public GameObject levelButtonPrefab; // Assign the prefab in the Inspector
+    public GameObject levelButton3DPrefab; // Assign the prefab in the Inspector
+    public Transform parentTransform3D;
+    public GameObject levelBackSegment;
+
     public Transform parentTransform;   // Assign the parent transform for layout in the Inspector
     public GameObject panelWithButtons;
 
     [Header("Panels")]  
     public GameObject[] allPanelsList;
 
-    private int elementsPadding;
+    //private int elementsPadding;
 
     //for swipe
     private Vector2 startTouchPosition;
@@ -32,11 +41,12 @@ public class LevelsSceneManager : MonoBehaviour
     private float maxSwipeLenght = 100.0f;
 
     private bool swipeDetected = false; // Prevent repeated triggers
+    private bool isRotating = false; // Track if rotation is in progress
 
     [Header("Center Panel")]
     public GameObject centerPanel;
     public Sprite[] centerPanelImages;
-    private Image backSprite;
+    //private Image backSprite;
 
     //public Button[] centerPanelButtons;
 
@@ -49,6 +59,25 @@ public class LevelsSceneManager : MonoBehaviour
 
     [Header("DEbug")]
     public TMP_Text levelTxt;
+
+    public GameObject cylinder; // Reference to your cylinder object
+    public float rotationAmount = 45f; // Rotation amount in degrees
+    public float rotationSpeed = 5f; // Speed for smooth rotation
+    private float targetRotationX;     // Desired X-axis rotation
+    private float currentRotationX = 0f;
+    
+    private float oneStep; // 45+45=1
+    private int totalSteps;
+
+    //private float rotationRange = 90;
+
+    private GameObject segmentUnder;
+    private GameObject segmentCurrent;
+    private GameObject segmentAbove;
+
+    public List<GameObject> segmentsList = new List<GameObject>(); // Empty list
+
+    private Coroutine rotationCoroutine = null; // To manage the rotation coroutine
 
     // Start is called before the first frame update
     void Start()
@@ -72,8 +101,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
 
             //get levels count
-            levelsCount = gameDataClass.saveData.isActive.Length;
-            //Debug.Log(levelsCount +"/"+lastLevel);
+            levelsCount = gameDataClass.saveData.isActive.Length;            
         }
 
         if (soundManagerClass != null)
@@ -83,23 +111,66 @@ public class LevelsSceneManager : MonoBehaviour
 
         DeleteCurrentLevelButtons();
 
-        currentScreenNumber = GetRoundedValue(lastLevel, 10);        
+        currentScreenNumber = GetRoundedValue(lastLevel, 10);
+        levelTxt.text = "Map " + currentScreenNumber;
 
-        LoadLevelButtons(currentScreenNumber);
+        oneStep = 0;
 
         // get back image
-        backSprite = centerPanel.GetComponent<Image>();
-        backSprite.sprite = centerPanelImages[currentScreenNumber-1];
+        /*        backSprite = centerPanel.GetComponent<Image>();
+                backSprite.sprite = centerPanelImages[currentScreenNumber-1];*/
+
+        // Initialize the previous scroll value and target rotation
+        if (scrollRect != null)
+            previousScrollValue = scrollRect.verticalNormalizedPosition;
+
+        if (cylinder != null)
+        {
+            currentRotationX = cylinder.transform.localEulerAngles.x;
+            targetRotationX = cylinder.transform.eulerAngles.x;
+            cylinder.transform.eulerAngles = new Vector3(targetRotationX, 0f, 0f); // Fix initial orientation
+
+            SegmentInsnaciate(90, "levels02");            
+            SegmentInsnaciate(0, "levels01");            
+            SegmentInsnaciate(-90, "levels02");
+        }
+
+        totalSteps = 0;
+
+        LoadLevelButtons(currentScreenNumber, segmentsList[1].transform, 0);
+
+        Debug.Log(currentScreenNumber + "/-" + totalSteps + "/-" + targetRotationX + "/-" + oneStep);
     }
 
-    public void LoadLevelButtons(int currentScreenNumber)
+    private void SegmentInsnaciate(float rotation, string matName, int sN=-1)
+    {
+        Quaternion segRotation = Quaternion.Euler(rotation, 0f, 0f); // 90 degrees on X-axis
+        GameObject segment = Instantiate(levelBackSegment, parentTransform3D.position, segRotation);
+        segment.transform.SetParent(parentTransform3D);
+        segment.transform.localScale = Vector3.one;  // (1, 1, 1)
+        segment.name = "seg_" + matName +"_" + rotation + "_" + totalSteps;
+
+        string pathToMaterial = "Materials/For_levels/" + matName;
+
+        AdssignMaterial(pathToMaterial, segment);
+
+        if (sN == -1) 
+        {
+            segmentsList.Add(segment);
+        }
+        else
+        {
+            segmentsList.Insert(sN, segment);
+        }
+        
+    }
+
+    public void LoadLevelButtons(int currentScreenNumber, Transform parentTransform, float rotation)
     {
         int startNumber = currentScreenNumber * 10;      // Upper bound
         int endNumber = startNumber - 9;                // Lower bound
 
-        InstantiateLevelButtons(startNumber, endNumber);
-
-        levelTxt.text = "Map " + currentScreenNumber;
+        InstantiateLevelButtons(startNumber, endNumber, parentTransform, rotation);        
     }
 
     int GetRoundedValue(int numerator, int denominator)
@@ -116,128 +187,152 @@ public class LevelsSceneManager : MonoBehaviour
         {
             Destroy(button);
         }
+
+        GameObject[] levelButtons3D = GameObject.FindGameObjectsWithTag("LevelButton3D");
+
+        foreach (GameObject button in levelButtons3D)
+        {
+            Destroy(button);
+        }
     }
 
-    public void  Next10Levels()
-    {        
+    public void  NextLevels()
+    {       
         currentScreenNumber += 1;
-        
         int startNumber = currentScreenNumber * 10;
-        
-        //if levels exists
-        if(startNumber <= levelsCount)
-        {
-            DeleteCurrentLevelButtons();
-            LoadLevelButtons(currentScreenNumber);
+        currentScreenNumber -= 1;
 
-            backSprite.sprite = centerPanelImages[currentScreenNumber - 1];
-            SwipeParticlesRun();
+        //if levels exists
+        if (startNumber <= levelsCount)
+        {
+
+            if (startNumber < levelsCount)
+            {
+                targetRotationX -= rotationAmount;
+                oneStep += rotationAmount;
+                totalSteps ++;
+
+                InstanciateFunc(true, 180, "levels02", 0);
+            }
+            
+            Debug.Log("oneStep: " + oneStep);
+
+            if (oneStep == 90)
+            {
+                currentScreenNumber ++;                
+                oneStep = 0;
+                DeleteChildrenWithTag(segmentsList[2], "LevelButton3D");
+                levelTxt.text = "Map " + currentScreenNumber;
+            }
+
+            if (oneStep == 45)
+            {
+                int nextLevelNumber = currentScreenNumber + 1;
+                LoadLevelButtons(nextLevelNumber, segmentsList[1].transform, 90);
+            }
+
+                Rotator();            
         }
         else
         {
-            currentScreenNumber -= 1; //return curent screen number
-        }               
+            //currentScreenNumber -= 1; //return curent screen number
+            //startNumber = currentScreenNumber * 10;
+            DeleteChildrenWithTag(segmentsList[2], "LevelButton3D");
+        }
+
+        Debug.Log("Next" + currentScreenNumber + "/" + totalSteps + "/" + targetRotationX + "/" + oneStep);
     }
 
-    public void Previous10Levels()
+    public void PreviousLevels()
     {
-        DeleteCurrentLevelButtons();
+      //  Debug.Log(currentScreenNumber +"/"+ totalSteps + "/"+ targetRotationX + "/" + oneStep);
+
 
         if (currentScreenNumber > 1)
-        {
-            currentScreenNumber -= 1;
-            SwipeParticlesRun();
+        {                                   
+            targetRotationX += rotationAmount;
+            oneStep += rotationAmount;
+            totalSteps --;
+
+            InstanciateFunc(false, -180, "levels01", 2);
+
+            if (oneStep == 90)
+            {
+                //DeleteCurrentLevelButtons();
+                currentScreenNumber -= 1;
+                levelTxt.text = "Map " + currentScreenNumber;
+                oneStep = 0;
+
+                DeleteChildrenWithTag(segmentsList[0], "LevelButton3D");
+            }
+
+            if (oneStep == 45)
+            {
+                LoadLevelButtons(currentScreenNumber - 1, segmentsList[1].transform, -90);
+            }
+
+            Rotator();
         }
-            
+        else
+        {
+            //cylinder.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
+            targetRotationX += 0;            
+            currentScreenNumber = 1;
+            //oneStep = 0;
+            DeleteChildrenWithTag(segmentsList[0], "LevelButton3D");
+        }
 
-        backSprite.sprite = centerPanelImages[currentScreenNumber - 1];
-
-        LoadLevelButtons(currentScreenNumber);
+        Debug.Log("Out:" + currentScreenNumber + "/" + totalSteps + "/" + targetRotationX + "/" + oneStep);
     }
 
-    void InstantiateLevelButtons(int startNumber, int endNumber)
+    private void InstanciateFunc(bool isNext, float rotation, string materialName, int insertIndex)
+    {
+        if (totalSteps % 2 != 0)
+        {
+            RemoveSegment(isNext, rotation, materialName, insertIndex);
+        }
+    }
+
+    void InstantiateLevelButtons(int startNumber, int endNumber, Transform parentTrnasform, float rotation)
     {
         //centerPanelButtons = null;
 
+        float startRotation = 5f; // Starting rotation on the X-axis
+        float rotationStep = -9f;    // Decrement step for each object
+
+        float xOffsetEven = 0.30f;   // X-axis offset for even indices
+        float xOffsetOdd = -0.30f;   // X-axis offset for odd indices
+
         for (int i = startNumber; i >= endNumber; i--)
         {
-            // Instantiate the prefab
-            GameObject newButton = Instantiate(levelButtonPrefab, parentTransform);
+            //3d
+            GameObject new3DButton = Instantiate(levelButton3DPrefab, parentTrnasform);
+            new3DButton.name = "Button3d_" + i;   
+            
+            float currentRotation = (startRotation + (endNumber - i) * rotationStep) + rotation;
 
-            //Get transform
-            RectTransform rectTransform = newButton.GetComponent<RectTransform>();
+            new3DButton.transform.rotation = Quaternion.Euler(currentRotation, 0, 0);
+            new3DButton.tag = "LevelButton3D";
 
-            float elementDimension = 128; //default
+            // Calculate the X-axis offset
+            float xOffset = (i % 2 == 0) ? xOffsetEven : xOffsetOdd;
 
-            elementsPadding = 0;
+            // Apply the position offset
+            Vector3 currentPosition = new3DButton.transform.position;
+            new3DButton.transform.position = new Vector3(currentPosition.x + xOffset, currentPosition.y, currentPosition.z);
 
-            VerticalLayoutGroup layoutGroup = panelWithButtons.GetComponent<VerticalLayoutGroup>();
+            LevelButton levelButtonScript3D = new3DButton.GetComponent<LevelButton>();
 
-            //get padding
-            elementsPadding = (int)(layoutGroup.spacing);
-
-            //get size panel.y/10
-            elementDimension = (uiManagerClass.LevelButtonsPanelSize()/10) - elementsPadding; //dimension
-
-            if (rectTransform != null)
+            if (levelButtonScript3D != null && new3DButton.tag == "LevelButton3D")
             {
-                // Set the width and height
-                rectTransform.sizeDelta = new Vector2(elementDimension, elementDimension); // Example: width = 200, height = 100
-            }
-
-            //naming and tagging
-            newButton.name = "LevelButton_" + i;
-            newButton.tag = "LevelButton";
-
-            // Access the LevelButton script on the instantiated prefab
-            LevelButton levelButtonScript = newButton.GetComponent<LevelButton>();
-
-            if (levelButtonScript != null)
-            {
-                // Set the Level value
-                levelButtonScript.level = i;
-
-                // Set the ConfirmPanel reference
-                levelButtonScript.confirmPanel = allPanelsList[0];
-
-                //get final button
-                Button buttonComponent = newButton.GetComponentInChildren<Button>();
-
-                RectTransform buttonRectTransform = buttonComponent.GetComponent<RectTransform>();
-                buttonRectTransform.sizeDelta = new Vector2(elementDimension, elementDimension);
-
-                // Get the anchored position of the button
-                Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
-
-                // Generate a random value between 0 and 64
-                //float randomValue = UnityEngine.Random.Range(-16f, 16f);
-
-                //important - distance from center
-                if (i % 2 == 0)  // Even index
-                {
-                    anchoredPosition.x += elementDimension/2;  // Add 10 to the x position
-                }
-                else  // Odd index
-                {
-                    anchoredPosition.x -= elementDimension/2;  // Subtract 10 from the x position
-                }
-
-                //distribution
-                buttonRectTransform.anchoredPosition = anchoredPosition;
-
-                //set action for open
-                if (buttonComponent != null)
-                {
-                    buttonComponent.onClick = new Button.ButtonClickedEvent();                    
-                    buttonComponent.onClick.AddListener(() => levelButtonScript.ShowConfirmPanel(levelButtonScript.level)); // Add listener
-                }
+                levelButtonScript3D.level = i;
+                levelButtonScript3D.confirmPanel = allPanelsList[0];
             }
             else
             {
-                Debug.LogWarning("The prefab does not have a LevelButton script attached.");
+                Debug.LogWarning("The 3D prefab does not have a LevelButton script attached.");
             }
-        }
-       
+        }  
     }
 
 
@@ -247,11 +342,35 @@ public class LevelsSceneManager : MonoBehaviour
         panelsActivity = PanelActivity();
         
         if (panelsActivity == false)
-            SwipeDetector();        
+            SwipeDetector();
+
+        if (Input.GetMouseButtonDown(0)) // Detect left mouse button click
+        {
+            // Create a ray from the camera through the mouse position
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Perform the raycast
+            if (Physics.Raycast(ray, out hit))
+            {
+                //Debug.Log("Click"+ ray + "/ "+ hit.collider.gameObject.name);
+                // Check if the clicked object is the plane
+                if (hit.collider.gameObject.name != null) // Assuming this script is on the plane
+                {
+                    LevelButton lb = hit.collider.gameObject.GetComponent<LevelButton>();
+
+                    if (lb != null && lb.isActive)
+                    {
+                        lb.ShowConfirmPanel(lb.level);
+                    }                    
+                }
+            }
+        }
+
     }
 
     private void SwipeDetector()
-    {        
+    {
         // Touch Input
         if (Input.touchCount > 0)
         {
@@ -307,63 +426,117 @@ public class LevelsSceneManager : MonoBehaviour
         // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
         if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold && Mathf.Abs(verticalSwipeDistance) < maxSwipeLenght)
         {
+            rotationCoroutine = null;
+
             if (verticalSwipeDistance > 0)
             {
-                   // SwipeUp();
+                Debug.Log("Previous Levels");
+                PreviousLevels();                
             }
             else
             {
-                   // SwipeDown();
+                Debug.Log("Next Levels");
+                NextLevels();
             }
-            
         }
     }
 
-    private void SwipeParticlesRun()
+    private void Rotator()
     {
-        // Get the mouse position in world coordinates
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = 11f; // Set a z-axis value (distance from the camera)
-        Vector3 particlePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
-        // Instantiate the particle effect
-        GameObject particleEffect = Instantiate(swipeParticles, particlePosition, Quaternion.identity);
-        // Optionally, ensure the particle system starts playing
-        ParticleSystem particleSystem = particleEffect.GetComponent<ParticleSystem>();
-        particleSystem.Play();
-        //Debug.Break();
-        Destroy(particleEffect, 1.9f);
-    }
-
-    private void SwipeUp()
-    {
-        
-       // Previous10Levels();
-    }
-
-    private void SwipeDown()
-    {
-        //Next10Levels();
-    }
-
-
-    public void OnScroll()
-    {
-        float currentScrollValue = scrollRect.verticalNormalizedPosition;
-
-        if (currentScrollValue > previousScrollValue)
+        if (rotationCoroutine != null)
         {
-            Previous10Levels();
-            // Run your "scrolling up" code here
-        }
-        else if (currentScrollValue < previousScrollValue)
-        {
-            Next10Levels();
-            // Run your "scrolling down" code here
+            StopCoroutine(rotationCoroutine); // Stop the current rotation if it's ongoing
         }
 
-        // Update the previous scroll value
-        previousScrollValue = currentScrollValue;
+        rotationCoroutine = StartCoroutine(SmoothRotate());
+    }
+
+    private IEnumerator SmoothRotate()
+    {
+        isRotating = true;
+
+        while (Mathf.Abs(Mathf.DeltaAngle(currentRotationX, targetRotationX)) > 0.1f)
+        {
+            // Interpolate towards the target rotation
+            currentRotationX = Mathf.Lerp(currentRotationX, targetRotationX, Time.deltaTime * rotationSpeed);
+
+            // Apply the rotation
+            cylinder.transform.localRotation = Quaternion.Euler(new Vector3(currentRotationX, 0f, 0f));
+
+            yield return null; // Wait for the next frame
+        }
+
+        isRotating = false;
+
+        // Snap to the exact target rotation at the end
+        currentRotationX = Mathf.Round(targetRotationX / 45f) * 45f; // Ensure it's an exact multiple of 45
+        cylinder.transform.localRotation = Quaternion.Euler(new Vector3(currentRotationX, 0f, 0f));
+
+        rotationCoroutine = null;
+    }
+
+
+    public void AdssignMaterial(string materialPath, GameObject gameObj)
+    {
+        // Load the material from the Resources folder using the given materialPath
+        Material newMaterial = Resources.Load<Material>(materialPath);
+
+        if (newMaterial != null)
+        {
+            // Get the MeshRenderer from the segmentAbove (including child objects)
+            MeshRenderer segmentRenderer = gameObj.GetComponentInChildren<MeshRenderer>();
+
+            if (segmentRenderer != null)
+            {
+                // Access and modify the materials array
+                Material[] materials = segmentRenderer.materials;
+                if (materials.Length > 0)
+                {
+                    materials[0] = newMaterial; // Set the first material to the new material
+                    segmentRenderer.materials = materials; // Reassign the array back to the renderer
+                }
+            }
+            else
+            {
+                Debug.LogWarning("MeshRenderer not found on the instantiated object.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Material not found! Ensure it's in a 'Resources' folder at path: " + materialPath);
+        }
+    }
+
+    void RemoveSegment(bool isNext, float rotation, string materialName, int insertIndex)
+    {
+        int segmentIndexToRemove = isNext ? segmentsList.Count - 1 : 0;
+
+        // Remove and destroy the specified segment
+        GameObject segmentToRemove = segmentsList[segmentIndexToRemove];
+        segmentsList.RemoveAt(segmentIndexToRemove);
+        Destroy(segmentToRemove);
+
+        // Add a new segment at the specified index
+        SegmentInsnaciate(rotation, materialName, insertIndex);
+
+        // Update segment names
+        segmentsList[0].name = "above";
+        segmentsList[1].name = "current";
+        segmentsList[2].name = "under";
+    }
+
+    void DeleteChildrenWithTag(GameObject parentObject, string tagToMatch)
+    {
+        // Loop through all child objects of the parent
+        foreach (Transform child in parentObject.transform)
+        {
+            // Check if the child's tag matches the specified tag
+            if (child.CompareTag(tagToMatch))
+            {
+                // Destroy the child GameObject
+                Destroy(child.gameObject);
+            }
+        }
     }
 
 }

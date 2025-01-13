@@ -63,7 +63,7 @@ public class EndGameManager : MonoBehaviour
     public Button retryLooseButton;
     public AudioClip loseMusic;
 
-    public int finalLevelNumber = 10; //!Important
+    public int finalLevelNumber = 50; //!Important
 
     // Start is called before the first frame update
     void Start()

@@ -53,10 +53,24 @@ public class GameData : MonoBehaviour
 
     public void SaveToFile()
     {
-        string savingData = JsonUtility.ToJson(gameData.saveData, true);
-        string filePath = Path.Combine(Application.persistentDataPath, fileName);
+        if (gameData == null || gameData.saveData == null)
+        {
+            Debug.LogError("gameData or gameData.saveData is null. Cannot save to file.");
+            return;
+        }
 
-        File.WriteAllText(filePath, savingData);
+        try
+        {
+            string savingData = JsonUtility.ToJson(gameData.saveData, true);
+            string filePath = Path.Combine(Application.persistentDataPath, fileName);
+
+            File.WriteAllText(filePath, savingData);
+            Debug.Log("Game data saved successfully to: " + filePath);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error while saving game data: " + ex.Message);
+        }
     }
 
     public void LoadFromFile()

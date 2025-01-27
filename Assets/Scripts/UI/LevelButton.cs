@@ -12,15 +12,20 @@ public class LevelButton : MonoBehaviour
     private int activeStars;
 
     [Header("Confirm Panel UI")]
-    public Image[] stars;
+    //public Image[] stars;
+
+    public GameObject[] stars3D;
+    public Material starOnMaterial;  // Active star material
+    public Material starOffMaterial;  // Inactive star material
+
     public GameObject starsPanel;
     public TMP_Text levelText;    
     public int level;
     public GameObject confirmPanel;
 
-    [Header("Stars")]
+/*    [Header("Stars")]
     public Sprite starOffSprite;
-    public Sprite starOnSprite;
+    public Sprite starOnSprite;*/
 
     [Header("Materials")]
     public Material materialOn;
@@ -33,7 +38,7 @@ public class LevelButton : MonoBehaviour
     private BonusShop bonusShopClass;
 
     [Header("Animation")]
-    private Animator animatorElement;
+    private Animator animatorElement;   
 
     // Start is called before the first frame update
     void Start()
@@ -47,17 +52,22 @@ public class LevelButton : MonoBehaviour
 
         LoadData();
         ChooseSprite();
-        ActivateStars();        
+        ActivateStars();
+
+        //fix
+        Material material = levelText.fontMaterial;
+        material.renderQueue = 3002;
     }
 
     void LoadData()
     {
         //game data check
-        if (gameDataClass != null)
+        if (gameDataClass != null && level > 0 && level <= gameDataClass.saveData.isActive.Length)
         {
             if (gameDataClass.saveData.isActive[level - 1])
             {
                 isActive = true;
+
                 if(animatorElement != null)
                 {
                     animatorElement.SetTrigger("LevelOn");
@@ -68,6 +78,7 @@ public class LevelButton : MonoBehaviour
             else
             {
                 isActive = false;
+
                 if (animatorElement != null)
                 {
                     animatorElement.SetTrigger("LevelOff");
@@ -78,25 +89,44 @@ public class LevelButton : MonoBehaviour
         }
 
         //active stars
-        activeStars = gameDataClass.saveData.stars[level - 1];
+        if (gameDataClass != null && level > 0 && level <= gameDataClass.saveData.isActive.Length)
+        {
+            SetStarMaterials();
+        }                           
+    }
 
+
+    void SetStarMaterials()
+    {
+        // Get the number of active stars for the current level
+        int activeStars = gameDataClass.saveData.stars[level - 1]; // Ensure level index is valid
+
+        // Deactivate starsPanel if no stars are active
         if (activeStars == 0)
         {
             starsPanel.SetActive(false);
+            return;
         }
-        else
+
+        // Activate starsPanel in case it's deactivated and there are stars
+        starsPanel.SetActive(true);
+
+        // Loop through the stars and set materials accordingly
+        for (int i = 0; i < stars3D.Length; i++)
         {
-            starsPanel.SetActive(true);
-            
-            //show stars
-            for (int i = 0; i < activeStars; i++)
+            if (i < activeStars)
             {
-                if(stars[i] != null)
-                    stars[i].sprite = starOnSprite;
+                // Set active material for stars within the active count
+                stars3D[i].GetComponent<MeshRenderer>().materials = new Material[] { starOnMaterial };
+            }
+            else
+            {
+                // Set inactive material for remaining stars
+                stars3D[i].GetComponent<MeshRenderer>().materials = new Material[] { starOffMaterial };
             }
         }
-               
     }
+
 
     void ChooseSprite()
     {
@@ -128,8 +158,8 @@ public class LevelButton : MonoBehaviour
         //show stars
         for (int i = 0; i < activeStars; i++)
         {
-            if (stars[i]!=null)
-                stars[i].sprite = starOnSprite;
+            if (stars3D[i] != null)
+                stars3D[i].SetActive(true);
         }
     }
 

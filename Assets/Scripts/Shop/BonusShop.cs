@@ -33,7 +33,8 @@ public class BonusShop : MonoBehaviour
     //classes
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
-    private SoundManager soundManagerClass;   
+    private SoundManager soundManagerClass;
+    private GameBoard gameBoardClass;
 
     [Header("End Game Class")]
     public EndGameManager endGameManagerClass;
@@ -108,6 +109,10 @@ public class BonusShop : MonoBehaviour
     
     private Color defaultInfoTextColor = new Color(0.196f, 0.231f, 0.4f, 1.0f);
 
+    [Header("Covers Buster Buttons")]
+    public GameObject coverL;
+    public GameObject coverR;
+
     private void Awake()
     {
         tempBonuses = new int[bonusCount];
@@ -117,8 +122,8 @@ public class BonusShop : MonoBehaviour
 
         //time for busters and life
         bustersTime.Add(30); //life sec
-        bustersTime.Add(300); //color sec
-        bustersTime.Add(240); //line sec
+        bustersTime.Add(600); //color sec 60x?
+        bustersTime.Add(500); //line sec 60x?
     }
 
     void OnEnable()
@@ -231,14 +236,6 @@ public class BonusShop : MonoBehaviour
             if (creditsCountText[i] != null)
                 creditsCountText[i].text = "" + tempCreditsCount;
         }
-
-        //in shop
-/*        if (creditsCountShopText != null)
-        {
-            creditsCountShopText.text = "" + tempCreditsCount;
-
-            
-        }*/
 
         if (creditsCountSlider != null)
         {
@@ -488,8 +485,41 @@ public class BonusShop : MonoBehaviour
             infoText.color = defaultInfoTextColor;
         }
 
+        CoverTimeButtons(type);
+
+
     }
 
+    private void CoverTimeButtons(ShopType type)
+    {
+        GameBoard gameBoardClass = GameObject.FindWithTag("GameBoard")?.GetComponent<GameBoard>();
+
+        if (gameBoardClass != null && type == ShopType.Busters && shopState == ShopState.Game)
+        {
+            Image coverImgR = coverR != null ? coverR.GetComponent<Image>() : null;
+            Image coverImgL = coverL != null ? coverL.GetComponent<Image>() : null;
+
+            if (coverImgR != null)            
+                coverImgR.enabled = false;
+            
+            if (coverImgL != null)            
+                coverImgL.enabled = false;            
+
+            foreach (GameObject button in GameObject.FindGameObjectsWithTag("BonusButton"))
+            {
+                BonusButton bBtn = button.GetComponent<BonusButton>();
+
+                if (bBtn?.busterType == BonusButton.BusterType.Time && gameBoardClass.currentState != GameState.win)
+                {
+                    if (coverImgR != null)
+                        coverImgR.enabled = true;
+
+                    if (coverImgL != null)
+                        coverImgL.enabled = true;
+                }
+            }
+        }
+    }
 
     void OnDisable()
     {

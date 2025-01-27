@@ -122,6 +122,7 @@ public class GameBoard : MonoBehaviour
     private ScoreManager scoreManagerClass;
     private UIManager uiManagerClass;
     private BonusShop bonusShopClass;
+    private EndGameManager endGameManagerClass;
 
     //arrays
     public GameObject[] elements;
@@ -287,6 +288,7 @@ public class GameBoard : MonoBehaviour
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
 
         //all dots on board
         allElements = new GameObject[column, row];
@@ -476,7 +478,7 @@ public class GameBoard : MonoBehaviour
 
 
         //like color bomb
-        if (colorBusterInUse)
+        if (colorBusterInUse || lineBusterInUse)
             SetTimlessBuster();
 
         matchState = MatchState.matching_stop;
@@ -532,6 +534,29 @@ public class GameBoard : MonoBehaviour
         {
             Debug.Log("No valid elements found to change tag.");
         }
+
+        //for line
+        if (validElements.Count > 0 && lineBusterInUse)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, validElements.Count);
+            ElementController randomElement = validElements[randomIndex];
+
+            if (UnityEngine.Random.Range(0, 2) == 0)
+            {
+                randomElement.GenerateColumnBomb();
+            }
+            else
+            {
+                randomElement.GenerateRowBomb();
+            }
+
+            Debug.Log($"Convert {randomElement.gameObject.name} to line bomb");
+        }
+        else
+        {
+            Debug.Log("No valid elements found to change tag.");
+        }
+
     }
 
     //check for matching
@@ -950,6 +975,13 @@ public class GameBoard : MonoBehaviour
         matchState = MatchState.matching_stop;
 
         goalManagerClass.UpdateGoals();
+
+        //run buster generator
+        if (endGameManagerClass.curCounterVal % 10 == 0)
+        {
+            if (colorBusterInUse || lineBusterInUse)
+                SetTimlessBuster();
+        }
     }
 
 

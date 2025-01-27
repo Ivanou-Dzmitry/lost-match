@@ -86,6 +86,25 @@ public class LevelConfirmPanel : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        bool isBonus1Ready = (bonusShopClass != null && buster01Prefab != null);
+        bool isBonus11Ready = (bonusShopClass != null && buster11Prefab != null);
+
+        if (isBonus1Ready)
+        {
+            if (buster01.bonusCount == 0)
+                buster01.useBusterPanel.SetActive(false);
+        }
+
+
+        if (isBonus11Ready)
+        {
+            if (buster11.bonusCount == 0)
+                buster11.useBusterPanel.SetActive(false);
+        }
+    }
+
     private IEnumerator UpdateBusterTime()
     {
         while (true)
@@ -195,7 +214,15 @@ public class LevelConfirmPanel : MonoBehaviour
         //confirmPanel.SetActive(true);
 
         //set text
-        highScoreText.text = "Records: " + highScore + " items, " + activeStars + " stars";
+        if(highScore > 0)
+        {
+            highScoreText.text = "Records: " + highScore + " items, " + activeStars + " stars";
+        }
+        else
+        {
+            highScoreText.text = "There are no records set at this level yet";
+        }
+        
         headerText.text = "LEVEL " + level;
 
         //stars turn on

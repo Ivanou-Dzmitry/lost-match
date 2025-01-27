@@ -31,6 +31,7 @@ public class BonusButton : MonoBehaviour
     private GameData gameDataClass;
     private BonusShop bonusShopClass;
     private SoundManager soundManagerClass;
+    private GameBoard gameBoardClass;
 
     [Header("UI Options")]
     public bool colorizeUI = true;
@@ -108,7 +109,14 @@ public class BonusButton : MonoBehaviour
         bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
 
-        UpdateBonusCount();
+        //avoid crash in levels
+        GameObject gameBoardObject = GameObject.FindWithTag("GameBoard");
+        if (gameBoardObject != null)
+        {
+            gameBoardClass = gameBoardObject.GetComponent<GameBoard>();
+        }
+
+            UpdateBonusCount();
 
         //set bonuce price
         if (gameDataClass.saveData.bonusesPrice != null)
@@ -260,6 +268,16 @@ public class BonusButton : MonoBehaviour
             //for last bonus
             if (bonusShopClass.shopState != BonusShop.ShopState.SetLastBonus)
                 this.bonusButtonShop.GetComponent<Button>().interactable = false;
+
+            bool isShopStateBonusSet = bonusShopClass.shopState != BonusShop.ShopState.SetBonus
+                           && bonusShopClass.shopState != BonusShop.ShopState.SetLastBonus;
+
+            //down busters in game
+            if (busterPlace == BusterPlace.InGame && this.addBusterPanel!=null && isShopStateBonusSet)
+            {
+                this.addBusterPanel.SetActive(true);
+            }
+            
         }
         else if (totalBonusCount > 0)
         {
@@ -269,6 +287,12 @@ public class BonusButton : MonoBehaviour
             //for last bonus
             if (bonusShopClass.shopState == BonusShop.ShopState.SetLastBonus)
                 this.bonusButtonShop.GetComponent<Button>().interactable = false;
+
+            //down busters in game
+            if (busterPlace == BusterPlace.InGame && this.addBusterPanel != null)
+            {
+                this.addBusterPanel.SetActive(false);
+            }
         }
 
     }
@@ -585,7 +609,27 @@ public class BonusButton : MonoBehaviour
 
     public void OpenShop()
     {
-        bonusShopClass.IntToShopType(0);
+        
+        if(gameBoardClass != null && bonusShopClass.shopState == ShopState.Game)
+        {
+            //for game
+            if (gameBoardClass.currentState == GameState.move)
+            {
+                bonusShopClass.IntToShopType(0); //open buster
+            }
+
+            //for win
+            if (gameBoardClass.currentState == GameState.win && gameBoardClass.matchState == MatchState.matching_stop)
+            {
+                bonusShopClass.IntToShopType(0);
+            }
+        }
+
+        //for levels
+        if (bonusShopClass.shopState == ShopState.Levels)
+        {
+            bonusShopClass.IntToShopType(0);
+        }
     }
 
     public void UseBuster(string busterName)

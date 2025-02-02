@@ -1405,7 +1405,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 512, y: 128}
+  m_SizeDelta: {x: 512, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5038472090533857495
 CanvasRenderer:
@@ -1462,10 +1462,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
-  m_fontSizeBase: 68.2
+  m_fontSize: 100
+  m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -3017,7 +3017,7 @@ MonoBehaviour:
   helpTxt:
   - Touch a Lost item and swipe it with your finger. Match 3 items of the same color
     to clear them.
-  - Match 4 or 5 items in different formations to generate busters!
+  - Match 4 or 5 items in different formations to generate boosters!
   - Combine busters by switching them with each other for enhance the effect
   helpImg:
   - {fileID: 21300000, guid: ef71a6aa7ae7a6046b33e9e8030feeac, type: 3}

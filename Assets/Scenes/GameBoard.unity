@@ -7000,6 +7000,8 @@ MonoBehaviour:
   break02Prefab: {fileID: 6527145333783162085, guid: d2be65300a6fd62419d5cacfdd279929, type: 3}
   blocker01Prefab: {fileID: 1127882633959337833, guid: 152ce459b2662cb4b9b7a02396b53827, type: 3}
   blocker02Prefab: {fileID: 1127882633959337833, guid: bd38daa07bf95f8499f65d29809cfdb9, type: 3}
+  expand01Prefab: {fileID: 0}
+  locker01Prefab: {fileID: 4965281490884118044, guid: eb6ce12b1aa70d1498c830df64c3a3a8, type: 3}
   minMatchForBomb: 4
   createdLines: []
   colorBombRayMat: {fileID: 2100000, guid: c9fab8a5642f6cf42b444410c3d4a66e, type: 2}
@@ -10629,8 +10631,6 @@ MonoBehaviour:
   congratPart:
   - {fileID: 2071755704}
   - {fileID: 495248032}
-  levelNumberLose: {fileID: 0}
-  creditsCountLose: {fileID: 0}
   retryLooseButton: {fileID: 0}
   loseMusic: {fileID: 8300000, guid: f399316b9345fc44bacbbbe01324fc06, type: 3}
   finalLevelNumber: 10

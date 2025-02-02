@@ -58,8 +58,8 @@ public class EndGameManager : MonoBehaviour
     public ParticleSystem[] congratPart;
 
     [Header("Lose Panel")]
-    public TMP_Text levelNumberLose;
-    public TMP_Text creditsCountLose;
+    //public TMP_Text levelNumberLose;
+    //public TMP_Text creditsCountLose;
     public Button retryLooseButton;
     public AudioClip loseMusic;
 
@@ -202,13 +202,14 @@ public class EndGameManager : MonoBehaviour
             bonusShopClass.IntToShopType(2);
         }           
 
-        levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);
+/*        if(levelNumberLose !=null)
+            levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);*/
 
         //stop animation
         AlarmAnimation(curCounterVal, false);
 
-        int currentCreditsCount = scoreManagerClass.score;
-        creditsCountLose.text = "You collect " + currentCreditsCount;
+/*        int currentCreditsCount = scoreManagerClass.score;
+        creditsCountLose.text = "You collect " + currentCreditsCount;*/
 
         //zero moves
         curCounterVal = 0;

@@ -39,7 +39,9 @@ public enum TileKind
     WrapBomb,
     ColorBomb,
     Breakable01,
-    Breakable02
+    Breakable02,
+    Locked01,
+    Expanding01
 }
 
 //type of matches
@@ -148,11 +150,15 @@ public class GameBoard : MonoBehaviour
     public GameObject break02Prefab;
     public GameObject blocker01Prefab;
     public GameObject blocker02Prefab;
-    //public GameObject expand01Prefab;
-    //public GameObject locker01Prefab;
+    public GameObject expand01Prefab;
+    public GameObject locker01Prefab;
 
     //for lock
     public SpecialElements[,] lockedCells;
+
+    //for lock
+    public SpecialElements[,] expandCells;
+
 
     //for blockers
     public SpecialElements[,] blockerCells;
@@ -176,6 +182,8 @@ public class GameBoard : MonoBehaviour
     private Dictionary<TileKind, int> preloadDict;
     private Dictionary<TileKind, GameObject> breacableDict;
     private Dictionary<TileKind, GameObject> blockersDict;
+    private Dictionary<TileKind, GameObject> lockersDict; //lockers
+    private Dictionary<TileKind, GameObject> expandDict; //expand
 
     [Header("ColorBomb Staff")]
     //for colorbomb
@@ -244,6 +252,19 @@ public class GameBoard : MonoBehaviour
             { TileKind.Blocker02, blocker02Prefab }
         };
 
+        //for lockers
+        lockersDict = new Dictionary<TileKind, GameObject>
+        {
+            { TileKind.Locked01, locker01Prefab }            
+        };
+
+        //for expand
+        expandDict = new Dictionary<TileKind, GameObject>
+        {
+            { TileKind.Expanding01, expand01Prefab }
+        };
+
+
         // Initialize the dictionary for preload elements
         preloadDict = new Dictionary<TileKind, int>
         {
@@ -297,6 +318,7 @@ public class GameBoard : MonoBehaviour
         blockerCells = new SpecialElements[column, row];
         lockedCells = new SpecialElements[column, row];
         breakableCells = new SpecialElements[column, row];
+        expandCells = new SpecialElements[column, row];
 
         //boms
         bombsCells = new ElementController[column, row];
@@ -411,12 +433,48 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    private void GenerateLocked()
+    {
+        int namingCounter = 0;
+
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+            TileKind kind = boardLayout[i].tileKind;
+
+            if (lockersDict.ContainsKey(kind))
+            {
+                Vector2 tempPos = new Vector2(boardLayout[i].columnX, boardLayout[i].rowY);
+
+                
+                GameObject lockedPrefab = lockersDict[kind];
+
+                if(lockedPrefab != null)
+                {
+                    GameObject lockedElement = Instantiate(lockedPrefab, tempPos, Quaternion.identity);
+
+                    if (lockedElement != null)
+                    {
+                        lockedCells[boardLayout[i].columnX, boardLayout[i].rowY] = lockedElement.GetComponent<SpecialElements>();
+
+                        namingCounter++;
+
+                        string elementName = lockedPrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
+                        lockedElement.name = elementName;
+
+                        lockedElement.transform.parent = gameArea.transform;
+                    }
+                }
+            }
+        }
+    }
+
 
     private void SetUpBoard()
     {
         GenerateEmptyElements();
         GenerateBlockers();
         GenerateBreakable();
+        GenerateLocked();
 
         //for naming
         int namingCounter = 0;      
@@ -838,7 +896,18 @@ public class GameBoard : MonoBehaviour
                 goalManagerClass.UpdateGoals();
             }
 
-            
+
+            //lockers
+            if (lockedCells[thisColumn, thisRow] != null)
+            {
+                lockedCells[thisColumn, thisRow].TakeDamage(1);
+
+                if (lockedCells[thisColumn, thisRow].hitPoints <= 0)
+                {
+                    lockedCells[thisColumn, thisRow] = null;
+                }
+            }
+
 
             //for blockers
             DamageBlockers(thisColumn, thisRow);            

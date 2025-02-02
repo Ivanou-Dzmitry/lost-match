@@ -252,20 +252,28 @@ public class ElementController : MonoBehaviour
         previousRow = row;
         previousColumn = column;
 
-        if (otherElement != null)
+        if (gameBoardClass.lockedCells[column, row] == null && gameBoardClass.lockedCells[column + (int)direction.x, row + (int)direction.y] == null)
         {
-            otherElement.GetComponent<ElementController>().column += -1 * (int)direction.x;
-            otherElement.GetComponent<ElementController>().row += -1 * (int)direction.y;
+            if (otherElement != null)
+            {
+                otherElement.GetComponent<ElementController>().column += -1 * (int)direction.x;
+                otherElement.GetComponent<ElementController>().row += -1 * (int)direction.y;
 
-            column += (int)direction.x;
-            row += (int)direction.y;
+                column += (int)direction.x;
+                row += (int)direction.y;
 
-            StartCoroutine(CheckMoveCo()); // work with element part 4
+                StartCoroutine(CheckMoveCo()); // work with element part 4
+            }
+            else
+            {
+                gameBoardClass.currentState = GameState.move;
+            }
         }
         else
         {
             gameBoardClass.currentState = GameState.move;
         }
+
     }
 
     private void ColorBombRaysCooker(Vector2 startPoint)

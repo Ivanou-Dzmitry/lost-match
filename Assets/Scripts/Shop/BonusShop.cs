@@ -147,7 +147,7 @@ public class BonusShop : MonoBehaviour
         shopType = ShopType.Closed;
 
         //add default
-        defInfoText.Add("Busters allow you to collect lost items faster");
+        defInfoText.Add("Boosters allow you to collect lost items faster");
         defInfoText.Add("Energy is needed to collect lost items");
         defInfoText.Add("Get the required number of moves to continue the game");
 
@@ -445,7 +445,7 @@ public class BonusShop : MonoBehaviour
         if (type == ShopType.Busters)
         {
             shopPanel[0].SetActive(true);
-            shopName[0].text = "BUSTERS";
+            shopName[0].text = "BOOSTERS";
             shopType = ShopType.Busters;
         }
         //for lives shop

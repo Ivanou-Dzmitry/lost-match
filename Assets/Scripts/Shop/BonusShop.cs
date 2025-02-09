@@ -43,6 +43,8 @@ public class BonusShop : MonoBehaviour
     public int[] tempBonuses;
     public int tempCreditsCount;
 
+    public TMP_Text shopCartText;
+
     private int creditsCount;
     public int[] ordersCount;
 
@@ -257,8 +259,11 @@ public class BonusShop : MonoBehaviour
         {
             ordersCount[i] = 0;
         }
-
         bonusSelected = -1;
+
+        //shop cart
+        if(shopCartText != null)
+            shopCartText.text = "Cart is empty";
     }
 
     public void BuyBonus()
@@ -391,7 +396,21 @@ public class BonusShop : MonoBehaviour
                 fillImage.enabled = credits > 0;
             }
         }
-            
+
+        //shop cart
+        int sum = tempBonuses.Sum();
+
+        if (shopCartText != null)
+        {
+            if (sum == 0)
+            {
+                shopCartText.text = "Cart is empty";
+            }
+            else
+            {
+                shopCartText.text = "Items in cart: " + sum;
+            }
+        }       
     }
 
     public void LivesClick()

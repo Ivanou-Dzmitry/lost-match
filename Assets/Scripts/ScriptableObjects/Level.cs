@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,11 +11,14 @@ public class Level : ScriptableObject
     public int columns;
     public int rows;
 
+    [Header("Back Tile File")]
+    public TextAsset xmlLayoutFile;
+
     [Header("Layout")]
     public TileType[] boardLayout;
 
     [Header("Art")]
-    public GameBoardBack elementsBack;
+    //public GameBoardBack elementsBack;
 
     [Header("Preload Layout")]
     public TileType[] preloadBoardLayout;

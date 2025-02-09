@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using System.Xml.Linq;
 using TMPro;
 using UnityEngine.UIElements;
+using System.Reflection;
 
 
 public enum GameState
@@ -41,7 +42,11 @@ public enum TileKind
     Breakable01,
     Breakable02,
     Locked01,
-    Expanding01
+    Expanding01,
+    Breakable03,
+    Blocker03,
+    Locked02,
+    Locked03
 }
 
 //type of matches
@@ -112,6 +117,8 @@ public class GameBoard : MonoBehaviour
     public TileType[] preloadBoardLayout;
     public GameObject gameArea;
 
+    public TextAsset xmlDocWithBackTileLayout;
+
     [Header("Art")]
     public GameObject elementsBackGO;
     public GameBoardBack gameBoardBack;
@@ -123,8 +130,9 @@ public class GameBoard : MonoBehaviour
     private MatchFinder matchFinderClass;
     private ScoreManager scoreManagerClass;
     private UIManager uiManagerClass;
-    private BonusShop bonusShopClass;
+    //private BonusShop bonusShopClass;
     private EndGameManager endGameManagerClass;
+    private BackBuilder backBuilderClass;
 
     //arrays
     public GameObject[] elements;
@@ -140,18 +148,29 @@ public class GameBoard : MonoBehaviour
     public int streakValue = 1;
     public int[] scoreGoals;
     public string goalsDescription;
+    public int minMatchForBomb = 4;
 
     //for blank
     private bool[,] emptyElement;
 
-    [Header("Prefabs")]
+    [Header("Breakable")]
     //public GameObject elementPrefab;
     public GameObject break01Prefab;
     public GameObject break02Prefab;
+    public GameObject break03Prefab;
+
+    [Header("Blocker")]
     public GameObject blocker01Prefab;
     public GameObject blocker02Prefab;
+    public GameObject blocker03Prefab;
+
+    [Header("Expand")]
     public GameObject expand01Prefab;
+
+    [Header("Locker")]
     public GameObject locker01Prefab;
+    public GameObject locker02Prefab;
+    public GameObject locker03Prefab;
 
     //for lock
     public SpecialElements[,] lockedCells;
@@ -171,7 +190,8 @@ public class GameBoard : MonoBehaviour
 
     //bombs values    
     private int minMatchCount = 3;
-    public int minMatchForBomb = 4;
+
+    
     private int matchLimit = 81; //awoid match bomb bugs
 
     private int matchForLineBomb = 4;
@@ -236,11 +256,13 @@ public class GameBoard : MonoBehaviour
 
                     goalsDescription = worldClass.levels[level].goalsDescription;
 
-                    gameBoardBack = worldClass.levels[level].elementsBack; //back
+                    //gameBoardBack = worldClass.levels[level].elementsBack; //back
 
                     boardLayout = worldClass.levels[level].boardLayout;
 
                     preloadBoardLayout = worldClass.levels[level].preloadBoardLayout;
+
+                    xmlDocWithBackTileLayout = worldClass.levels[level].xmlLayoutFile;
                 }
             }
         }
@@ -249,13 +271,16 @@ public class GameBoard : MonoBehaviour
         blockersDict = new Dictionary<TileKind, GameObject>
         {
             { TileKind.Blocker01, blocker01Prefab },
-            { TileKind.Blocker02, blocker02Prefab }
+            { TileKind.Blocker02, blocker02Prefab },
+            { TileKind.Blocker03, blocker03Prefab }
         };
 
         //for lockers
         lockersDict = new Dictionary<TileKind, GameObject>
         {
-            { TileKind.Locked01, locker01Prefab }            
+            { TileKind.Locked01, locker01Prefab },
+            { TileKind.Locked02, locker02Prefab },
+            { TileKind.Locked03, locker03Prefab }
         };
 
         //for expand
@@ -279,7 +304,8 @@ public class GameBoard : MonoBehaviour
         breacableDict = new Dictionary<TileKind, GameObject>
         {
             { TileKind.Breakable01, break01Prefab },
-            { TileKind.Breakable02, break02Prefab }
+            { TileKind.Breakable02, break02Prefab },
+            { TileKind.Breakable03, break03Prefab }
         };
 
     }
@@ -308,8 +334,9 @@ public class GameBoard : MonoBehaviour
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
-        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        //bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
+        backBuilderClass = GameObject.FindWithTag("BackBuilder").GetComponent<BackBuilder>();
 
         //all dots on board
         allElements = new GameObject[column, row];
@@ -336,10 +363,15 @@ public class GameBoard : MonoBehaviour
         Screen.SetResolution(1920, 1080, true);
         Screen.SetResolution((int)Screen.width, (int)Screen.height, true);
 
-        //load back sprite
-        elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
+        //load backTIles!
 
-        if(soundManagerClass != null)
+        if(xmlDocWithBackTileLayout != null)
+            backBuilderClass.LoadDataFromXML(xmlDocWithBackTileLayout, column, row);
+
+        //load back sprite
+        //elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
+
+        if (soundManagerClass != null)
         {
             soundManagerClass.PlayMusic(levelMusic);
         }
@@ -413,10 +445,14 @@ public class GameBoard : MonoBehaviour
 
                 GameObject breakablePrefab = breacableDict[kind];
 
-                GameObject breakableElement = Instantiate(breakablePrefab, tempPos, Quaternion.identity);
+                GameObject breakableElement = null;
 
-                breakableCells[boardLayout[i].columnX, boardLayout[i].rowY] = breakableElement.GetComponent<SpecialElements>();
-
+                if (breakablePrefab != null)
+                {
+                    breakableElement = Instantiate(breakablePrefab, tempPos, Quaternion.identity);
+                    breakableCells[boardLayout[i].columnX, boardLayout[i].rowY] = breakableElement.GetComponent<SpecialElements>();
+                }                                
+                
                 namingCounter++;
 
                 string elementName = breakablePrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
@@ -650,7 +686,7 @@ public class GameBoard : MonoBehaviour
     private void CongratInfo(int matchCount)
     {
         if (matchCount > 20)
-            uiManagerClass.ShowInGameInfo("Great!", true, ColorPalette.Colors["VioletMed"]); //show panel with text
+            uiManagerClass.ShowInGameInfo("Great!", true, 3, ColorPalette.Colors["VioletMed"]); //show panel with text
 
         Debug.Log("matchCount: " + matchCount);
     }
@@ -846,6 +882,8 @@ public class GameBoard : MonoBehaviour
                     soundManagerClass.PlaySound(currentBreak.elementSounds[hitPoints]);
                 }
 
+                Debug.Log("hitPoints:" + hitPoints);
+
                 // Run particles if available
                 if (currentBreak.elementParticles[hitPoints] != null)
                 {
@@ -897,16 +935,7 @@ public class GameBoard : MonoBehaviour
             }
 
 
-            //lockers
-            if (lockedCells[thisColumn, thisRow] != null)
-            {
-                lockedCells[thisColumn, thisRow].TakeDamage(1);
-
-                if (lockedCells[thisColumn, thisRow].hitPoints <= 0)
-                {
-                    lockedCells[thisColumn, thisRow] = null;
-                }
-            }
+            DamageLockers(thisColumn, thisRow);
 
 
             //for blockers
@@ -1034,7 +1063,7 @@ public class GameBoard : MonoBehaviour
         if (IsDeadLock())
         {            
             ShuffleBoard();
-            uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+            uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
         }
 
         if (currentState != GameState.pause)
@@ -1198,6 +1227,52 @@ public class GameBoard : MonoBehaviour
             }
         }
     }
+
+    private void DamageLockers(int thisColumn, int thisRow)
+    {
+
+        //lockers
+        if (lockedCells[thisColumn, thisRow] != null)
+        {
+            lockedCells[thisColumn, thisRow].TakeDamage(1);
+
+            SpecialElements currentLocker = lockedCells[thisColumn, thisRow];
+
+            if (lockedCells[thisColumn, thisRow].hitPoints <= 0)
+            {
+
+                //get hit points
+                int hitPoint = lockedCells[thisColumn, thisRow].hitPoints;
+
+                int index = Mathf.Clamp(hitPoint, 0, currentLocker.elementSounds.Length - 1);
+
+                //sound
+                if (currentLocker.elementSounds[index] != null)
+                {
+                    soundManagerClass.PlaySound(currentLocker.elementSounds[index]);
+                }
+
+                //particles
+                if (currentLocker.elementParticles[index] != null)
+                {
+                    GameObject lockerParticle = Instantiate(
+                        currentLocker.elementParticles[index],
+                        lockedCells[thisColumn, thisRow].transform.position,
+                        Quaternion.identity
+                    );
+
+                    lockerParticle.name = "locker_part_" + thisColumn + "_" + thisRow + "_" + index;
+                    lockerParticle.transform.parent = gameArea.transform;
+
+                    Destroy(lockerParticle, 2.9f); // Particle delay
+                }
+
+                lockedCells[thisColumn, thisRow] = null;
+            }
+        }
+
+    }
+
 
     //blockers
     private void DamageBlockers(int column, int row)
@@ -1533,7 +1608,7 @@ public class GameBoard : MonoBehaviour
         if (IsDeadLock())
         {
             ShuffleBoard();            
-            uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+            uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
         }
     }
 

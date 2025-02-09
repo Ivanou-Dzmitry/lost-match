@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 6
   rows: 8
+  xmlLayoutFile: {fileID: 4900000, guid: 462d4240b7e982a49a62a2a2980207ed, type: 3}
   boardLayout:
   - columnX: 2
     rowY: 0
@@ -108,6 +109,6 @@ MonoBehaviour:
     counterValue: 28
   levelGoals:
   - numberGoalsNeeded: 26
-    numberCollectedGoals: 3
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01

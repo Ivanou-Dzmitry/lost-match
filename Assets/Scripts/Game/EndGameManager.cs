@@ -171,7 +171,7 @@ public class EndGameManager : MonoBehaviour
         //credits. saved if close, but not save if retry
         int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
 
-        creditsCount.text = "Credits: " + currentCreditsCount;
+        creditsCount.text = "" + currentCreditsCount;
 
         //turn on stars
         for (int i = 0; i < scoreManagerClass.numberStars; i++)

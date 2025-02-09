@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 7
   rows: 6
+  xmlLayoutFile: {fileID: 4900000, guid: 4deda85e2bd59bb4c990a72c0353412e, type: 3}
   boardLayout:
   - columnX: 0
     rowY: 0
@@ -54,6 +55,6 @@ MonoBehaviour:
     counterValue: 22
   levelGoals:
   - numberGoalsNeeded: 6
-    numberCollectedGoals: 1
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 9b004a568872f2b45ac925678e91793e, type: 3}
     matchValue: LineBomb

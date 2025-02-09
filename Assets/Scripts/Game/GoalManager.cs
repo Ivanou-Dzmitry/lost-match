@@ -159,7 +159,8 @@ public class GoalManager : MonoBehaviour
         // Code to run before WinGame
         gameBoardClass.currentState = GameState.win;
 
-        uiManagerClass.ShowInGameInfo("Level Completed!", true, ColorPalette.Colors["GreenSaturate"]);
+        // info
+        uiManagerClass.ShowInGameInfo("Level Completed!", true, 1, ColorPalette.Colors["GreenSaturate"]);
 
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 
@@ -173,7 +174,8 @@ public class GoalManager : MonoBehaviour
         // Code to run before LoseGame
         gameBoardClass.currentState = GameState.lose;
 
-        uiManagerClass.ShowInGameInfo("Out of moves!", true, ColorPalette.Colors["VioletMed"]);
+        // info
+        uiManagerClass.ShowInGameInfo("Out of moves!", true, 2, ColorPalette.Colors["VioletMed"]);
 
         yield return new WaitForSeconds(waitingTime); // Wait for ... second
 

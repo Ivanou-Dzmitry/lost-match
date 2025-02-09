@@ -61,7 +61,7 @@ public class ElementController : MonoBehaviour
     [Header("Sound")]
     public AudioClip elementSound;
     public AudioClip lineBombSound;
-    //public AudioClip colorBombSound;
+    public AudioClip colorBombSound;
     public AudioClip wrapBombSound;
 
     [Header("Particles")]
@@ -134,7 +134,7 @@ public class ElementController : MonoBehaviour
         {
             case 0:
                 gameBoardClass.ShuffleBoard();
-                uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+                uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
                 break;
 /*            case 1:
                 this.isColorBomb = true;
@@ -681,6 +681,8 @@ public class ElementController : MonoBehaviour
         {
             isColorBomb = true;
             this.tag = "no_tag";
+            elementSound = colorBombSound;
+
             this.GetComponent<SpriteRenderer>().sprite = null;
 
             //add sprite

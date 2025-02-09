@@ -45,7 +45,7 @@ public class SpecialElements : MonoBehaviour
     private void UseShuffle()
     {
         gameBoardClass.ShuffleBoard();
-        uiManagerClass.ShowInGameInfo("Mixed up", true, ColorPalette.Colors["DarkBlue"]); //show panel with text
+        uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
 
         bonusShopClass.bonusSelected = -1;
         bonusShopClass.bonusDescPanel.SetActive(false);

@@ -50,6 +50,10 @@ public class UIManager : MonoBehaviour
     public TMP_Text finalText;
     private Image infoPanelImage;
 
+    [Header("Icons")]
+    public List<Sprite> iconsList = new List<Sprite>();
+    public GameObject iconInfo;
+
 
     void Start()
     {
@@ -136,7 +140,7 @@ public class UIManager : MonoBehaviour
         return panelLevelButtons.sizeDelta.y;
     }
 
-    public void ShowInGameInfo(string infoText, bool showPanel, Color pnlColor = default)
+    public void ShowInGameInfo(string infoText, bool showPanel, int iconNumber, Color pnlColor = default)
     {
         if (pnlColor == default)
         {
@@ -158,6 +162,15 @@ public class UIManager : MonoBehaviour
             finalTextPanel.SetActive(false);
             finalText.text = "";
         }
+
+        //set image
+        Image infoImg = iconInfo.GetComponent<Image>();
+
+        if (infoImg != null)
+        {
+            if(iconsList[iconNumber] != null)
+                infoImg.sprite = iconsList[iconNumber];
+        }        
 
         //hide panel
         if (finalTextPanel != null && finalTextPanel.activeSelf)

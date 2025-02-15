@@ -105,7 +105,7 @@ public class BackBuilder : MonoBehaviour
             newTile.name = "Tile_" + tileNumber +"-" + column + "_" + row;
         }
 
-        // Find the index in the tiles array based on tileNumber
+        // Find the index in the tiles array based on tileNumber. 0-15 Elements, 16-... back
         int tileIndex = tileNumber - 16;
 
        // Debug.Log("tileIndex: " + tileIndex);

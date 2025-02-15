@@ -1,13 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Unity.VisualScripting;
-using System.Xml.Linq;
 using TMPro;
-using UnityEngine.UIElements;
-using System.Reflection;
+using UnityEngine.UI;
 
 
 public enum GameState
@@ -227,7 +223,7 @@ public class GameBoard : MonoBehaviour
     public bool colorBusterInUse;
     public bool lineBusterInUse;
 
-    private Coroutine updateCoroutine;
+    private Coroutine updateCoroutine;    
 
     private void Awake()
     {
@@ -686,9 +682,9 @@ public class GameBoard : MonoBehaviour
     private void CongratInfo(int matchCount)
     {
         if (matchCount > 20)
-            uiManagerClass.ShowInGameInfo("Great!", true, 3, ColorPalette.Colors["VioletMed"]); //show panel with text
-
-        Debug.Log("matchCount: " + matchCount);
+        {
+            uiManagerClass.ShowInGameInfo("Great!", true, 3, ColorPalette.Colors["VioletMed"]); //show panel with text           
+        }                    
     }
 
     //step 9     
@@ -1797,6 +1793,5 @@ public class GameBoard : MonoBehaviour
             yield return new WaitForSeconds(1f); // Wait for 1 second
         }        
     }
-
 
 }

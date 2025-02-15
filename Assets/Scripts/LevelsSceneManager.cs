@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 
 public class LevelsSceneManager : MonoBehaviour
@@ -39,13 +40,17 @@ public class LevelsSceneManager : MonoBehaviour
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
     private float swipeThreshold = 0.5f; // Minimum distance for a swipe
-    private float maxSwipeLenght = 100.0f;
+    private float maxSwipeLenght = 2000.0f;
+    
+    private float touchStartTime;
+    private float timeThreshold = 0.5f;
 
     private bool swipeDetected = false; // Prevent repeated triggers
     private bool isRotating = false; // Track if rotation is in progress
 
     [Header("DEbug")]
     public TMP_Text levelTxt;
+    public TMP_Text debugTxt;
 
     public GameObject levelCylinder; // Reference to your cylinder object
     public float rotationAmount = 45f; // Rotation amount in degrees
@@ -351,7 +356,9 @@ public class LevelsSceneManager : MonoBehaviour
         panelsActivity = PanelActivity();
         
         if (panelsActivity == false)
+        {
             SwipeDetector();
+        }            
 
         if (!isRotating) // When rotation stops
         {
@@ -367,7 +374,6 @@ public class LevelsSceneManager : MonoBehaviour
             // Perform the raycast
             if (Physics.Raycast(ray, out hit))
             {
-                //Debug.Log("Click"+ ray + "/ "+ hit.collider.gameObject.name);
                 // Check if the clicked object is the plane
                 if (hit.collider.gameObject.name != null) // Assuming this script is on the plane
                 {
@@ -405,7 +411,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
         }
 
-        rotationSpeed = 8;
+        rotationSpeed = 5;
     }
 
     float FindClosestAngle(float value)
@@ -429,17 +435,21 @@ public class LevelsSceneManager : MonoBehaviour
             {
                 case TouchPhase.Began:
                     startTouchPosition = touch.position;
+                    touchStartTime = Time.time;
                     swipeDetected = false; // Reset swipe detection
                     break;
 
                 case TouchPhase.Moved:
-                    endTouchPosition = touch.position; // Continuously update the end position
+                    endTouchPosition = touch.position; // Continuously update the end position                    
                     break;
 
                 case TouchPhase.Ended:
                     endTouchPosition = touch.position;
-                    if (!swipeDetected && IsValidSwipe())
-                    {
+                    float swipeTime = Time.time - touchStartTime;
+                    debugTxt.text = "ST-" + swipeTime;
+
+                    if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)
+                    {                        
                         HandleSwipe();
                         swipeDetected = true;
                     }
@@ -447,8 +457,9 @@ public class LevelsSceneManager : MonoBehaviour
             }
         }
 
-        // Mouse Input (for testing on PC)
-        if (Input.GetMouseButtonDown(0))
+        
+       // Mouse Input (for testing on PC)
+/*        if (Input.GetMouseButtonDown(0))
         {
             startTouchPosition = Input.mousePosition;
             swipeDetected = false;
@@ -461,18 +472,20 @@ public class LevelsSceneManager : MonoBehaviour
                 HandleSwipe();
                 swipeDetected = true;
             }
-        }
+        }*/
+
+        
     }
 
     private bool IsValidSwipe()
     {
-        float swipeDistance = Vector2.Distance(startTouchPosition, endTouchPosition);
-        return swipeDistance > maxSwipeLenght;
+        float swipeDistance = Vector2.Distance(startTouchPosition, endTouchPosition);        
+        return swipeDistance < maxSwipeLenght;
     }
 
     private bool PanelActivity()
     {
-        bool pnlAct = false;
+        bool pnlAct = false;        
 
         for(int i = 0; i < allPanelsList.Length; i++)
         {
@@ -489,10 +502,7 @@ public class LevelsSceneManager : MonoBehaviour
     private void HandleSwipe()
     {
         float verticalSwipeDistance = endTouchPosition.y - startTouchPosition.y;
-
-        levelTxt.text = "Swipe: "+ verticalSwipeDistance;
-
-
+       
         // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
         if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold)
         {
@@ -523,19 +533,6 @@ public class LevelsSceneManager : MonoBehaviour
         {
             StopCoroutine(rotationCoroutine); // Stop the current rotation if it's ongoing                       
         }
-
-/*        float finalRotation = 0;
-
-        Debug.Log("Current: " + currentRotationX + "/must: " + (targetRotationX + 45f));                   
-
-        if (isRotating && direction == "next")
-        {
-            finalRotation = targetRotationX + 45f;
-            currentRotationX = finalRotation;
-            isRotating = false;            
-        }
-            
-        Debug.Log("Fixed current:" + currentRotationX + "/Target: " + targetRotationX);*/
 
         rotationCoroutine = StartCoroutine(SmoothRotate());
     }
@@ -594,22 +591,6 @@ public class LevelsSceneManager : MonoBehaviour
             Debug.LogError("currentScreenNumber is out of bounds! Ensure it is within the levelMaterials array range.");
         }
     }
-
-    void RotateButtons()
-    {
-        // Find all objects with the tag "LevelButton3D"
-        GameObject[] levelButtons = GameObject.FindGameObjectsWithTag("LevelButton3D");
-
-        // Loop through each object and set its rotation
-        foreach (GameObject button in levelButtons)
-        {
-            if (button != null)
-            {
-                button.transform.rotation = Quaternion.Euler(0, 0, 0); // Set rotation to (0, 0, 0)
-            }
-        }
-    }
-
 
     void MovePivotToCenter(GameObject obj)
     {

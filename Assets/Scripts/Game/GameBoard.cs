@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 
 public enum GameState
@@ -42,7 +43,9 @@ public enum TileKind
     Breakable03,
     Blocker03,
     Locked02,
-    Locked03
+    Locked03,
+    Expanding02,
+    Expanding03
 }
 
 //type of matches
@@ -129,6 +132,7 @@ public class GameBoard : MonoBehaviour
     //private BonusShop bonusShopClass;
     private EndGameManager endGameManagerClass;
     private BackBuilder backBuilderClass;
+    private FXManager fxManagerClass;
 
     //arrays
     public GameObject[] elements;
@@ -162,6 +166,8 @@ public class GameBoard : MonoBehaviour
 
     [Header("Expand")]
     public GameObject expand01Prefab;
+    public GameObject expand02Prefab;
+    public GameObject expand03Prefab;
 
     [Header("Locker")]
     public GameObject locker01Prefab;
@@ -173,7 +179,7 @@ public class GameBoard : MonoBehaviour
 
     //for lock
     public SpecialElements[,] expandCells;
-
+    private bool makeExpand = true;
 
     //for blockers
     public SpecialElements[,] blockerCells;
@@ -186,7 +192,6 @@ public class GameBoard : MonoBehaviour
 
     //bombs values    
     private int minMatchCount = 3;
-
     
     private int matchLimit = 81; //awoid match bomb bugs
 
@@ -201,29 +206,14 @@ public class GameBoard : MonoBehaviour
     private Dictionary<TileKind, GameObject> lockersDict; //lockers
     private Dictionary<TileKind, GameObject> expandDict; //expand
 
-    [Header("ColorBomb Staff")]
-    //for colorbomb
-    public List<GameObject> createdLines = new List<GameObject>();
-
-    //add rainbow
-    private List<Color> rayColors = new List<Color>()
-    {
-        Color.red,              // Red
-        new Color(1f, 0.647f, 0f), // Orange
-        Color.yellow,           // Yellow
-        Color.green,            // Green
-        Color.blue,             // Blue
-        new Color(0.294f, 0f, 0.51f), // Indigo
-        new Color(0.56f, 0f, 1f) // Violet
-    };
-
-    public Material colorBombRayMat;
-
     [Header("Busters")]
     public bool colorBusterInUse;
     public bool lineBusterInUse;
+    private int initialMoves; //for time booster run
+    private int boosterValue = 10; //value when buster run
 
     private Coroutine updateCoroutine;    
+
 
     private void Awake()
     {
@@ -282,7 +272,9 @@ public class GameBoard : MonoBehaviour
         //for expand
         expandDict = new Dictionary<TileKind, GameObject>
         {
-            { TileKind.Expanding01, expand01Prefab }
+            { TileKind.Expanding01, expand01Prefab },
+            { TileKind.Expanding02, expand02Prefab },
+            { TileKind.Expanding03, expand03Prefab }
         };
 
 
@@ -333,6 +325,7 @@ public class GameBoard : MonoBehaviour
         //bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         backBuilderClass = GameObject.FindWithTag("BackBuilder").GetComponent<BackBuilder>();
+        fxManagerClass = GameObject.FindWithTag("FXManager").GetComponent<FXManager>();
 
         //all dots on board
         allElements = new GameObject[column, row];
@@ -377,8 +370,8 @@ public class GameBoard : MonoBehaviour
 
         levelNumberTxt.text = "Level " + (level + 1);
 
-        //color bomb
-        createdLines.Clear();
+        //for time booster
+        initialMoves = endGameManagerClass.curCounterVal;
     }
 
     //empty cells
@@ -465,6 +458,40 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    private void GenerateExpandTiles()
+    {
+        int namingCounter = 0;
+
+        for (int i = 0; i < boardLayout.Length; i++)
+        {
+
+            TileKind kind = boardLayout[i].tileKind;
+
+            if (expandDict.ContainsKey(kind))
+            {
+                Vector2 tempPos = new Vector2(boardLayout[i].columnX, boardLayout[i].rowY);
+
+                    GameObject expandPrefab = expandDict[kind];
+
+                    GameObject expandingElement = null;
+
+                    if (expandPrefab != null)
+                    {
+                        expandingElement = Instantiate(expandPrefab, tempPos, Quaternion.identity);
+                        expandCells[boardLayout[i].columnX, boardLayout[i].rowY] = expandingElement.GetComponent<SpecialElements>();
+                    }
+
+                    namingCounter++;
+                    //naming
+                    string elementName = expandingElement.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
+                    expandingElement.name = elementName;
+
+                    //set properties parent
+                    expandingElement.transform.parent = gameArea.transform;                
+            }
+        }
+    }
+
     private void GenerateLocked()
     {
         int namingCounter = 0;
@@ -487,7 +514,7 @@ public class GameBoard : MonoBehaviour
                     if (lockedElement != null)
                     {
                         lockedCells[boardLayout[i].columnX, boardLayout[i].rowY] = lockedElement.GetComponent<SpecialElements>();
-
+                        Debug.Log("here");
                         namingCounter++;
 
                         string elementName = lockedPrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
@@ -498,6 +525,8 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
+
+        
     }
 
 
@@ -507,6 +536,7 @@ public class GameBoard : MonoBehaviour
         GenerateBlockers();
         GenerateBreakable();
         GenerateLocked();
+        GenerateExpandTiles();
 
         //for naming
         int namingCounter = 0;      
@@ -516,7 +546,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (!emptyElement[i, j] && !blockerCells[i, j])
+                if (!emptyElement[i, j] && !blockerCells[i, j] && !expandCells[i,j])
                 {
                     //temp position and offset
                     Vector2 elementPosition = new Vector2(i, j);
@@ -558,14 +588,13 @@ public class GameBoard : MonoBehaviour
 
        
         //bonus cells bombs and etc.
-        GenBonusCells();
+        GenBoosters();
 
         //if not null gen preload cells
         if (preloadBoardLayout != null)
         {
             GenPreloadLayout();
         }
-
 
         //like color bomb
         if (colorBusterInUse || lineBusterInUse)
@@ -732,7 +761,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j])
+                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j] && !expandCells[i, j])
                 {
                     for (int k = j + 1; k < row; k++)
                     {
@@ -766,7 +795,7 @@ public class GameBoard : MonoBehaviour
         {
             Quaternion rotation = element.isRowBomb ? Quaternion.Euler(0, 0, 90) : Quaternion.identity;
             Vector3 particlePosition = elementPosition;
-            InstantiateAndConfigureParticle(element, particlePosition, rotation);
+            fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
 
             // Handle combo particles
             if (element.isCombo)
@@ -774,26 +803,26 @@ public class GameBoard : MonoBehaviour
                 if (element.comboE1 != -1)
                 {
                     particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE1);
-                    InstantiateAndConfigureParticle(element, particlePosition, rotation);
+                    fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
                 }
 
                 if (element.comboE2 != -1)
                 {
                     particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE2);
-                    InstantiateAndConfigureParticle(element, particlePosition, rotation);
+                    fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
                 }
             }
         }
 
         // Helper to instantiate and configure a particle
-        void InstantiateAndConfigureParticle(ElementController element, Vector3 position, Quaternion rotation)
+/*        void InstantiateAndConfigureParticle(ElementController element, Vector3 position, Quaternion rotation)
         {
             GameObject particle = Instantiate(element.lineBombParticle, position, rotation);
             SpriteMask spriteMask = particle.GetComponentInChildren<SpriteMask>();
             if (spriteMask != null)
                 SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
             Destroy(particle, 1.9f);
-        }
+        }*/
 
         // Helper to update position based on bomb type
         Vector3 UpdatePosition(Vector3 originalPosition, bool isRowBomb, int comboValue)
@@ -840,7 +869,7 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    void SetSpriteMaskToScreenCenter(SpriteMask spriteMask, int angle = -1)
+/*    void SetSpriteMaskToScreenCenter(SpriteMask spriteMask, int angle = -1)
     {
         float yOffset = 1; //see public float yOffset = 1; in CameraManager
 
@@ -858,7 +887,7 @@ public class GameBoard : MonoBehaviour
         //rotate for horizontal
         if (angle > 0)
             spriteMask.transform.eulerAngles += new Vector3(0, 0, angle);
-    }
+    }*/
 
 
     private void DestroyBreakableAt(int thisColumn, int thisRow)
@@ -877,8 +906,6 @@ public class GameBoard : MonoBehaviour
                 {
                     soundManagerClass.PlaySound(currentBreak.elementSounds[hitPoints]);
                 }
-
-                Debug.Log("hitPoints:" + hitPoints);
 
                 // Run particles if available
                 if (currentBreak.elementParticles[hitPoints] != null)
@@ -930,12 +957,12 @@ public class GameBoard : MonoBehaviour
                 goalManagerClass.UpdateGoals();
             }
 
-
             DamageLockers(thisColumn, thisRow);
 
-
             //for blockers
-            DamageBlockers(thisColumn, thisRow);            
+            DamageBlockers(thisColumn, thisRow);      
+            
+            DamageExpandable(thisColumn, thisRow);  
 
             //sound
             if (currentElement.elementSound != null)
@@ -967,8 +994,8 @@ public class GameBoard : MonoBehaviour
             matchFinderClass.currentMatch.Clear();
 
             //for colorbomb
-            if(createdLines.Count > 0)
-                StartCoroutine(DeleteColorBombLines(.3f));
+            if(fxManagerClass.createdLines.Count > 0)
+                StartCoroutine(fxManagerClass.DeleteColorBombLines(.3f));
         }       
     }
 
@@ -981,7 +1008,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j])
+                if (allElements[i, j] == null && !emptyElement[i, j] && !blockerCells[i, j] && !expandCells[i, j])
                 {
                     Vector2 tempPosition = new Vector2(i, j);
                     int refilledElementNumber = UnityEngine.Random.Range(0, elements.Length);
@@ -1056,6 +1083,8 @@ public class GameBoard : MonoBehaviour
 
         currentElement = null;
 
+        CheckToMakeExpandable();
+
         if (IsDeadLock())
         {            
             ShuffleBoard();
@@ -1065,16 +1094,22 @@ public class GameBoard : MonoBehaviour
         if (currentState != GameState.pause)
             currentState = GameState.move;
 
+        makeExpand = true;
+
         //stop matching
         matchState = MatchState.matching_stop;
 
         goalManagerClass.UpdateGoals();
 
-        //run buster generator
-        if (endGameManagerClass.curCounterVal % 10 == 0)
+        //run booster generator
+        int movesMade = initialMoves - endGameManagerClass.curCounterVal; // Moves used so far
+
+        if (movesMade % boosterValue == 0) // Run every 10 moves
         {
             if (colorBusterInUse || lineBusterInUse)
+            {
                 SetTimlessBuster();
+            }
         }
     }
 
@@ -1083,7 +1118,6 @@ public class GameBoard : MonoBehaviour
     private MatchType ColumnOrRow()
     {
         // Copy of the current match remove double
-        
         List<GameObject> matchCopy = new List<GameObject>(matchFinderClass.currentMatch);
 
         matchTypeClass.type = 0;
@@ -1226,19 +1260,19 @@ public class GameBoard : MonoBehaviour
 
     private void DamageLockers(int thisColumn, int thisRow)
     {
-
         //lockers
         if (lockedCells[thisColumn, thisRow] != null)
         {
             lockedCells[thisColumn, thisRow].TakeDamage(1);
 
+            int hitPoint = lockedCells[thisColumn, thisRow].hitPoints;
+
+            Debug.Log("hitPoint: " + hitPoint);
+
             SpecialElements currentLocker = lockedCells[thisColumn, thisRow];
-
-            if (lockedCells[thisColumn, thisRow].hitPoints <= 0)
+          
+            if (hitPoint <= 0 || hitPoint <= currentLocker.elementSounds.Length)
             {
-
-                //get hit points
-                int hitPoint = lockedCells[thisColumn, thisRow].hitPoints;
 
                 int index = Mathf.Clamp(hitPoint, 0, currentLocker.elementSounds.Length - 1);
 
@@ -1259,14 +1293,17 @@ public class GameBoard : MonoBehaviour
 
                     lockerParticle.name = "locker_part_" + thisColumn + "_" + thisRow + "_" + index;
                     lockerParticle.transform.parent = gameArea.transform;
-
+                    //Debug.Break();
                     Destroy(lockerParticle, 2.9f); // Particle delay
                 }
 
-                lockedCells[thisColumn, thisRow] = null;
+                if (lockedCells[thisColumn, thisRow].hitPoints <= 0)
+                {
+                    lockedCells[thisColumn, thisRow] = null;
+                }
+                
             }
         }
-
     }
 
 
@@ -1348,7 +1385,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-
     }
     
     //for bomb and blockers
@@ -1369,7 +1405,7 @@ public class GameBoard : MonoBehaviour
     }
 
     //bobms and etc
-    private void GenBonusCells()
+    private void GenBoosters()
     {
         foreach (var layout in boardLayout)
         {
@@ -1572,7 +1608,7 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < row; j++)
             {
-                if (!emptyElement[i, j] && !blockerCells[i, j] && !bombsCells[i, j]) //list of not
+                if (!emptyElement[i, j] && !blockerCells[i, j] && !bombsCells[i, j] && !expandCells[i, j]) //list of not
                 {
                     int cellToUse = UnityEngine.Random.Range(0, newBoard.Count);
 
@@ -1608,176 +1644,161 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    // Coroutine to fade out and delete color bomb lines after a delay
-    private IEnumerator DeleteColorBombLines(float delay)
+    private void DamageAdjacentExpand(int column, int row)
     {
-        // Wait for the specified delay before starting the fade-out process
-        yield return new WaitForSeconds(delay);
-
-        // Fade out each line and then destroy it
-        foreach (GameObject line in createdLines)
+        if (expandCells[column, row])
         {
-            if (line != null)
+            expandCells[column, row].TakeDamage(1);
+
+            int hitPoint = expandCells[column, row].hitPoints;
+
+            SpecialElements currentExpandable = expandCells[column, row];
+
+            // Effects queue
+            if (hitPoint <= 0 || hitPoint <= currentExpandable.elementSounds.Length)
             {
-                LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
-                if (lineRenderer != null)
+                int index = Mathf.Clamp(hitPoint, 0, currentExpandable.elementSounds.Length - 1);
+
+                if (currentExpandable.elementSounds[index] != null)
                 {
-                    // Start fading out the line before destroying it
-                    StartCoroutine(FadeAndDestroyLine(lineRenderer, line));
+                    soundManagerClass.PlaySound(currentExpandable.elementSounds[index]);
+                }
+
+                //particles
+                if (currentExpandable.elementParticles[index] != null)
+                {
+                    GameObject expandParticle = Instantiate(
+                        currentExpandable.elementParticles[index],
+                        expandCells[column, row].transform.position,
+                        Quaternion.identity
+                    );
+
+                    expandParticle.name = "expand_part_" + column + "_" + row + "_" + index;
+                    expandParticle.transform.parent = gameArea.transform;
+
+                    Destroy(expandParticle, 1.9f); // Particle delay
+                }
+            }
+
+            if (expandCells[column, row].hitPoints <= 0)
+            {
+                expandCells[column, row] = null;
+            }
+
+            makeExpand = false;
+        }    
+    }
+
+
+    private void DamageExpandable(int thisColumn, int thisRow)
+    {
+        if (thisColumn > 0)
+        {
+            DamageAdjacentExpand(thisColumn - 1, thisRow);
+        }
+
+        if (thisColumn < column - 1)
+        {
+            DamageAdjacentExpand(thisColumn + 1, thisRow);
+        }
+
+        if (thisRow > 0)
+        {
+            DamageAdjacentExpand(thisColumn, thisRow - 1);
+        }
+
+        if (thisRow < row - 1)
+        {
+            DamageAdjacentExpand(thisColumn, thisRow + 1);
+        }
+    }
+
+    private void CheckToMakeExpandable()
+    {
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (expandCells[i, j] && makeExpand)
+                {
+                    BirthExpandable();
+                    return;
                 }
             }
         }
-
-        // Clear the list after deletion (all lines will be destroyed by now)
-        createdLines.Clear();
     }
 
-    public void CreateColorBombLines(Vector2 startPoint, Vector2 endPoint, Color color, float width)
+    private Vector2 CheckForExpand(int thisColumn, int thisRow)
     {
-        // Create a new GameObject for the LineRenderer
-        GameObject lineObject = new GameObject("DynamicLine");
-        LineRenderer lineRenderer = lineObject.AddComponent<LineRenderer>();
 
-        lineRenderer.name = "colorbomb_line_" + endPoint.x + "_" + endPoint.y;
-
-        // Set the material
-        lineRenderer.material = colorBombRayMat;
-
-        //width = 0.5f;
-
-        // Divide the line into 8 segments
-        int segments = 12;
-        lineRenderer.positionCount = segments + 1; // 9 points for 8 segments      
-
-        // Convert Vector2 to Vector3 (z = 0 for 2D lines)
-        //Vector3 startPoint3D = new Vector3(startPoint.x, startPoint.y, 0f);
-        //Vector3 endPoint3D = new Vector3(endPoint.x, endPoint.y, 0f);
-
-        // Calculate the total distance between start and end points
-        float lineLength = Vector2.Distance(startPoint, endPoint);
-
-        //Debug.Log(lineRenderer.name + "=" + lineLength);
-
-        // Set the positions for the start and end points
-        lineRenderer.SetPosition(0, startPoint);
-        lineRenderer.SetPosition(segments, endPoint);
-
-        // Determine the maxShift based on the line length
-        ///float maxShift = (lineLength < 2f) ? 0.01f : 0.2f; // Use 0.1f for short lines, 0.5f for long lines
-
-        if (lineLength < 1.5f)
+        if (thisColumn < column - 1 && allElements[thisColumn + 1, thisRow])
         {
-            // For short lines, set only start and end points
-            lineRenderer.positionCount = 2; // Only 2 points for start and end
-            lineRenderer.SetPosition(0, new Vector3(startPoint.x, startPoint.y, 0f));
-            lineRenderer.SetPosition(1, new Vector3(endPoint.x, endPoint.y, 0f));
+            return Vector2.right;
         }
-        else
+
+        if (thisColumn > 0 && allElements[thisColumn - 1, thisRow])
         {
-            // For longer lines, divide into segments and apply sawtooth pattern
-            //int segments = 16;
-            lineRenderer.positionCount = segments + 1; // 17 points for 16 segments
+            return Vector2.left;
+        }
 
-            // Convert Vector2 to Vector3 (z = 0 for 2D lines)
-            Vector3 startPoint3D = new Vector3(startPoint.x, startPoint.y, 0f);
-            Vector3 endPoint3D = new Vector3(endPoint.x, endPoint.y, 0f);
 
-            // Calculate the normalized direction vector
-            Vector3 direction = (endPoint3D - startPoint3D).normalized;
+        if (thisRow < row - 1 && allElements[thisColumn, thisRow + 1])
+        {
+            return Vector2.up;
+        }
 
-            // Calculate and apply the sawtooth pattern
-            float segmentLength = lineLength / segments; // Uniform length for each segment
-            float maxShift = (Mathf.Abs(endPoint.x - startPoint.x) > 2f && Mathf.Abs(endPoint.y - startPoint.y) > 2f) ? 0.4f : 0.2f; // Larger shift for longer diagonals
 
-            for (int i = 0; i <= segments; i++) // Include both endpoints
+        if (thisRow > 0 && allElements[thisColumn, thisRow - 1])
+        {
+            return Vector2.down;
+        }
+
+        return Vector2.zero;
+    }
+
+    private void BirthExpandable()
+    {
+        bool slimeBorn = false;
+        int loops = 0;
+        const int maxLoops = 200;
+
+        while (!slimeBorn && loops < maxLoops)
+        {
+            int newX = UnityEngine.Random.Range(0, column);
+            int newY = UnityEngine.Random.Range(0, row);
+
+            if (expandCells[newX, newY])
             {
-                Vector3 point = startPoint3D + direction * (i * segmentLength);
+                Vector2 adj = CheckForExpand(newX, newY);
 
-                // Calculate shift factor that decreases as we get closer to the end point
-                float t = (float)i / segments; // Interpolation value between 0 and 1
-                float shiftFactor = maxShift * (1 - t); // Gradually decrease shift as we approach the end
-
-                // Create the sawtooth effect by shifting odd points along x and y
-                if (i % 2 != 0) // Check if the index is odd
+                if (adj != Vector2.zero)
                 {
-                    // Apply alternating shifts for the sawtooth effect
-                    float shift = shiftFactor * (i % 2 == 1 ? 1 : -1); // Alternating direction for each odd point
+                    int adjX = newX + (int)adj.x;
+                    int adjY = newY + (int)adj.y;
 
-                    // Apply the shift to both X and Y axes
-                    point.x += shift;
-                    point.y += shift;
+                    Destroy(allElements[adjX, adjY]);
+                    Vector2 tempPos = new Vector2(adjX, adjY);
+
+                    // Add slime
+                    GameObject expandingElement = Instantiate(expand01Prefab, tempPos, Quaternion.identity);
+                    expandCells[adjX, adjY] = expandingElement.GetComponent<SpecialElements>();
+
+                    int randomValue = UnityEngine.Random.Range(1, 100);
+                    //naming
+                    string elementName = expandingElement.tag + "_c" + adjX + "_r" + adjY + "_" + randomValue + "_new";
+                    expandingElement.name = elementName;
+
+                    //set properties parent
+                    expandingElement.transform.parent = gameArea.transform;
+
+                    slimeBorn = true;
                 }
-
-                lineRenderer.SetPosition(i, point);
             }
+
+            loops++;
         }
-
-        int randStart = UnityEngine.Random.Range(0, rayColors.Count);
-        //int randEnd = UnityEngine.Random.Range(0, rayColors.Count);
-
-        Color startRayColor = rayColors[randStart];
-        Color endRayColor = rayColors[randStart];
-
-        // Set the color
-        lineRenderer.startColor = startRayColor;
-        lineRenderer.endColor = endRayColor;
-
-        // Set the width
-        lineRenderer.startWidth = width;
-        lineRenderer.endWidth = width;
-
-        // Set additional properties (optional)
-        lineRenderer.useWorldSpace = true; // Use world coordinates
-        lineRenderer.sortingOrder = 1;    // Ensure visibility
-
-        //sorting
-        lineRenderer.sortingLayerName = "Elements";
-        lineRenderer.sortingOrder = 3;
-
-
-        //set parent
-        lineObject.transform.parent = gameArea.transform;
-
-        createdLines.Add(lineObject);
     }
 
-
-    // Coroutine to fade out the line's opacity and destroy it
-    private IEnumerator FadeAndDestroyLine(LineRenderer lineRenderer, GameObject lineObject)
-    {
-        float fadeDuration = 0.5f; // Time in seconds to fade out
-        float startTime = Time.time;
-        Color startColor = lineRenderer.startColor;
-
-        //get width
-        float startWidth = lineRenderer.startWidth;
-
-        // Gradually decrease opacity over time
-        while (Time.time < startTime + fadeDuration)
-        {
-            float t = (Time.time - startTime) / fadeDuration; // Calculate the time factor
-            float alpha = Mathf.Lerp(1f, 0f, t); // Lerp from 1 to 0 for opacity
-
-            float lineWidth = Mathf.Lerp(startWidth, 0f, t); // Lerp from 1 to 0 for opacity
-
-            // Set the color with the new alpha
-            Color fadedColor = new Color(startColor.r, startColor.g, startColor.b, alpha);
-            lineRenderer.startColor = fadedColor;
-            lineRenderer.endColor = fadedColor;
-
-            lineRenderer.startWidth = lineWidth;
-            lineRenderer.endWidth = lineWidth;
-
-            yield return null; // Wait until the next frame
-        }
-
-        // Ensure the final opacity is 0
-        lineRenderer.startColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
-        lineRenderer.endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
-
-        // Destroy the line object after fading
-        Destroy(lineObject);
-    }
 
     private IEnumerator UpdatePerSec()
     {

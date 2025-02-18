@@ -28,6 +28,24 @@ MonoBehaviour:
   - columnX: 1
     rowY: 6
     tileKind: 16
+  - columnX: 3
+    rowY: 0
+    tileKind: 21
+  - columnX: 2
+    rowY: 0
+    tileKind: 15
+  - columnX: 4
+    rowY: 0
+    tileKind: 20
+  - columnX: 4
+    rowY: 7
+    tileKind: 18
+  - columnX: 5
+    rowY: 7
+    tileKind: 19
+  - columnX: 6
+    rowY: 7
+    tileKind: 14
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
@@ -38,7 +56,7 @@ MonoBehaviour:
   goalsDescription: Collect the socks
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 14
+    counterValue: 24
   levelGoals:
   - numberGoalsNeeded: 2
     numberCollectedGoals: 0

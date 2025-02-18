@@ -22,11 +22,12 @@ public class AvatarManager : MonoBehaviour
     {
         avatarImage = avatar.GetComponent<Image>();
 
+        //game
         if (gameBoard != null)
         {
             gameBoardClass = gameBoard.GetComponent<GameBoard>();
         }
-        else
+        else //levels
         {
             gameBoardClass = null;
             InvokeRepeating(nameof(ChangeAvatar), 0f, 10f);
@@ -56,7 +57,7 @@ public class AvatarManager : MonoBehaviour
 
     void Update()
     {
-
+        //for game
         if (gameBoardClass != null)
         {
             bool canSetTemporaryAvatar = gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop;
@@ -67,18 +68,20 @@ public class AvatarManager : MonoBehaviour
                 StartCoroutine(CheckConditionsFor10Seconds());
             }
         }
-        else
+        
+        ChangeAvaOnClick();
+    }
+
+    private void ChangeAvaOnClick()
+    {
+        if (Input.GetMouseButtonDown(0))  // Left click or touch
         {
-            if (Input.GetMouseButtonDown(0))  // Left click or touch
+            if (avatarImage.sprite == avatarSprite[3])
             {
-                if (avatarImage.sprite == avatarSprite[3])
-                {
-                    int randomIndex = Random.Range(0, 3);
-                    avatarImage.sprite = avatarSprite[randomIndex];
-                }
+                int randomIndex = Random.Range(0, 3); //random avatar
+                avatarImage.sprite = avatarSprite[randomIndex];
             }
         }
-
     }
 
     private IEnumerator CheckConditionsFor10Seconds()

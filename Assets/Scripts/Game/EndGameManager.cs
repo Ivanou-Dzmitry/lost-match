@@ -169,9 +169,9 @@ public class EndGameManager : MonoBehaviour
         levelNumber.text = "LEVEL " + (gameBoardClass.level + 1);
 
         //credits. saved if close, but not save if retry
-        int currentCreditsCount = gameDataClass.saveData.credits + scoreManagerClass.score;
+        int currentCreditsCount = scoreManagerClass.score;
 
-        creditsCount.text = "" + currentCreditsCount;
+        creditsCount.text = "+" + currentCreditsCount; //show earned credits
 
         //turn on stars
         for (int i = 0; i < scoreManagerClass.numberStars; i++)

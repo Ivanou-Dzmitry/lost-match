@@ -32,6 +32,7 @@ public class ElementController : MonoBehaviour
     private HintManager hintManagerClass;
     private GoalManager goalManagerClass;
     private UIManager uiManagerClass;
+    private FXManager fxManagerClass;
 
     private float movementSpeed = 20.0f;
 
@@ -44,8 +45,8 @@ public class ElementController : MonoBehaviour
 
     [Header("Combo")]
     public bool isCombo;
-    public int comboE1;
-    public int comboE2;
+    public int comboE1; //element 1 for combo
+    public int comboE2; //element 2 for combo
 
     [Header("Color")]
     public Color elementColor; //for colorize wrap
@@ -90,6 +91,7 @@ public class ElementController : MonoBehaviour
         hintManagerClass = GameObject.FindWithTag("HintManager").GetComponent<HintManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+        fxManagerClass = GameObject.FindWithTag("FXManager").GetComponent<FXManager>();
 
         animatorElement = GetComponent<Animator>();
 
@@ -282,7 +284,7 @@ public class ElementController : MonoBehaviour
         {
             for (int i = 0; i < colorBombElements.Count; i++)
             {
-                gameBoardClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
+                fxManagerClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
             }
         }
     }
@@ -292,7 +294,7 @@ public class ElementController : MonoBehaviour
     {
         //for color bomb
         Vector2 startPoint = new Vector2(this.column, this.row);
-        gameBoardClass.createdLines.Clear();
+        fxManagerClass.createdLines.Clear();
 
         isCombo = false;
         comboE1 = -1;

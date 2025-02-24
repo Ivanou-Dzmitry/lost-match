@@ -12,48 +12,107 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_13
   m_EditorClassIdentifier: 
-  columns: 7
-  rows: 6
+  columns: 6
+  rows: 9
+  xmlLayoutFile: {fileID: 4900000, guid: 216fe9fb62cda774fa0d8a45e889f037, type: 3}
   boardLayout:
   - columnX: 0
-    rowY: 0
-    tileKind: 5
-  - columnX: 6
-    rowY: 0
-    tileKind: 5
+    rowY: 8
+    tileKind: 14
+  - columnX: 5
+    rowY: 8
+    tileKind: 14
+  - columnX: 0
+    rowY: 7
+    tileKind: 14
+  - columnX: 5
+    rowY: 7
+    tileKind: 14
+  - columnX: 0
+    rowY: 6
+    tileKind: 14
+  - columnX: 5
+    rowY: 6
+    tileKind: 14
   - columnX: 0
     rowY: 5
-    tileKind: 5
-  - columnX: 6
+    tileKind: 14
+  - columnX: 5
     rowY: 5
-    tileKind: 5
+    tileKind: 14
   - columnX: 0
     rowY: 4
     tileKind: 5
-  - columnX: 6
+  - columnX: 1
     rowY: 4
-    tileKind: 5
-  - columnX: 2
-    rowY: 5
-    tileKind: 8
+    tileKind: 14
   - columnX: 4
-    rowY: 5
-    tileKind: 9
-  elementsBack:
-    gameBoardBackSprite: {fileID: 21300000, guid: d875033e17e65ad49a779b385239949d, type: 3}
+    rowY: 4
+    tileKind: 14
+  - columnX: 5
+    rowY: 4
+    tileKind: 5
+  - columnX: 0
+    rowY: 3
+    tileKind: 14
+  - columnX: 5
+    rowY: 3
+    tileKind: 14
+  - columnX: 0
+    rowY: 2
+    tileKind: 14
+  - columnX: 5
+    rowY: 2
+    tileKind: 14
+  - columnX: 0
+    rowY: 1
+    tileKind: 14
+  - columnX: 1
+    rowY: 1
+    tileKind: 6
+  - columnX: 2
+    rowY: 1
+    tileKind: 6
+  - columnX: 3
+    rowY: 1
+    tileKind: 6
+  - columnX: 4
+    rowY: 1
+    tileKind: 6
+  - columnX: 5
+    rowY: 1
+    tileKind: 14
+  - columnX: 0
+    rowY: 0
+    tileKind: 14
+  - columnX: 1
+    rowY: 0
+    tileKind: 14
+  - columnX: 2
+    rowY: 0
+    tileKind: 14
+  - columnX: 3
+    rowY: 0
+    tileKind: 14
+  - columnX: 4
+    rowY: 0
+    tileKind: 14
+  - columnX: 5
+    rowY: 0
+    tileKind: 14
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 1e000000320000004b000000
-  goalsDescription: Collect scarves
+  scoreGoals: 6400000096000000c8000000
+  goalsDescription: Break the ice floes
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 22
+    counterValue: 18
   levelGoals:
-  - numberGoalsNeeded: 6
-    numberCollectedGoals: 1
-    goalSprite: {fileID: 21300000, guid: 9b004a568872f2b45ac925678e91793e, type: 3}
-    matchValue: LineBomb
+  - numberGoalsNeeded: 22
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 public class LevelConfirmPanel : MonoBehaviour
 {
@@ -86,6 +87,34 @@ public class LevelConfirmPanel : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        int activeLevels = gameDataClass.saveData.isActive.Count(b => b);
+
+        buster01.addBusterButton.interactable = false;
+        buster11.addBusterButton.interactable = false;
+
+        Image b1Img = buster01.addBusterPanel.GetComponent<Image>();
+        Image b11Img = buster11.addBusterPanel.GetComponent<Image>();
+
+        b1Img.color = Color.black;
+        b11Img.color = Color.black;
+
+        if (activeLevels > 19)
+        {
+            buster01.addBusterButton.interactable = true;
+            b1Img.color = Color.white;
+        }
+
+
+        if (activeLevels > 9)
+        {
+            buster11.addBusterButton.interactable = true;
+            b11Img.color = Color.white;
+        }
+
+    }
+
     private void Update()
     {
         bool isBonus1Ready = (bonusShopClass != null && buster01Prefab != null);
@@ -101,7 +130,7 @@ public class LevelConfirmPanel : MonoBehaviour
         if (isBonus11Ready)
         {
             if (buster11.bonusCount == 0)
-                buster11.useBusterPanel.SetActive(false);
+                buster11.useBusterPanel.SetActive(false);            
         }
     }
 

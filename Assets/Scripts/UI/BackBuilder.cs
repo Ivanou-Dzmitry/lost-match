@@ -106,7 +106,7 @@ public class BackBuilder : MonoBehaviour
         }
 
         // Find the index in the tiles array based on tileNumber. 0-15 Elements, 16-... back
-        int tileIndex = tileNumber - 16;
+        int tileIndex = tileNumber - 26;
 
        // Debug.Log("tileIndex: " + tileIndex);
         

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -158,6 +159,10 @@ public class BonusButton : MonoBehaviour
         {
             countPanel.SetActive(false);
         }
+
+
+
+
     }
 
     private void Awake()
@@ -202,6 +207,8 @@ public class BonusButton : MonoBehaviour
 
             HideMinusButton();
         }
+
+
     }
 
 
@@ -292,6 +299,28 @@ public class BonusButton : MonoBehaviour
             if (busterPlace == BusterPlace.InGame && this.addBusterPanel != null)
             {
                 this.addBusterPanel.SetActive(false);
+            }
+        }
+
+        //get active levels
+        int activeLevels = gameDataClass.saveData.isActive.Count(b => b);
+        
+        //Level depends
+        //for line bomb
+        if (this.bonusNumber == 11)
+        {
+            if (this.plusButton != null) // Check if plusButton is assigned
+            {
+                this.plusButton.interactable = (activeLevels > 9);
+            }
+        }
+
+        //for color bomb
+        if (this.bonusNumber == 1)
+        {
+            if (this.plusButton != null) // Check if plusButton is assigned
+            {
+                this.plusButton.interactable = (activeLevels > 19);
             }
         }
 

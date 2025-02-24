@@ -12,39 +12,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_11
   m_EditorClassIdentifier: 
-  columns: 7
-  rows: 9
+  columns: 6
+  rows: 7
   xmlLayoutFile: {fileID: 4900000, guid: 86bac1ca8b605fd4c9887ba2db97036b, type: 3}
   boardLayout:
+  - columnX: 0
+    rowY: 6
+    tileKind: 5
+  - columnX: 5
+    rowY: 6
+    tileKind: 5
+  - columnX: 0
+    rowY: 3
+    tileKind: 14
+  - columnX: 1
+    rowY: 3
+    tileKind: 14
+  - columnX: 2
+    rowY: 3
+    tileKind: 14
   - columnX: 3
     rowY: 3
-    tileKind: 17
-  - columnX: 3
-    rowY: 4
-    tileKind: 17
-  - columnX: 1
-    rowY: 5
-    tileKind: 16
-  - columnX: 1
-    rowY: 6
-    tileKind: 16
-  - columnX: 3
+    tileKind: 14
+  - columnX: 4
+    rowY: 3
+    tileKind: 14
+  - columnX: 5
+    rowY: 3
+    tileKind: 14
+  - columnX: 0
     rowY: 0
-    tileKind: 21
+    tileKind: 14
+  - columnX: 1
+    rowY: 0
+    tileKind: 14
   - columnX: 2
     rowY: 0
-    tileKind: 15
+    tileKind: 14
+  - columnX: 3
+    rowY: 0
+    tileKind: 14
   - columnX: 4
     rowY: 0
-    tileKind: 20
-  - columnX: 4
-    rowY: 7
-    tileKind: 18
+    tileKind: 14
   - columnX: 5
-    rowY: 7
-    tileKind: 19
-  - columnX: 6
-    rowY: 7
+    rowY: 0
     tileKind: 14
   preloadBoardLayout: []
   element:
@@ -52,17 +64,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
-  scoreGoals: 140000002800000037000000
-  goalsDescription: Collect the socks
+  scoreGoals: 1e0000005a00000082000000
+  goalsDescription: Break the ice floes
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 24
+    counterValue: 15
   levelGoals:
-  - numberGoalsNeeded: 2
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
-    matchValue: blocker_01
-  - numberGoalsNeeded: 2
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: bb9a65553c30ee54e80ad40813dc433f, type: 3}
-    matchValue: breakable_01
+  - numberGoalsNeeded: 12
+    numberCollectedGoals: 12
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

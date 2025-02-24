@@ -402,13 +402,13 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0, g: 0, b: 0, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1528,6 +1528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   busterType: 0
+  busterPlace: 0
   colorizeUI: 1
   interactibleUI: 1
   maxSignUI: 1
@@ -1537,6 +1538,7 @@ MonoBehaviour:
   bundleCount: 0
   isBundle: 0
   bonusButtonShop: {fileID: 3059157766219364375}
+  bonusCount: 0
   bonusCountText: {fileID: 482928757842525031}
   busterCountPanel: {fileID: 0}
   countPanel: {fileID: 5479646287690070989}
@@ -1555,6 +1557,7 @@ MonoBehaviour:
   busterTimeText: {fileID: 0}
   addBusterPanel: {fileID: 0}
   addBusterButton: {fileID: 0}
+  useBusterPanel: {fileID: 0}
 --- !u!222 &4389239180841709035
 CanvasRenderer:
   m_ObjectHideFlags: 0

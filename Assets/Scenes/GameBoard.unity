@@ -7285,8 +7285,8 @@ MonoBehaviour:
   expand02Prefab: {fileID: 4965281490884118044, guid: e1396ca25d0f5ff4ab9991d9671fa5d1, type: 3}
   expand03Prefab: {fileID: 4965281490884118044, guid: f6e8b86872833e140a55016145e7751d, type: 3}
   locker01Prefab: {fileID: 4965281490884118044, guid: eb6ce12b1aa70d1498c830df64c3a3a8, type: 3}
-  locker02Prefab: {fileID: 4965281490884118044, guid: 053e17efef9559f49a1ca1ddab29a69d, type: 3}
-  locker03Prefab: {fileID: 4965281490884118044, guid: 2add83a2315969b40a68f567ded335b2, type: 3}
+  locker02Prefab: {fileID: 4965281490884118044, guid: 0061180d37e29374abcec496d631e10b, type: 3}
+  locker03Prefab: {fileID: 4965281490884118044, guid: 1a6e283c062e07b4b82b072ec9a0c849, type: 3}
   colorBusterInUse: 0
   lineBusterInUse: 0
 --- !u!4 &1186150553

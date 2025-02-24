@@ -186,7 +186,7 @@ MonoBehaviour:
   hitPoints: 2
   elementSounds:
   - {fileID: 8300000, guid: 77e3e0781dbeb9e43b54511d61bf470a, type: 3}
-  - {fileID: 8300000, guid: 77e3e0781dbeb9e43b54511d61bf470a, type: 3}
+  - {fileID: 8300000, guid: 2fc91998b4a70e84494980889ae07645, type: 3}
   elementParticles:
   - {fileID: 6634894383000490887, guid: f890e0f9346b95f43b4ec4acc84f43f2, type: 3}
   - {fileID: 6634894383000490887, guid: 4dab9acf571aabf4abd9888b7d5d7871, type: 3}

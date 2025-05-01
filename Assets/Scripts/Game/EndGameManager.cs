@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public enum GameType
 {
@@ -27,6 +28,8 @@ public class EndGameManager : MonoBehaviour
     private ScoreManager scoreManagerClass;
     private SoundManager soundManagerClass;
     private BonusShop bonusShopClass;
+    private GoalManager goalManagerClass;
+
 
     //panels
     public GameObject winPanel;
@@ -65,6 +68,11 @@ public class EndGameManager : MonoBehaviour
 
     public int finalLevelNumber = 50; //!Important
 
+    private bool thisRetry = false;
+    private bool thisInterrupt = false;
+    private bool thisWin = false;
+    private bool thisBuyMoves = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -73,7 +81,8 @@ public class EndGameManager : MonoBehaviour
         levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
-        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();        
+        bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
 
         SetGameType();
         SetupGame();
@@ -192,6 +201,7 @@ public class EndGameManager : MonoBehaviour
             soundManagerClass.PlayMusic(winMusic);
         }
 
+        thisWin = true;
     }
 
     public void LoseGame()
@@ -232,6 +242,11 @@ public class EndGameManager : MonoBehaviour
             gameDataClass.saveData.bonuses[5] = livesCount; //minus 1 life
             gameDataClass.SaveToFile();
         }
+
+        thisInterrupt = true;
+        thisWin = false;
+        //log
+        Log();
     }
 
 
@@ -239,7 +254,7 @@ public class EndGameManager : MonoBehaviour
     {
         int nextLevelNumber = gameBoardClass.level + 1;
 
-       
+        thisWin = true;
         //get moves
         if (nextLevelNumber < finalLevelNumber)
         {
@@ -254,11 +269,13 @@ public class EndGameManager : MonoBehaviour
 
             confirmPanel.SetActive(true);
 
-            SaveCredits();          
+            SaveCredits();
+            Log();
         }
         else
         {
             SaveCredits();
+            Log();
             SceneManager.LoadScene("Levels");
         }
     }
@@ -269,6 +286,11 @@ public class EndGameManager : MonoBehaviour
         {
             gameDataClass.saveData.levelToLoad = (gameBoardClass.level);
             gameDataClass.SaveToFile();
+            
+            //log
+            thisRetry = true;
+            thisWin = true;
+            Log();
 
             SceneManager.LoadScene("GameBoard");
         }
@@ -290,8 +312,42 @@ public class EndGameManager : MonoBehaviour
         soundManagerClass.PlayMusic(levelMusic);
 
         AlarmAnimation(curCounterVal, true);
+
+        thisBuyMoves = true;
     }
 
+    public void Log()
+    {
+        //lvl
+        gameBoardClass.log.levelNumber = gameBoardClass.level;
+
+        //size
+        gameBoardClass.log.col = gameBoardClass.column;
+        gameBoardClass.log.row = gameBoardClass.row;
+
+        //credits
+        gameBoardClass.log.score = scoreManagerClass.score;
+
+        gameBoardClass.log.retry = thisRetry;
+        gameBoardClass.log.interrupt = thisInterrupt;
+        gameBoardClass.log.win = thisWin;
+
+        int goalsCount = goalManagerClass.levelGoals.Length;
+
+        gameBoardClass.log.goal1 = goalManagerClass.levelGoals[0].numberCollectedGoals;
+        
+        if (goalsCount > 1)
+            gameBoardClass.log.goal2 = goalManagerClass.levelGoals[1].numberCollectedGoals;
+        
+        if (goalsCount > 2)
+            gameBoardClass.log.goal3 = goalManagerClass.levelGoals[2].numberCollectedGoals;
+
+        gameBoardClass.log.moves = curCounterVal;
+
+        gameBoardClass.log.buyMoves = thisBuyMoves;
+
+        gameBoardClass.log.EndSession();
+    }
 
 /*    public void QuitAndLooseLife()
     {

@@ -57,6 +57,30 @@ public class MatchFinder : MonoBehaviour
         //mark as matched
         element.GetComponent<ElementController>().isMatched = true;
 
+        //log
+/*        if (element != null)
+        {
+            switch (element.tag)
+            {
+                case "element_01":
+                    gameBoardClass.log.elem1++;
+                    break;
+                case "element_02":
+                    gameBoardClass.log.elem2++;
+                    break;
+                case "element_03":
+                    gameBoardClass.log.elem3++;
+                    break;
+                case "element_04":
+                    gameBoardClass.log.elem4++;
+                    break;
+                case "element_05":
+                    gameBoardClass.log.elem5++;
+                    break;
+            }
+        }*/
+
+
         //element.GetComponent<SpriteRenderer>().color = element.GetComponent<ElementController>().elementColor; //tint for debug
         //element.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1f); //tint for debug
 

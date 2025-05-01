@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System.Linq;
 
 
 public enum GameState
@@ -212,8 +213,10 @@ public class GameBoard : MonoBehaviour
     private int initialMoves; //for time booster run
     private int boosterValue = 10; //value when buster run
 
-    private Coroutine updateCoroutine;    
+    private Coroutine updateCoroutine;
 
+    [Header("LOG")]
+    public GameLog log;
 
     private void Awake()
     {
@@ -296,6 +299,8 @@ public class GameBoard : MonoBehaviour
             { TileKind.Breakable03, break03Prefab }
         };
 
+        //logger start
+        log = gameObject.AddComponent<GameLog>();
     }
 
     void OnEnable()
@@ -371,7 +376,7 @@ public class GameBoard : MonoBehaviour
         levelNumberTxt.text = "Level " + (level + 1);
 
         //for time booster
-        initialMoves = endGameManagerClass.curCounterVal;
+        initialMoves = endGameManagerClass.curCounterVal;       
     }
 
     //empty cells
@@ -514,7 +519,6 @@ public class GameBoard : MonoBehaviour
                     if (lockedElement != null)
                     {
                         lockedCells[boardLayout[i].columnX, boardLayout[i].rowY] = lockedElement.GetComponent<SpecialElements>();
-                        Debug.Log("here");
                         namingCounter++;
 
                         string elementName = lockedPrefab.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
@@ -724,6 +728,39 @@ public class GameBoard : MonoBehaviour
         
         //remove doubles
         matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
+
+        //Debug.Log("Count:" + matchFinderClass.currentMatch.Count);
+        foreach (var match in matchFinderClass.currentMatch)
+        {
+            Debug.Log("Current Match: " + string.Join(", ", matchFinderClass.currentMatch.Select(go => go.tag)));
+        }
+
+        // Count elements by tag
+        foreach (var obj in matchFinderClass.currentMatch)
+        {
+            if (obj != null)
+            {
+                switch (obj.tag)
+                {
+                    case "element_01":
+                        log.elem1++;
+                        break;
+                    case "element_02":
+                        log.elem2++;
+                        break;
+                    case "element_03":
+                        log.elem3++;
+                        break;
+                    case "element_04":
+                        log.elem4++;
+                        break;
+                    case "element_05":
+                        log.elem5++;
+                        break;
+                }
+            }
+        }
+
 
         CongratInfo(matchFinderClass.currentMatch.Count);
 

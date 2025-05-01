@@ -37,12 +37,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 8
     tileKind: 5
-  - columnX: 2
-    rowY: 8
-    tileKind: 12
-  - columnX: 5
-    rowY: 8
-    tileKind: 12
   - columnX: 6
     rowY: 8
     tileKind: 5
@@ -55,12 +49,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 7
     tileKind: 5
-  - columnX: 2
-    rowY: 7
-    tileKind: 12
-  - columnX: 5
-    rowY: 7
-    tileKind: 12
   - columnX: 6
     rowY: 7
     tileKind: 5
@@ -73,12 +61,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 6
     tileKind: 5
-  - columnX: 2
-    rowY: 6
-    tileKind: 12
-  - columnX: 5
-    rowY: 6
-    tileKind: 12
   - columnX: 6
     rowY: 6
     tileKind: 5
@@ -91,12 +73,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 5
     tileKind: 5
-  - columnX: 2
-    rowY: 5
-    tileKind: 12
-  - columnX: 5
-    rowY: 5
-    tileKind: 12
   - columnX: 6
     rowY: 5
     tileKind: 5
@@ -109,12 +85,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 4
     tileKind: 5
-  - columnX: 2
-    rowY: 4
-    tileKind: 12
-  - columnX: 5
-    rowY: 4
-    tileKind: 12
   - columnX: 6
     rowY: 4
     tileKind: 5
@@ -127,12 +97,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 3
     tileKind: 5
-  - columnX: 2
-    rowY: 3
-    tileKind: 12
-  - columnX: 5
-    rowY: 3
-    tileKind: 12
   - columnX: 6
     rowY: 3
     tileKind: 5
@@ -145,12 +109,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 2
     tileKind: 5
-  - columnX: 2
-    rowY: 2
-    tileKind: 12
-  - columnX: 5
-    rowY: 2
-    tileKind: 12
   - columnX: 6
     rowY: 2
     tileKind: 5
@@ -163,12 +121,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 1
     tileKind: 5
-  - columnX: 2
-    rowY: 1
-    tileKind: 12
-  - columnX: 5
-    rowY: 1
-    tileKind: 12
   - columnX: 6
     rowY: 1
     tileKind: 5
@@ -181,9 +133,6 @@ MonoBehaviour:
   - columnX: 1
     rowY: 0
     tileKind: 11
-  - columnX: 2
-    rowY: 0
-    tileKind: 12
   - columnX: 5
     rowY: 0
     tileKind: 5
@@ -204,11 +153,7 @@ MonoBehaviour:
     gameType: 0
     counterValue: 25
   levelGoals:
-  - numberGoalsNeeded: 9
+  - numberGoalsNeeded: 18
     numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01
-  - numberGoalsNeeded: 16
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
-    matchValue: locker_01

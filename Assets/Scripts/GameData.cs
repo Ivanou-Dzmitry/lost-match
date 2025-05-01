@@ -16,7 +16,6 @@ public class SaveData
     public int[] maxBonusCount;
     public int[] bonusesPrice;
     public int credits;
-    //public int lives;
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;

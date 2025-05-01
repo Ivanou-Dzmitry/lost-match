@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - SoundManager
+  - SettingsManager
+  - GameData
+  - EffectSource
+  - MusicSource
+  - MatchFinder
+  - GoalManager
+  - ScoreManager
+  - element_01
+  - element_02
+  - element_03
+  - element_04
+  - element_05
+  - GameBoard
+  - EndGameManager
+  - line_bomb
+  - breakable_01
+  - breakable_02
+  - blocker_01
+  - blocker_02
+  - LevelGoals
+  - BonusButton
+  - BonusShop
+  - no_tag
+  - BonusButtonPrefabGame
+  - TimeManager
+  - HintManager
+  - UIManager
+  - ShopInfoText
+  - LevelButton
+  - PanelWithBonus
+  - LSM
+  - LevelButton3D
+  - locker_01
+  - BackBuilder
+  - breakable_03
+  - Lock
+  - blocker_03
+  - FXManager
+  - expandable_01
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - LevelBack
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Elements
+    uniqueID: 1779671539
+    locked: 0
+  - name: UI
+    uniqueID: 914660801
+    locked: 0

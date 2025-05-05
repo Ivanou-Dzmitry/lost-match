@@ -64,7 +64,7 @@ public class GameData : MonoBehaviour
             string filePath = Path.Combine(Application.persistentDataPath, fileName);
 
             File.WriteAllText(filePath, savingData);
-            Debug.Log("Game data saved successfully to: " + filePath);
+            //Debug.Log("Game data saved successfully to: " + filePath);
         }
         catch (Exception ex)
         {

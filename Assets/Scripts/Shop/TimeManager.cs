@@ -99,7 +99,7 @@ public class TimeManager : MonoBehaviour
 
     private void CheckTimers()
     {
-        Debug.Log("Checking timers...");
+        //Debug.Log("Checking timers...");
 
         List<string> completedTimers = new List<string>();
 

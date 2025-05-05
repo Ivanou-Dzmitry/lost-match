@@ -257,7 +257,6 @@ public class LevelsSceneManager : MonoBehaviour
     public void  NextLevels()
     {
         //DebugLogger("NEXT IN");
-
         targetRotationX -= rotationAmount;
 
         totalSteps++;
@@ -446,7 +445,7 @@ public class LevelsSceneManager : MonoBehaviour
                 case TouchPhase.Ended:
                     endTouchPosition = touch.position;
                     float swipeTime = Time.time - touchStartTime;
-                    debugTxt.text = "ST-" + swipeTime;
+                    //debugTxt.text = "ST-" + swipeTime;
 
                     if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)
                     {                        
@@ -459,20 +458,23 @@ public class LevelsSceneManager : MonoBehaviour
 
         
        // Mouse Input (for testing on PC)
-/*        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             startTouchPosition = Input.mousePosition;
+            touchStartTime = Time.time;
             swipeDetected = false;
         }
         else if (Input.GetMouseButtonUp(0))
         {
             endTouchPosition = Input.mousePosition;
-            if (!swipeDetected && IsValidSwipe())
+            float swipeTime = Time.time - touchStartTime;
+
+            if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)
             {
                 HandleSwipe();
                 swipeDetected = true;
             }
-        }*/
+        }
 
         
     }

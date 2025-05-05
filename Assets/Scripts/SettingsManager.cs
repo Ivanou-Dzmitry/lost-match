@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,9 +35,54 @@ public class SettingsManager : MonoBehaviour
     public TMP_Text musicValueTxt;
     public Sprite[] musicButtonSprites;
 
+    public static class SystemInformation
+    {
+        [DllImport("user32.dll")]
+        private static extern System.IntPtr GetDesktopWindow();
+
+        [DllImport("user32.dll")]
+        private static extern System.IntPtr GetWindowDC(System.IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(System.IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref RECT pvParam, uint fWinIni);
+
+        private const uint SPI_GETWORKAREA = 0x0030;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
+        {
+            public int Left, Top, Right, Bottom;
+        }
+
+        public static int WorkingAreaHeight()
+        {
+            RECT rect = new RECT();
+            if (SystemParametersInfo(SPI_GETWORKAREA, 0, ref rect, 0))
+            {
+                return rect.Bottom - rect.Top;
+            }
+            else
+            {
+                // Fallback to screen height if failed
+                return Screen.currentResolution.height;
+            }
+        }
+    }
+
 
     private void Start()
     {
+
+        //Set Framerate
+        Application.targetFrameRate = 30;
+
+        //set resoluton
+        Screen.SetResolution(1920, 1080, true);
+        Screen.SetResolution((int)Screen.width, (int)Screen.height, true);
+
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;
 

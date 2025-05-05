@@ -350,16 +350,9 @@ public class GameBoard : MonoBehaviour
         //setup board
         SetUpBoard();
 
-        //Set Framerate
-        Application.targetFrameRate = 30;
-
-        //set resoluton
-        Screen.SetResolution(1920, 1080, true);
-        Screen.SetResolution((int)Screen.width, (int)Screen.height, true);
-
         //load backTIles!
 
-        if(xmlDocWithBackTileLayout != null)
+        if (xmlDocWithBackTileLayout != null)
             backBuilderClass.LoadDataFromXML(xmlDocWithBackTileLayout, column, row);
 
         //load back sprite

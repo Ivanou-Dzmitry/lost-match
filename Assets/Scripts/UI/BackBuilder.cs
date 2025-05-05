@@ -37,7 +37,7 @@ public class BackBuilder : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Loaded {sprites.Length} sprites from {atlas.texture.name}");
+            //Debug.Log($"Loaded {sprites.Length} sprites from {atlas.texture.name}");
         }
 
         return sprites;

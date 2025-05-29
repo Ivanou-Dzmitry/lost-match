@@ -127,7 +127,8 @@ public class BackBuilder : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Tile number " + tileNumber + " is out of bounds for the tiles array!");
+            //for 0 tiles
+            //Debug.Log("BackBuilder: Tile number " + tileNumber + " was loaded!");
         }
 
         Vector2 gridPosition = new Vector2(column, row);

@@ -104,6 +104,12 @@ public class EndGameManager : MonoBehaviour
                 if (gameBoardClass.worldClass.levels[gameBoardClass.level] != null)
                 {
                     EndGameReqClass = gameBoardClass.worldClass.levels[gameBoardClass.level].endGameRequrimentsForLevel;
+
+                    //check description
+                    if (EndGameReqClass.counterValue == 0)
+                    {
+                        Debug.LogWarning("Counter Value = 0. Set Counter Value for level!");
+                    }
                 }
             }
         }

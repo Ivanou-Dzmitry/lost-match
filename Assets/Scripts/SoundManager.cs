@@ -17,12 +17,17 @@ public class SoundManager : MonoBehaviour
     private GameData gameDataClass;
     private SettingsManager settingsManagerClass;
 
+    public float fadeTime = 1.5f; // You can set this in the inspector
+
+    private float originalVolume;
+
+    public static SoundManager Instance;
 
     private void Awake()
     {
-        if (soundManager == null)
+        if (Instance == null)
         {
-            soundManager = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -48,11 +53,13 @@ public class SoundManager : MonoBehaviour
 
     private void LoadSoundData()
     {
+        MuteSound(gameDataClass.saveData.soundToggle);
+        MuteMusic(gameDataClass.saveData.musicToggle);
+
         SetVolume("sound");
         SetVolume("music");
 
-        MuteSound(gameDataClass.saveData.soundToggle);
-        MuteMusic(gameDataClass.saveData.musicToggle);        
+        //Debug.Log($"Volume: sound={effectsSource.volume}, music={musicSource.volume}");
     }
 
 
@@ -69,7 +76,7 @@ public class SoundManager : MonoBehaviour
             {
                 musicSource.volume = gameDataClass.saveData.musicVolume;
             }
-        }
+        }        
     }
 
     public void MuteSound(bool value)
@@ -97,6 +104,7 @@ public class SoundManager : MonoBehaviour
         }
 
         AudioClip clip = musicSource.clip;
+        
         if (clip != null)
             PlayMusic(clip);
     }
@@ -122,15 +130,19 @@ public class SoundManager : MonoBehaviour
     {
         if (gameDataClass.saveData.musicToggle == true)
         {
-            musicSource.clip = clip;
+            //Debug.Log($"{musicSource}, {musicSource.isPlaying}, {musicSource.volume}");
 
-            //stop previous
             if (musicSource != null && musicSource.isPlaying)
             {
-                musicSource.Stop();
+                originalVolume = musicSource.volume;
+                StartCoroutine(FadeOutAndPlayNewClip(clip)); //fade out and play music
             }
-
-            musicSource.Play();
+            else
+            {
+                musicSource.clip = clip;
+                musicSource.volume = originalVolume;
+                musicSource.Play();
+            }
         }
     }
 
@@ -138,14 +150,53 @@ public class SoundManager : MonoBehaviour
     {
         if (musicSource != null && musicSource.isPlaying)
         {
-            musicSource.Stop();
+            originalVolume = musicSource.volume;
+            StartCoroutine(FadeOutAndStop());
         }
+    }
+
+    private IEnumerator FadeOutAndStop()
+    {
+        float startVolume = musicSource.volume;
+
+        float t = 0f;
+        while (t < fadeTime)
+        {
+            t += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeTime);
+            yield return null;
+        }
+
+        musicSource.Stop();
+        musicSource.volume = originalVolume;
+    }
+
+    private IEnumerator FadeOutAndPlayNewClip(AudioClip newClip)
+    {
+        float startVolume = musicSource.volume;
+        float t = 0f;
+
+        while (t < fadeTime)
+        {
+            t += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeTime);
+            yield return null;
+        }
+
+        musicSource.Stop();
+        musicSource.clip = newClip;
+        musicSource.volume = originalVolume;
+        musicSource.Play();
     }
 
 
     public void ButtonClick()
     {
-        aClip = (AudioClip)Resources.Load("button_click_01");
+        AudioClip aClip = Resources.Load<AudioClip>("Sound/Effects/btn_click01_aclip");
+        
+        if (aClip == null)
+            Debug.LogError("Failed to load audio clip!");
+        
         effectsSource.PlayOneShot(aClip);
     }
 }

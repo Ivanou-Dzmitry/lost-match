@@ -5719,9 +5719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraOffset: -1
-  aspectRatio: 1.78
   yOffset: 1
-  orthographicSize: 9
   backImage: {fileID: 553865568}
   elementBack: {fileID: 1016489731}
 --- !u!1001 &948813631

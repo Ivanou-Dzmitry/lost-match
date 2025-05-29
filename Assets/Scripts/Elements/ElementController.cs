@@ -23,6 +23,7 @@ public class ElementController : MonoBehaviour
     [Header("Swipe Stuff")]
     public float swipeAngle = 0;
     public float swipeResist = 0.5f;
+    private float adjustedSwipeResist;
 
     //classes
     private GameBoard gameBoardClass;
@@ -99,6 +100,10 @@ public class ElementController : MonoBehaviour
         isCombo = false;
         comboE1 = -1;
         comboE2 = -1;
+
+        float dpi = Screen.dpi;
+        if (dpi == 0) dpi = 96; // Fallback for unknown DPI values
+        adjustedSwipeResist = swipeResist / (dpi / 96f);
     }
 
     //step 1
@@ -116,9 +121,11 @@ public class ElementController : MonoBehaviour
             animatorElement.SetBool("Touched", true);
         }
 
+        //first mouse position
         if (gameBoardClass.currentState == GameState.move)
         {
-            firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //first touch
+            //firstTouchPos = Input.mousePosition; // Don't convert yet
         }
 
         //run using bonus
@@ -189,9 +196,10 @@ public class ElementController : MonoBehaviour
             animatorElement.SetBool("Touched", false);
         }
 
+        //mose final position
         if (gameBoardClass.currentState == GameState.move)
         {
-            finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //mouse 2 position
             CalculateAngle(); //step 3
         }
     }
@@ -199,8 +207,12 @@ public class ElementController : MonoBehaviour
     //step 4
     private void CalculateAngle()
     {
+        float mousePathY = Mathf.Abs(finalTouchPos.y - firstTouchPos.y);
+        float mousePathX = Mathf.Abs(finalTouchPos.x - firstTouchPos.x);
+        Debug.Log($"{finalTouchPos.y} : {firstTouchPos.y} : res {mousePathY}, swipe= {adjustedSwipeResist}");
+
         //work with swipe only
-        if (Mathf.Abs(finalTouchPos.y - firstTouchPos.y) > swipeResist || Mathf.Abs(finalTouchPos.x - firstTouchPos.x) > swipeResist)
+        if (mousePathY > adjustedSwipeResist || mousePathX > adjustedSwipeResist)
         {
             //state
             gameBoardClass.currentState = GameState.wait;

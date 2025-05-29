@@ -7,3 +7,9 @@ Library
 Logs
 lostmatch
 Builds
+.DS_Store
+Assembly-CSharp.csproj
+lost-match.sln
+ProjectSettings/BurstAotSettings_StandaloneOSX.json
+ProjectSettings/ProjectSettings.asset
+ProjectSettings/ProjectSettings.asset

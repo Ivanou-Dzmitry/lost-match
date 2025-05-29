@@ -85,6 +85,12 @@ public class GoalManager : MonoBehaviour
                     {
                         levelGoals[i].numberCollectedGoals = 0;
                     }
+
+                    //check goals
+                    if(levelGoals.Length == 0)
+                    {
+                        Debug.LogWarning("Set level Goals!");
+                    }
                 }
             }
         }

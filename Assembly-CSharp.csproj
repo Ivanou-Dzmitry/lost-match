@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\SoundManager.cs" />
     <Compile Include="Assets\Scripts\Game\HintManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+    <Compile Include="Assets\Scripts\Utils\ButtonAutoConnect.cs" />
     <Compile Include="Assets\Scripts\Elements\ElementController.cs" />
     <Compile Include="Assets\Scripts\UI\GoalPanel.cs" />
     <Compile Include="Assets\Scripts\Elements\FXManager.cs" />
@@ -94,6 +95,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_04_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_11_20\level_13_back.xml" />
+    <None Include="Assets\ScriptableObjects\Levels_21_30\level_22_back.xml" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_08_back.xml" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
@@ -104,7 +106,7 @@
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_09_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_01_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_02_back.xml" />
-    <None Include="Assets\ScriptableObjects\Levels_11_20\Level_11_back.xml" />
+    <None Include="Assets\ScriptableObjects\Levels_11_20\level_11_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_11_20\level_15_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_06_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_11_20\level_19_back.xml" />
@@ -117,6 +119,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\ScriptableObjects\Levels_1_10\Level_10_back.xml" />
+    <None Include="Assets\ScriptableObjects\Levels_21_30\level_21_back.xml" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\ScriptableObjects\Levels_11_20\level_14_back.xml" />
     <None Include="Assets\ScriptableObjects\Levels_11_20\level_20_back.xml" />

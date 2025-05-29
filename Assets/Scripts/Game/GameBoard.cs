@@ -239,11 +239,26 @@ public class GameBoard : MonoBehaviour
 
                     row = worldClass.levels[level].rows;
 
-                    elements = worldClass.levels[level].element;
-
+                    //elements check
+                    elements = worldClass.levels[level].element;                    
+                    if (elements.Length == 0)
+                    {
+                        Debug.LogError("No elements added to level!");
+                    }
+                    
+                    //goals check
                     scoreGoals = worldClass.levels[level].scoreGoals; //get score goals for stars
+                    if (scoreGoals.Length == 0)
+                    {
+                        Debug.LogError("No Score goals added to level!");
+                    }
 
+                    //desc check
                     goalsDescription = worldClass.levels[level].goalsDescription;
+                    if(goalsDescription.Length == 0)
+                    {
+                        Debug.LogError("No Level Description added to level!");
+                    }
 
                     //gameBoardBack = worldClass.levels[level].elementsBack; //back
 

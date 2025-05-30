@@ -584,6 +584,9 @@ public class BonusButton : MonoBehaviour
             //turn on particles
             BonusParticleManager(true);
         }
+
+        //sound
+        soundManagerClass.ButtonClick();
     }
 
     void SetBonusDescription(int selectedBonus)

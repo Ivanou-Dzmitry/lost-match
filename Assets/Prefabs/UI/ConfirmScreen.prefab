@@ -524,6 +524,7 @@ GameObject:
   - component: {fileID: 3651319343607288415}
   - component: {fileID: 4799480720844369896}
   - component: {fileID: 2450352574534231002}
+  - component: {fileID: 698423483980485343}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -692,6 +693,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &698423483980485343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2282150729155187980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6648905940fe2294abf844562964da7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2793274776190191291
 GameObject:
   m_ObjectHideFlags: 0
@@ -781,6 +794,7 @@ GameObject:
   - component: {fileID: 6635279699017092220}
   - component: {fileID: 2144110326445682150}
   - component: {fileID: 3033079085537768905}
+  - component: {fileID: 8014209974112007520}
   m_Layer: 5
   m_Name: PlayButton
   m_TagString: Untagged
@@ -938,6 +952,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8014209974112007520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2889684009685572211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6648905940fe2294abf844562964da7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3149445670572325163
 GameObject:
   m_ObjectHideFlags: 0

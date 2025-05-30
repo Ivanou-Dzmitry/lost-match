@@ -11,5 +11,7 @@ public class ButtonAutoConnect : MonoBehaviour
         {
             btn.onClick.AddListener(SoundManager.Instance.ButtonClick);
         }
+
+        Debug.Log("Click!");
     }
 }

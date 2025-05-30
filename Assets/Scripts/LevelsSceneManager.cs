@@ -203,6 +203,7 @@ public class LevelsSceneManager : MonoBehaviour
 
             LevelButton levelButtonScript3D = new3DButton.GetComponent<LevelButton>();
 
+            //assign level and panel
             if (levelButtonScript3D != null && new3DButton.tag == "LevelButton3D")
             {
                 levelButtonScript3D.level = i;
@@ -377,6 +378,8 @@ public class LevelsSceneManager : MonoBehaviour
                 if (hit.collider.gameObject.name != null) // Assuming this script is on the plane
                 {
                     LevelButton lvlButton = hit.collider.gameObject.GetComponent<LevelButton>();
+
+                    soundManagerClass.ButtonClick();
 
                     if (lvlButton != null && lvlButton.isActive && panelsActivity == false)
                     {

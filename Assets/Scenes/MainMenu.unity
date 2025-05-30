@@ -1502,7 +1502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectsSource: {fileID: 605416124}
   musicSource: {fileID: 1749257621}
-  fadeTime: 0.5
+  fadeTime: 1
 --- !u!4 &883751487
 Transform:
   m_ObjectHideFlags: 0

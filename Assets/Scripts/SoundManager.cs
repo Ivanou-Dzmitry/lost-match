@@ -20,6 +20,7 @@ public class SoundManager : MonoBehaviour
     public float fadeTime = 1.5f; // You can set this in the inspector
 
     private float originalVolume;
+    private float savedMusicTime = 0f;
 
     public static SoundManager Instance;
 
@@ -59,6 +60,13 @@ public class SoundManager : MonoBehaviour
         SetVolume("sound");
         SetVolume("music");
 
+        AudioClip clip = musicSource.clip;
+
+        if (clip != null && musicSource.mute == false)
+        {
+            PlayMusic(clip);
+        }
+
         //Debug.Log($"Volume: sound={effectsSource.volume}, music={musicSource.volume}");
     }
 
@@ -75,6 +83,7 @@ public class SoundManager : MonoBehaviour
             if (type == "music")
             {
                 musicSource.volume = gameDataClass.saveData.musicVolume;
+                originalVolume = musicSource.volume;
             }
         }        
     }
@@ -95,18 +104,14 @@ public class SoundManager : MonoBehaviour
     public void MuteMusic(bool value)
     {
         if(value)
-        {
-            musicSource.mute = false;
+        {            
+            musicSource.mute = false;            
         }
         else
         {
+            savedMusicTime = musicSource.time;            
             musicSource.mute = true;
-        }
-
-        AudioClip clip = musicSource.clip;
-        
-        if (clip != null)
-            PlayMusic(clip);
+        }            
     }
 
 
@@ -130,12 +135,12 @@ public class SoundManager : MonoBehaviour
     {
         if (gameDataClass.saveData.musicToggle == true)
         {
-            //Debug.Log($"{musicSource}, {musicSource.isPlaying}, {musicSource.volume}");
+            //Debug.Log($"{musicSource}, {musicSource.isPlaying}, {musicSource.volume}, {originalVolume}");
 
             if (musicSource != null && musicSource.isPlaying)
             {
                 originalVolume = musicSource.volume;
-                StartCoroutine(FadeOutAndPlayNewClip(clip)); //fade out and play music
+                MusicFader("fadeIn", "play", clip); //fade out and play music
             }
             else
             {
@@ -151,47 +156,73 @@ public class SoundManager : MonoBehaviour
         if (musicSource != null && musicSource.isPlaying)
         {
             originalVolume = musicSource.volume;
-            StartCoroutine(FadeOutAndStop());
+            MusicFader("fadeOut", "stop");
         }
     }
 
-    private IEnumerator FadeOutAndStop()
+    public void MusicFader(string fadeType, string action, AudioClip clip = null)
     {
-        float startVolume = musicSource.volume;
-
-        float t = 0f;
-        while (t < fadeTime)
-        {
-            t += Time.deltaTime;
-            musicSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeTime);
-            yield return null;
-        }
-
-        musicSource.Stop();
-        musicSource.volume = originalVolume;
+        StartCoroutine(FadeMusicCoroutine(fadeType, action, clip));
     }
 
-    private IEnumerator FadeOutAndPlayNewClip(AudioClip newClip)
+    private IEnumerator FadeMusicCoroutine(string fadeType, string action, AudioClip newClip = null)
     {
         float startVolume = musicSource.volume;
         float t = 0f;
 
-        while (t < fadeTime)
+        //Debug.Log($"IN Vol: SRC {musicSource.volume},  orig {originalVolume}");
+
+        if (fadeType == "fadeOut")
         {
-            t += Time.deltaTime;
-            musicSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeTime);
-            yield return null;
+            while (t < fadeTime)
+            {
+                t += Time.deltaTime;
+                musicSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeTime);
+                yield return null;
+            }
+
+            // Don't use Stop() if you want to resume later
+            if (action == "stop")
+            {
+                savedMusicTime = musicSource.time;
+                musicSource.Pause();  // Keeps position
+                yield break;
+            }
+
+            musicSource.Pause();  // Pause before switching clip
         }
 
-        musicSource.Stop();
-        musicSource.clip = newClip;
-        musicSource.volume = originalVolume;
-        musicSource.Play();
+        if (action == "play")
+        {
+            if (newClip != null && musicSource.clip != newClip)
+            {
+                musicSource.clip = newClip;
+                savedMusicTime = 0f;
+            }
+
+            musicSource.volume = (fadeType == "fadeIn") ? 0f : originalVolume;
+            musicSource.time = savedMusicTime;
+            musicSource.Play();
+
+            if (fadeType == "fadeIn")
+            {
+                t = 0f;
+                while (t < fadeTime)
+                {
+                    t += Time.deltaTime;
+                    musicSource.volume = Mathf.Lerp(0f, originalVolume, t / fadeTime);
+                    yield return null;
+                }
+            }
+        }
+
+        //Debug.Log($"OUT Vol: SRC {musicSource.volume},  orig {originalVolume}");
     }
 
 
     public void ButtonClick()
     {
+        //set click sound
         AudioClip aClip = Resources.Load<AudioClip>("Sound/Effects/btn_click01_aclip");
         
         if (aClip == null)

@@ -764,16 +764,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isActive: 1
-  stars:
-  - {fileID: 1195253985991488803}
-  - {fileID: 8892801127515288719}
-  - {fileID: 1868783411925968884}
+  stars3D: []
+  starOnMaterial: {fileID: 0}
+  starOffMaterial: {fileID: 0}
   starsPanel: {fileID: 6891920748959697084}
   levelText: {fileID: 8213095868815629359}
   level: 2
   confirmPanel: {fileID: 0}
-  starOffSprite: {fileID: -1220206920, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}
-  starOnSprite: {fileID: -1220206920, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}
+  materialOn: {fileID: 0}
+  materialOff: {fileID: 0}
+  buttonMesh: {fileID: 0}
 --- !u!114 &6136834738350720317
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2358800661761872623}
   - component: {fileID: 991500056949169768}
   - component: {fileID: 3486926854006006582}
+  - component: {fileID: 5176553524204957318}
   m_Layer: 0
   m_Name: AddBusterButton
   m_TagString: Untagged
@@ -132,6 +133,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &5176553524204957318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 258890234038904627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6648905940fe2294abf844562964da7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1285684303234927427
 GameObject:
   m_ObjectHideFlags: 0

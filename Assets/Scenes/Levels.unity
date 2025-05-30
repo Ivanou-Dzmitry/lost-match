@@ -1635,18 +1635,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 347628251}
-        m_TargetAssemblyTypeName: BonusShop, Assembly-CSharp
-        m_MethodName: IntToShopType
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: Lives
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 1505364922}
         m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
         m_MethodName: ButtonClick
@@ -1657,6 +1645,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 347628251}
+        m_TargetAssemblyTypeName: BonusShop, Assembly-CSharp
+        m_MethodName: IntToShopType
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: Lives
           m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &473156184
@@ -4622,10 +4622,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1713720697}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1505364922}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: ButtonClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4634,10 +4634,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 1505364922}
-        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
-        m_MethodName: ButtonClick
-        m_Mode: 1
+      - m_Target: {fileID: 1713720697}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8566,6 +8566,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 72b9509107de5e241826f59dd40772b0, type: 2}
+    - target: {fileID: -6379133756758321163, guid: a773b3a6cb787b84ab8f5d62e2196364, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -6379133756758321163, guid: a773b3a6cb787b84ab8f5d62e2196364, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -6331986672899926217, guid: a773b3a6cb787b84ab8f5d62e2196364, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -8801,7 +8809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectsSource: {fileID: 1613050832}
   musicSource: {fileID: 1689933140}
-  fadeTime: 1.5
+  fadeTime: 0.5
 --- !u!4 &1505364923
 Transform:
   m_ObjectHideFlags: 0

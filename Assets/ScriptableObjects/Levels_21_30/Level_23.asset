@@ -12,35 +12,142 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_23
   m_EditorClassIdentifier: 
-  columns: 7
-  rows: 6
+  columns: 8
+  rows: 10
+  xmlLayoutFile: {fileID: 4900000, guid: 9ba8746dcab0d3c47b54496b6ebf290f, type: 3}
   boardLayout:
   - columnX: 0
-    rowY: 0
+    rowY: 9
     tileKind: 5
-  - columnX: 6
-    rowY: 0
-    tileKind: 5
-  - columnX: 0
-    rowY: 5
-    tileKind: 5
-  - columnX: 6
-    rowY: 5
-    tileKind: 5
-  - columnX: 0
-    rowY: 4
-    tileKind: 5
-  - columnX: 6
-    rowY: 4
-    tileKind: 5
+  - columnX: 1
+    rowY: 9
+    tileKind: 7
   - columnX: 2
-    rowY: 5
-    tileKind: 8
+    rowY: 9
+    tileKind: 6
+  - columnX: 3
+    rowY: 9
+    tileKind: 6
   - columnX: 4
+    rowY: 9
+    tileKind: 6
+  - columnX: 5
+    rowY: 9
+    tileKind: 6
+  - columnX: 6
+    rowY: 9
+    tileKind: 7
+  - columnX: 7
+    rowY: 9
+    tileKind: 5
+  - columnX: 0
+    rowY: 8
+    tileKind: 5
+  - columnX: 1
+    rowY: 8
+    tileKind: 6
+  - columnX: 2
+    rowY: 8
+    tileKind: 5
+  - columnX: 3
+    rowY: 8
+    tileKind: 5
+  - columnX: 4
+    rowY: 8
+    tileKind: 5
+  - columnX: 5
+    rowY: 8
+    tileKind: 5
+  - columnX: 6
+    rowY: 8
+    tileKind: 6
+  - columnX: 7
+    rowY: 8
+    tileKind: 5
+  - columnX: 0
+    rowY: 7
+    tileKind: 5
+  - columnX: 1
+    rowY: 7
+    tileKind: 6
+  - columnX: 2
+    rowY: 7
+    tileKind: 5
+  - columnX: 3
+    rowY: 7
+    tileKind: 5
+  - columnX: 4
+    rowY: 7
+    tileKind: 5
+  - columnX: 5
+    rowY: 7
+    tileKind: 5
+  - columnX: 6
+    rowY: 7
+    tileKind: 6
+  - columnX: 7
+    rowY: 7
+    tileKind: 5
+  - columnX: 0
+    rowY: 6
+    tileKind: 12
+  - columnX: 7
+    rowY: 6
+    tileKind: 12
+  - columnX: 0
     rowY: 5
-    tileKind: 9
-  elementsBack:
-    gameBoardBackSprite: {fileID: 21300000, guid: d875033e17e65ad49a779b385239949d, type: 3}
+    tileKind: 12
+  - columnX: 7
+    rowY: 5
+    tileKind: 12
+  - columnX: 0
+    rowY: 4
+    tileKind: 12
+  - columnX: 7
+    rowY: 4
+    tileKind: 12
+  - columnX: 0
+    rowY: 3
+    tileKind: 12
+  - columnX: 7
+    rowY: 3
+    tileKind: 12
+  - columnX: 0
+    rowY: 2
+    tileKind: 12
+  - columnX: 7
+    rowY: 2
+    tileKind: 12
+  - columnX: 0
+    rowY: 1
+    tileKind: 12
+  - columnX: 7
+    rowY: 1
+    tileKind: 12
+  - columnX: 0
+    rowY: 0
+    tileKind: 13
+  - columnX: 1
+    rowY: 0
+    tileKind: 13
+  - columnX: 2
+    rowY: 0
+    tileKind: 13
+  - columnX: 3
+    rowY: 0
+    tileKind: 13
+  - columnX: 4
+    rowY: 0
+    tileKind: 13
+  - columnX: 5
+    rowY: 0
+    tileKind: 13
+  - columnX: 6
+    rowY: 0
+    tileKind: 13
+  - columnX: 7
+    rowY: 0
+    tileKind: 13
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
@@ -54,6 +161,6 @@ MonoBehaviour:
     counterValue: 22
   levelGoals:
   - numberGoalsNeeded: 6
-    numberCollectedGoals: 1
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 9b004a568872f2b45ac925678e91793e, type: 3}
     matchValue: LineBomb

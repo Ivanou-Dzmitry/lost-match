@@ -19,6 +19,8 @@ public class EmailSender : MonoBehaviour
 
         string destinationPath = Path.Combine("/storage/emulated/0/Download", newFileName);
 
+        Debug.Log("Log:" + destinationPath); //to log
+
         #if UNITY_ANDROID
                 // On Android, save to the Downloads folder
                 destinationPath = Path.Combine("/storage/emulated/0/Download", newFileName);

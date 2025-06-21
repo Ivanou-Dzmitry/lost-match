@@ -30,7 +30,7 @@ MonoBehaviour:
     tileKind: 6
   - columnX: 1
     rowY: 7
-    tileKind: 5
+    tileKind: 7
   - columnX: 2
     rowY: 7
     tileKind: 5
@@ -39,7 +39,7 @@ MonoBehaviour:
     tileKind: 5
   - columnX: 6
     rowY: 7
-    tileKind: 5
+    tileKind: 7
   - columnX: 1
     rowY: 6
     tileKind: 5
@@ -61,22 +61,10 @@ MonoBehaviour:
   - columnX: 0
     rowY: 5
     tileKind: 6
-  - columnX: 1
-    rowY: 5
-    tileKind: 14
   - columnX: 2
     rowY: 5
     tileKind: 14
-  - columnX: 3
-    rowY: 5
-    tileKind: 7
-  - columnX: 4
-    rowY: 5
-    tileKind: 7
   - columnX: 5
-    rowY: 5
-    tileKind: 14
-  - columnX: 6
     rowY: 5
     tileKind: 14
   - columnX: 7
@@ -85,22 +73,10 @@ MonoBehaviour:
   - columnX: 0
     rowY: 4
     tileKind: 6
-  - columnX: 1
-    rowY: 4
-    tileKind: 14
   - columnX: 2
     rowY: 4
     tileKind: 14
-  - columnX: 3
-    rowY: 4
-    tileKind: 7
-  - columnX: 4
-    rowY: 4
-    tileKind: 7
   - columnX: 5
-    rowY: 4
-    tileKind: 14
-  - columnX: 6
     rowY: 4
     tileKind: 14
   - columnX: 7
@@ -126,22 +102,16 @@ MonoBehaviour:
     tileKind: 5
   - columnX: 1
     rowY: 2
-    tileKind: 5
+    tileKind: 7
   - columnX: 2
     rowY: 2
     tileKind: 5
-  - columnX: 3
-    rowY: 2
-    tileKind: 14
-  - columnX: 4
-    rowY: 2
-    tileKind: 14
   - columnX: 5
     rowY: 2
     tileKind: 5
   - columnX: 6
     rowY: 2
-    tileKind: 5
+    tileKind: 7
   - columnX: 3
     rowY: 1
     tileKind: 6
@@ -160,17 +130,17 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 64000000fa000000f4010000
+  scoreGoals: 4b0000006400000096000000
   goalsDescription: Destroy gum blockers, and collect Wrap Caps
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 28
   levelGoals:
-  - numberGoalsNeeded: 34
-    numberCollectedGoals: 0
+  - numberGoalsNeeded: 16
+    numberCollectedGoals: 16
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01
-  - numberGoalsNeeded: 6
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: e356b17f335b22547a69e50bc85ad612, type: 3}
-    matchValue: WrapBomb
+  - numberGoalsNeeded: 8
+    numberCollectedGoals: 8
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

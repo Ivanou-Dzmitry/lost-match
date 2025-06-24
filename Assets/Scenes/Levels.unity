@@ -13908,10 +13908,6 @@ PrefabInstance:
       value: -64
       objectReference: {fileID: 0}
     - target: {fileID: 2735721723042617449, guid: 9dead62fd44649840ac401d836e80504, type: 3}
-      propertyPath: m_fontSize
-      value: 68.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2735721723042617449, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_enableAutoSizing
       value: 0
       objectReference: {fileID: 0}

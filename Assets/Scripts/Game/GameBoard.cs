@@ -994,6 +994,10 @@ public class GameBoard : MonoBehaviour
                 {
                     goalManagerClass.CompareGoal("WrapBomb", thisColumn, thisRow); //for Wrap bombs                    
                 }
+                else if (currentElement.isColorBomb)
+                {
+                    goalManagerClass.CompareGoal("ColorBomb", thisColumn, thisRow); //for Color bombs                    
+                }
                 else
                 {
                     goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString(), thisColumn, thisRow); //for usual dots
@@ -1521,21 +1525,47 @@ public class GameBoard : MonoBehaviour
                 Destroy(allElements[valueX, valueY].gameObject);
 
                 // Create preload
-                GameObject preloadElements = Instantiate(elements[preloadDict[kind]], tempPos, Quaternion.identity);
-                
-                //set properties
-                preloadElements.transform.parent = gameArea.transform;
+                //GameObject preloadElements = Instantiate(elements[preloadDict[kind]], tempPos, Quaternion.identity);
 
-                // Set position
-                ElementController elemnt = preloadElements.GetComponent<ElementController>();
-                elemnt.column = valueX;
-                elemnt.row = valueY;
+                try
+                {
+                    int index = preloadDict[kind];
 
-                //preload dots naming
-                preloadElements.name = preloadElements.tag + "_c" + valueX + "_r" + valueY + "_" + "_pre" + i;
+                    if (index < 0 || index >= elements.Length)
+                    {
+                        Debug.LogError($"Invalid index {index} for kind {kind}. Elements array length: {elements.Length}");
+                    }
+                    else
+                    {
+                        GameObject preloadElements = Instantiate(elements[index], tempPos, Quaternion.identity);
 
-                // Add to dots
-                allElements[valueX, valueY] = preloadElements;
+                        //set properties
+                        preloadElements.transform.parent = gameArea.transform;
+
+                        // Set position
+                        ElementController elemnt = preloadElements.GetComponent<ElementController>();
+                        elemnt.column = valueX;
+                        elemnt.row = valueY;
+
+                        //preload dots naming
+                        preloadElements.name = preloadElements.tag + "_c" + valueX + "_r" + valueY + "_" + "_pre" + i;
+
+                        // Add to dots
+                        allElements[valueX, valueY] = preloadElements;
+                    }
+                }
+                catch (KeyNotFoundException)
+                {
+                    Debug.LogError($"Kind '{kind}' not found in preloadDict.");
+                }
+                catch (IndexOutOfRangeException ex)
+                {
+                    Debug.LogError($"Index out of range for kind '{kind}': {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Unexpected error during instantiation for kind '{kind}': {ex.Message}");
+                }
             }
         }
     }

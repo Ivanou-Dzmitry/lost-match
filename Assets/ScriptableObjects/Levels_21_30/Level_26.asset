@@ -130,17 +130,17 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 4b0000006400000096000000
+  scoreGoals: 320000006e00000096000000
   goalsDescription: Destroy gum blockers, and collect Wrap Caps
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 28
   levelGoals:
   - numberGoalsNeeded: 16
-    numberCollectedGoals: 16
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01
   - numberGoalsNeeded: 8
-    numberCollectedGoals: 8
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
     matchValue: locker_01

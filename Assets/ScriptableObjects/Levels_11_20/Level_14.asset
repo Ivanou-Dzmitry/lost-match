@@ -138,7 +138,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   scoreGoals: 320000004600000064000000
-  goalsDescription: Destroy gum blockers
+  goalsDescription: Collect binky, and destroy gum blockers
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 18
@@ -147,3 +147,7 @@ MonoBehaviour:
     numberCollectedGoals: 10
     goalSprite: {fileID: 21300000, guid: bb9a65553c30ee54e80ad40813dc433f, type: 3}
     matchValue: breakable_01
+  - numberGoalsNeeded: 30
+    numberCollectedGoals: 36
+    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
+    matchValue: element_02

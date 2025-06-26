@@ -165,8 +165,8 @@ public class LevelsSceneManager : MonoBehaviour
 
     void InstantiateLevelButtons(int startNumber, int endNumber, Transform parentTrnasform, float rotation)
     {
-        float startRotation = 8.5f; // Starting rotation on the X-axis
-        float rotationStep = -8.5f;    // Decrement step for each object
+        float startRotation = 10.5f; // Starting rotation on the X-axis
+        float rotationStep = -8.0f;    // Decrement step for each object
 
         float xOffsetEven = 0.4f;   // X-axis offset for even indices
         float xOffsetOdd = -0.4f;   // X-axis offset for odd indices
@@ -302,8 +302,6 @@ public class LevelsSceneManager : MonoBehaviour
             Rotator("next");
         }
             
-
-        //DebugLogger("NEXT OUT");
     }
 
     public void PreviousLevels()
@@ -478,8 +476,6 @@ public class LevelsSceneManager : MonoBehaviour
                 swipeDetected = true;
             }
         }
-
-        
     }
 
     private bool IsValidSwipe()

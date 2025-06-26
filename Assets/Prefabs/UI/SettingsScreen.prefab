@@ -2560,7 +2560,6 @@ GameObject:
   - component: {fileID: 5748418673312693764}
   - component: {fileID: 741110818974402918}
   - component: {fileID: 9003761994503126544}
-  - component: {fileID: 4656787786219589543}
   - component: {fileID: 3586810873810795560}
   m_Layer: 5
   m_Name: AuthorsBtn
@@ -2683,21 +2682,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &4656787786219589543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917825028246005512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
-  m_EffectDistance: {x: 0, y: -8}
-  m_UseGraphicAlpha: 1
 --- !u!114 &3586810873810795560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4586,7 +4570,6 @@ GameObject:
   - component: {fileID: 521886300746221333}
   - component: {fileID: 8297425062715185638}
   - component: {fileID: 8259747953173730286}
-  - component: {fileID: 2002219306543412655}
   - component: {fileID: 1624924478588204136}
   - component: {fileID: 7985491777721121537}
   m_Layer: 5
@@ -4722,21 +4705,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
---- !u!114 &2002219306543412655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9033302644303922253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
-  m_EffectDistance: {x: 0, y: -8}
-  m_UseGraphicAlpha: 1
 --- !u!95 &1624924478588204136
 Animator:
   serializedVersion: 5

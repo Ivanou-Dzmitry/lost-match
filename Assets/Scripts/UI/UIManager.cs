@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
 
     private float panelCenterHeight;
 
-    private int topPanelHeight = 235; //!Important
+    private int topPanelHeight = 200; //!Important
     private int panelBottomHeight = 0;
     private int controlButtonsHeight = 64;
 

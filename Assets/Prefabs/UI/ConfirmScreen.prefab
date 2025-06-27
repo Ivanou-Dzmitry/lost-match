@@ -522,7 +522,6 @@ GameObject:
   - component: {fileID: 2459724050995923267}
   - component: {fileID: 6570055893486332817}
   - component: {fileID: 3651319343607288415}
-  - component: {fileID: 4799480720844369896}
   - component: {fileID: 2450352574534231002}
   - component: {fileID: 698423483980485343}
   m_Layer: 5
@@ -657,21 +656,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4799480720844369896
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2282150729155187980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.7490196}
-  m_EffectDistance: {x: 0, y: -8}
-  m_UseGraphicAlpha: 1
 --- !u!95 &2450352574534231002
 Animator:
   serializedVersion: 5

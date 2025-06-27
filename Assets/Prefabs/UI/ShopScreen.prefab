@@ -2172,7 +2172,6 @@ GameObject:
   - component: {fileID: 8835849577941969035}
   - component: {fileID: 7047519452727354142}
   - component: {fileID: 6095476614424973766}
-  - component: {fileID: 886647472019518313}
   - component: {fileID: 8475186889003014278}
   m_Layer: 5
   m_Name: CloseButton
@@ -2294,21 +2293,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &886647472019518313
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393852446669684278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
-  m_EffectDistance: {x: 0, y: -8}
-  m_UseGraphicAlpha: 1
 --- !u!95 &8475186889003014278
 Animator:
   serializedVersion: 5

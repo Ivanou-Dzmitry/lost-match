@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
 {
     public Canvas mainCanvas;
     private Vector2 canvasDimension;
-    
+
 
     [Header("Main Panels")]
     public RectTransform panelTop; // Assign your panel's RectTransform in the Inspector    
@@ -38,9 +38,10 @@ public class UIManager : MonoBehaviour
 
     private float panelCenterHeight;
 
-    private int topPanelHeight = 200; //!Important
-    private int panelBottomHeight = 0;
+    private int topPanelHeight = 263; //!Important
     private int controlButtonsHeight = 64;
+
+    float topSafeOffset;
 
     private float waitingTime = 1f;
 
@@ -64,7 +65,7 @@ public class UIManager : MonoBehaviour
         AdjustPanelPosition();
 
         //get color from panel
-        if(infoPanel != null )
+        if (infoPanel != null)
             infoPanelImage = infoPanel.GetComponent<Image>();
     }
 
@@ -79,6 +80,9 @@ public class UIManager : MonoBehaviour
         // Calculate the height of the unsafe zone (top and bottom combined)
         float unsafeZoneHeight = screenHeight - safeArea.height;
 
+        topSafeOffset = (Screen.height - Screen.safeArea.yMax)/2;
+
+
         float panelTopHeight = 0;
 
         Scene currentScene = SceneManager.GetActiveScene();
@@ -89,11 +93,12 @@ public class UIManager : MonoBehaviour
             panelTopHeight = panelTop.rect.height;
 
             //set size
-            Vector2 size = panelTop.sizeDelta;
-            
+            Vector2 size = panelTop.sizeDelta;            
 
             //panel for game and levels
-            size.y = unsafeZoneHeight + topPanelHeight;
+            size.y = topSafeOffset + topPanelHeight;
+
+            Debug.Log($"Safe: {safeArea.height}, Screen:{screenHeight}, Final size: {size.y}, TopSafe:{topSafeOffset}");
 
             panelTop.sizeDelta = size;
 
@@ -113,15 +118,15 @@ public class UIManager : MonoBehaviour
         {
             //change size
             Vector2 currentSize = panelCenter.sizeDelta;
-            currentSize.y = canvasDimension.y - panelTopHeight - (paddingPanels) - panelBottomHeight;
+            currentSize.y = canvasDimension.y - panelTopHeight - topSafeOffset; //set center size
 
             panelCenterHeight = currentSize.y;            
 
             panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y);
 
-            Vector2 anchoredPosition2 = panelCenter.anchoredPosition;
-            anchoredPosition2.y = -unsafeZoneHeight - topPanelHeight - paddingPanels;
-            panelCenter.anchoredPosition = anchoredPosition2;
+            Vector2 newAnchoredPosition = panelCenter.anchoredPosition;
+            newAnchoredPosition.y = -topSafeOffset - topPanelHeight; //set center y position
+            panelCenter.anchoredPosition = newAnchoredPosition;
         }        
 
         if(panelLevelButtons != null)

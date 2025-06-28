@@ -57,6 +57,7 @@ public class ScoreManager : MonoBehaviour
         // Pre-allocate starPosition array with size based on the starCount
         float[] starPosition = new float[starCount];
 
+        //star position on progress bar
         for (int i = 0; i < starCount; i++)
         {
             // Calculate the position for the star based on the score goal
@@ -69,13 +70,12 @@ public class ScoreManager : MonoBehaviour
             float imageWidth = rectTransformStar.rect.width/2;
             Vector3 currentPosition = rectTransformStar.localPosition;
 
-            // Update the position of the star
-            rectTransformStar.localPosition = new Vector3(starPosition[i] - imageWidth, currentPosition.y, currentPosition.z);
+            // Update the position of the star on the progress bar
+            rectTransformStar.localPosition = new Vector3(starPosition[i]+imageWidth, currentPosition.y, currentPosition.z);
         }
 
 
         UpdateBar();
-
     }
 
     public void IncreaseScore(int amountToIncrease)

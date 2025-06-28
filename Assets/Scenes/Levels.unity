@@ -2294,7 +2294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &603446163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4772,7 +4772,7 @@ MonoBehaviour:
     m_Right: 32
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 6
+  m_ChildAlignment: 4
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
@@ -11459,6 +11459,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: a5f3cb424cdb0ae498eaa8165ebfeee5, type: 2}
   - {fileID: 2100000, guid: 0ec30f4a57b851b4d8c45db65b1ea49a, type: 2}
   - {fileID: 2100000, guid: 76e8eb76300c6a5459e84051ac284690, type: 2}
+  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
+  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
+  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
+  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
   - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
   levelTxt: {fileID: 603446163}
   debugTxt: {fileID: 591816695}

@@ -51,7 +51,7 @@ TagManager:
   - LevelBack
   - Water
   - UI
-  - 
+  - 3d
   - 
   - 
   - 
@@ -86,4 +86,7 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 914660801
+    locked: 0
+  - name: 3d
+    uniqueID: 3881095665
     locked: 0

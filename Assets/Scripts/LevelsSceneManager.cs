@@ -67,6 +67,9 @@ public class LevelsSceneManager : MonoBehaviour
 
     private Coroutine rotationCoroutine = null; // To manage the rotation coroutine
 
+    int levelButtonsOnScreen = 5; //5 or 10
+    int stepsToScrollScreen = 2;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -92,9 +95,14 @@ public class LevelsSceneManager : MonoBehaviour
             levelsCount = gameDataClass.saveData.isActive.Length;            
         }
 
-        levelSegmentsCount = levelsCount / 10; //each segment 10 levels
+        //each segment levelButtonsOnScreen levels
+        levelSegmentsCount = levelsCount / levelButtonsOnScreen;
+
+        //important each level - 2 steps
+        maxSteps = (levelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
         
-        maxSteps = (levelsCount / levelSegmentsCount); //important each level - 2 steps/ -1 avoid necessary rotation
+
+        Debug.Log($"levelSegmentsCount:{levelSegmentsCount}, maxSteps:{maxSteps}, levelsCount:{levelsCount}");
 
         if (soundManagerClass != null)
         {
@@ -103,7 +111,7 @@ public class LevelsSceneManager : MonoBehaviour
 
         DeleteCurrentLevelButtons();
 
-        currentScreenNumber = GetRoundedValue(lastLevel, 10);
+        currentScreenNumber = GetRoundedValue(lastLevel, levelButtonsOnScreen);
         
         //debug info
         levelTxt.text = "Map " + currentScreenNumber;
@@ -122,7 +130,7 @@ public class LevelsSceneManager : MonoBehaviour
 
         totalSteps = GetTotalSteps(currentScreenNumber);
 
-        //Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max{maxSteps}");
+        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max{maxSteps}");
     }
 
 
@@ -141,7 +149,7 @@ public class LevelsSceneManager : MonoBehaviour
         
         //material
         if(screen > 0)
-            AdssignMaterial(screen, segment);
+            AssignMaterial(screen, segment);
 
         if (sN == -1) 
         {
@@ -157,16 +165,18 @@ public class LevelsSceneManager : MonoBehaviour
 
     public void LoadLevelButtons(int currentScreenNumber, Transform parentTransform, float rotation)
     {
-        int startNumber = currentScreenNumber * 10;      // Upper bound
-        int endNumber = startNumber - 9;                // Lower bound
+        int startNumber = currentScreenNumber * levelButtonsOnScreen;      // Upper bound
+        int endNumber = startNumber - 4;                // Lower bound
+
+        Debug.Log($"startNumber:{startNumber}, endNumber:{endNumber}");
 
         InstantiateLevelButtons(startNumber, endNumber, parentTransform, rotation);        
     }
 
     void InstantiateLevelButtons(int startNumber, int endNumber, Transform parentTrnasform, float rotation)
     {
-        float startRotation = 10.5f; // Starting rotation on the X-axis
-        float rotationStep = -8.0f;    // Decrement step for each object
+        float startRotation = 10.0f; // Starting rotation on the X-axis
+        float rotationStep = -16.5f;    // Decrement step for each object
 
         float xOffsetEven = 0.4f;   // X-axis offset for even indices
         float xOffsetOdd = -0.4f;   // X-axis offset for odd indices
@@ -301,7 +311,9 @@ public class LevelsSceneManager : MonoBehaviour
         {
             Rotator("next");
         }
-            
+
+        DebugLogger("NEXT");
+
     }
 
     public void PreviousLevels()
@@ -339,7 +351,7 @@ public class LevelsSceneManager : MonoBehaviour
             
         levelTxt.text = "Map " + currentScreenNumber;
 
-        //DebugLogger("PREV OUT");
+        DebugLogger("PREV OUT");
     }
 
     private void DebugLogger(string where)
@@ -507,6 +519,7 @@ public class LevelsSceneManager : MonoBehaviour
         // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
         if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold)
         {
+            Debug.Log($"totalSteps:{totalSteps}, maxSteps:{maxSteps}");
 
             if (verticalSwipeDistance > 0)
             {
@@ -561,25 +574,38 @@ public class LevelsSceneManager : MonoBehaviour
     }
 
 
-    public void AdssignMaterial(int currentScreenNumber, GameObject gameObj)
+    public void AssignMaterial(int currentScreenNumber, GameObject gameObj)
     {
-        // Check if the currentScreenNumber is within the bounds of the levelMaterials array
-        if (currentScreenNumber >= 1 && currentScreenNumber <= levelMaterials.Length)
+        try
         {
-            // Get the material based on the current screen number
-            Material newMaterial = levelMaterials[currentScreenNumber - 1]; // Array is 0-based, so subtract 1
+            int materialIndex;
 
-            // Get the MeshRenderer from the game object (including child objects)
+            // Use odd indexes (1, 3, 5, 7, 9) for odd screen numbers
+            // and even indexes (0, 2, 4, 6, 8) for even screen numbers
+            if (currentScreenNumber % 2 == 0)
+            {
+                // Even: map to 0, 2, 4, 6, 8
+                materialIndex = Math.Min((currentScreenNumber % 10), 8); // Avoid going over 8
+                if (materialIndex % 2 != 0) materialIndex--; // Force to even
+            }
+            else
+            {
+                // Odd: map to 1, 3, 5, 7, 9
+                materialIndex = Math.Min((currentScreenNumber % 10), 9);
+                if (materialIndex % 2 == 0) materialIndex++; // Force to odd
+            }
+
+            Material newMaterial = levelMaterials[materialIndex];
+
             MeshRenderer segmentRenderer = gameObj.GetComponentInChildren<MeshRenderer>();
 
             if (segmentRenderer != null)
             {
-                // Access and modify the materials array
                 Material[] materials = segmentRenderer.materials;
                 if (materials.Length > 0)
                 {
-                    materials[0] = newMaterial; // Set the first material to the new material
-                    segmentRenderer.materials = materials; // Reassign the array back to the renderer
+                    materials[0] = newMaterial;
+                    segmentRenderer.materials = materials;
                 }
             }
             else
@@ -587,11 +613,31 @@ public class LevelsSceneManager : MonoBehaviour
                 Debug.LogWarning("MeshRenderer not found on the instantiated object.");
             }
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogError("currentScreenNumber is out of bounds! Ensure it is within the levelMaterials array range.");
+            Debug.LogWarning($"Material assignment failed: {e.Message}. Using default material.");
+
+            // Fallback to material[0]
+            try
+            {
+                MeshRenderer segmentRenderer = gameObj.GetComponentInChildren<MeshRenderer>();
+                if (segmentRenderer != null)
+                {
+                    Material[] materials = segmentRenderer.materials;
+                    if (materials.Length > 0)
+                    {
+                        materials[0] = levelMaterials[0];
+                        segmentRenderer.materials = materials;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Fallback material assignment also failed: " + ex.Message);
+            }
         }
     }
+
 
     void MovePivotToCenter(GameObject obj)
     {

@@ -1294,7 +1294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ca573af39c569f947bc4c7a323d5b503, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6458bd66bdb6b9a43bc9a6d17c55ca8d, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11458,18 +11458,22 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 8fb9549c3aa90724cba43c9f33e04375, type: 2}
   - {fileID: 2100000, guid: a5f3cb424cdb0ae498eaa8165ebfeee5, type: 2}
   - {fileID: 2100000, guid: 0ec30f4a57b851b4d8c45db65b1ea49a, type: 2}
-  - {fileID: 2100000, guid: 76e8eb76300c6a5459e84051ac284690, type: 2}
-  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
-  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
-  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
-  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
-  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
+  - {fileID: 2100000, guid: 5a8f8579cb49c0746a0c4e70df7a83c0, type: 2}
+  - {fileID: 2100000, guid: 0e3a7a989cad4974c934cc4ea69bea71, type: 2}
+  - {fileID: 2100000, guid: 35b921c8b44fa3b45b45d310d1b05276, type: 2}
+  - {fileID: 2100000, guid: efb379f03daa45549bf842be34d39679, type: 2}
+  - {fileID: 2100000, guid: 0a0e9488c91777c42b4f18c7f03651c3, type: 2}
+  - {fileID: 2100000, guid: a3fbfee69485c534d98dfa0c7f9f816f, type: 2}
   levelTxt: {fileID: 603446163}
   debugTxt: {fileID: 591816695}
   levelCylinder: {fileID: 1713811716}
   rotationAmount: 45
   rotationSpeed: 5
   segmentsList: []
+  levelObjPrefabs:
+  - {fileID: 1856826858714205706, guid: bf1944cb64b3ef64d9f044305dd687d5, type: 3}
+  - {fileID: 92486694860228033, guid: 2218abecd9430404f8360d92e34809b7, type: 3}
+  - {fileID: 168387508713597878, guid: 4626f35f396ef964dbffd8d73865d63e, type: 3}
 --- !u!4 &1934902380
 Transform:
   m_ObjectHideFlags: 0

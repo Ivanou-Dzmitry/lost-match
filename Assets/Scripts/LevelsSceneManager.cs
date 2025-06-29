@@ -65,6 +65,9 @@ public class LevelsSceneManager : MonoBehaviour
     public List<GameObject> segmentsList = new List<GameObject>(); // Empty list
     private float[] validAngles = { 0, 45, 90, 135, 180, -90, -45, -135, -180 };
 
+    [SerializeField] private GameObject[] levelObjPrefabs; // levelObj01, levelObj02, levelObj03
+    private const int maxPoints = 16;
+
     private Coroutine rotationCoroutine = null; // To manage the rotation coroutine
 
     int levelButtonsOnScreen = 5; //5 or 10
@@ -146,11 +149,13 @@ public class LevelsSceneManager : MonoBehaviour
         GameObject segment = Instantiate(levelBackSegment, parentTransform3D.position, segRotation);
         segment.transform.SetParent(parentTransform3D);
         segment.transform.localScale = Vector3.one;  // (1, 1, 1)               
-        
-        //material
-        if(screen > 0)
+
+        // Assign material
+        if (screen > 0)
             AssignMaterial(screen, segment);
 
+        // Name and add to list
+        segment.name = "segment_" + "_" + rotation + "_" + screen;
         if (sN == -1) 
         {
             segmentsList.Add(segment);
@@ -160,7 +165,44 @@ public class LevelsSceneManager : MonoBehaviour
             segmentsList.Insert(sN, segment);
         }
 
-        segment.name = "segment_" + "_" + rotation +"_"+ screen;
+
+        List<Transform> objPoints = new List<Transform>();
+        Transform[] allChildren = segment.GetComponentsInChildren<Transform>(true); // 'true' includes inactive
+
+        for (int i = 1; i <= maxPoints; i++)
+        {
+            string pointName = $"objPoint{i:D3}";
+            foreach (Transform t in allChildren)
+            {
+                if (t.name == pointName)
+                {
+                    objPoints.Add(t);
+                    break;
+                }
+            }
+        }
+
+        System.Random rng = new System.Random();
+        List<Transform> chosenPoints = objPoints.OrderBy(_ => rng.Next()).Take(3).ToList();
+
+        int counter = 0;
+        foreach (Transform spawnPoint in chosenPoints)
+        {
+            counter++;
+            int prefabIndex = rng.Next(levelObjPrefabs.Length);
+            GameObject obj = Instantiate(levelObjPrefabs[prefabIndex], spawnPoint.transform);
+            obj.transform.localPosition = Vector3.zero;
+
+            float randomY = UnityEngine.Random.Range(0f, 360f);
+            obj.transform.localRotation = Quaternion.Euler(-90f, randomY, 0f);
+
+            float randomScale = UnityEngine.Random.Range(0.5f, 1.0f);
+            obj.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
+
+            obj.name = "levelObj_" + prefabIndex +"_" + counter;
+        }
+
+
     }
 
     public void LoadLevelButtons(int currentScreenNumber, Transform parentTransform, float rotation)
@@ -173,7 +215,7 @@ public class LevelsSceneManager : MonoBehaviour
         InstantiateLevelButtons(startNumber, endNumber, parentTransform, rotation);        
     }
 
-    void InstantiateLevelButtons(int startNumber, int endNumber, Transform parentTrnasform, float rotation)
+    void InstantiateLevelButtons(int startNumber, int endNumber, Transform parentTransform, float rotation)
     {
         float startRotation = 10.0f; // Starting rotation on the X-axis
         float rotationStep = -16.5f;    // Decrement step for each object
@@ -195,7 +237,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
 
             //3d
-            GameObject new3DButton = Instantiate(levelButton3DPrefab, parentTrnasform);
+            GameObject new3DButton = Instantiate(levelButton3DPrefab, parentTransform);
             new3DButton.name = "Button3d_" + i;
 
             float currentRotation = (startRotation + (endNumber - i) * rotationStep) + rotation;

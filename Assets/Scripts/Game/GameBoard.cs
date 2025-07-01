@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using System.Linq;
+using System.Xml.Linq;
 
 
 public enum GameState
@@ -613,6 +614,16 @@ public class GameBoard : MonoBehaviour
             SetTimlessBuster();
 
         matchState = MatchState.matching_stop;
+
+        if (IsDeadLock())
+        {
+            ShuffleBoard();
+
+            if (uiManagerClass != null)
+                uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]);
+            else
+                Debug.LogError("uiManagerClass is null! Cannot show info.");
+        }
     }
 
     private void SetTimlessBuster()
@@ -913,27 +924,6 @@ public class GameBoard : MonoBehaviour
             Destroy(elementParticle, .9f);
         }
     }
-
-/*    void SetSpriteMaskToScreenCenter(SpriteMask spriteMask, int angle = -1)
-    {
-        float yOffset = 1; //see public float yOffset = 1; in CameraManager
-
-        // Get the screen center in world space
-        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-        Vector3 worldCenter = Camera.main.ScreenToWorldPoint(screenCenter);
-
-        // Set the Sprite Mask position (ensure the correct z-axis value)
-        worldCenter.z = 0f; // Adjust this depending on your scene setup
-        worldCenter.y -= yOffset;
-        spriteMask.transform.position = worldCenter;
-
-        spriteMask.transform.localScale = new Vector3(column, row, 0);
-
-        //rotate for horizontal
-        if (angle > 0)
-            spriteMask.transform.eulerAngles += new Vector3(0, 0, angle);
-    }*/
-
 
     private void DestroyBreakableAt(int thisColumn, int thisRow)
     {
@@ -1602,7 +1592,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-
         return false;
     }
 
@@ -1620,16 +1609,38 @@ public class GameBoard : MonoBehaviour
 
     public bool SwithAndCheck(int column, int row, Vector2 direction)
     {
-        SwitchPieces(column, row, direction);
+        int targetCol = column + (int)direction.x;
+        int targetRow = row + (int)direction.y;
 
-        if (CheckForMatches())
+        // Prevent out-of-bounds
+        if (targetCol < 0 || targetCol >= this.column || targetRow < 0 || targetRow >= this.row)
+            return false;
+
+        // Prevent switch if either cell is locked
+        if (lockedCells[column, row] != null || lockedCells[targetCol, targetRow] != null)
         {
-            SwitchPieces(column, row, direction);
-            return true;
+            // Optional: Debug
+            //Debug.Log($"Switch blocked: locked cell at [{column},{row}] or [{targetCol},{targetRow}]");
+            return false;
         }
 
+        // Prevent switch if either cell is locked
+        if (expandCells[column, row] != null || expandCells[targetCol, targetRow] != null)
+        {
+            // Optional: Debug
+            //Debug.Log($"Switch blocked: locked cell at [{column},{row}] or [{targetCol},{targetRow}]");
+            return false;
+        }
+
+        // Perform switch
         SwitchPieces(column, row, direction);
-        return false;
+
+        bool hasMatch = CheckForMatches();
+
+        // Revert switch
+        SwitchPieces(column, row, direction);
+
+        return hasMatch;
     }
 
     private bool IsDeadLock()
@@ -1658,7 +1669,6 @@ public class GameBoard : MonoBehaviour
                 }
             }
         }
-
         return true;
     }
 
@@ -1714,8 +1724,12 @@ public class GameBoard : MonoBehaviour
 
         if (IsDeadLock())
         {
-            ShuffleBoard();            
-            uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
+            ShuffleBoard();
+
+            if (uiManagerClass != null)
+                uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]);
+            else
+                Debug.LogError("uiManagerClass is null! Cannot show info.");
         }
     }
 

@@ -67,6 +67,8 @@ public class UIManager : MonoBehaviour
         //get color from panel
         if (infoPanel != null)
             infoPanelImage = infoPanel.GetComponent<Image>();
+
+        //Debug.Log($"IPI: {infoPanelImage.sprite.name}");
     }
 
     void AdjustPanelPosition()
@@ -98,7 +100,7 @@ public class UIManager : MonoBehaviour
             //panel for game and levels
             size.y = topSafeOffset + topPanelHeight;
 
-            Debug.Log($"Safe: {safeArea.height}, Screen:{screenHeight}, Final size: {size.y}, TopSafe:{topSafeOffset}");
+            //Debug.Log($"Safe: {safeArea.height}, Screen:{screenHeight}, Final size: {size.y}, TopSafe:{topSafeOffset}");
 
             panelTop.sizeDelta = size;
 
@@ -147,15 +149,42 @@ public class UIManager : MonoBehaviour
 
     public void ShowInGameInfo(string infoText, bool showPanel, int iconNumber, Color pnlColor = default)
     {
+        //init again
+        if (infoPanel != null)
+            infoPanelImage = infoPanel.GetComponent<Image>();
+
+        // Defensive: check infoPanelImage
+        if (infoPanelImage == null)
+        {
+            Debug.LogError("infoPanelImage is null!");
+            return;
+        }
+
+        // Set panel color or default color
         if (pnlColor == default)
         {
-            infoPanelImage.color = ColorPalette.Colors["DarkTeal"];
+            if (ColorPalette.Colors.ContainsKey("DarkTeal"))
+                infoPanelImage.color = ColorPalette.Colors["DarkTeal"];
+            else
+                Debug.LogWarning("ColorPalette missing key 'DarkTeal'");
         }
         else
         {
             infoPanelImage.color = pnlColor;
         }
-            
+
+        // Defensive: check finalTextPanel and finalText
+        if (finalTextPanel == null)
+        {
+            Debug.LogError("finalTextPanel is null!");
+            return;
+        }
+
+        if (finalText == null)
+        {
+            Debug.LogError("finalText is null!");
+            return;
+        }
 
         if (showPanel)
         {
@@ -168,21 +197,38 @@ public class UIManager : MonoBehaviour
             finalText.text = "";
         }
 
-        //set image
-        Image infoImg = iconInfo.GetComponent<Image>();
-
-        if (infoImg != null)
+        // Defensive: iconInfo and iconsList
+        if (iconInfo == null)
         {
-            if(iconsList[iconNumber] != null)
-                infoImg.sprite = iconsList[iconNumber];
-        }        
+            Debug.LogWarning("iconInfo is null, skipping icon update");
+        }
+        else
+        {
+            Image infoImg = iconInfo.GetComponent<Image>();
+            if (infoImg != null)
+            {
+                if (iconsList != null && iconsList.Count > iconNumber && iconsList[iconNumber] != null)
+                {
+                    infoImg.sprite = iconsList[iconNumber];
+                }
+                else
+                {
+                    Debug.LogWarning($"iconsList is null or invalid iconNumber: {iconNumber}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("iconInfo GameObject does not have an Image component");
+            }
+        }
 
-        //hide panel
-        if (finalTextPanel != null && finalTextPanel.activeSelf)
+        // Defensive: Hide panel coroutine call
+        if (finalTextPanel.activeSelf)
         {
             StartCoroutine(HidePanelCoroutine(waitingTime));
         }
     }
+
 
     private IEnumerator HidePanelCoroutine(float delay)
     {

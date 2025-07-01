@@ -96,7 +96,7 @@ public class BonusButton : MonoBehaviour
     public Button addBusterButton;
     public GameObject useBusterPanel;
 
-    public static readonly Color beforeBuyColor = new Color(1.0f, 0.929f, 0.808f, 1.0f); //default
+    public static readonly Color beforeBuyColor = new Color(0.600f, 0.678f, 0.780f, 1f); //default
     public static readonly Color afterBuyColor = new Color(0.729f, 0.902f, 0.8f, 1f); //when buy
 
     private float timer = 1f; // Tracks time

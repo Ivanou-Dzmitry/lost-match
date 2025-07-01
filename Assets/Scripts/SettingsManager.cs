@@ -79,9 +79,14 @@ public class SettingsManager : MonoBehaviour
         //Set Framerate
         Application.targetFrameRate = 30;
 
-        //set resoluton
-        Screen.SetResolution(1920, 1080, true);
-        Screen.SetResolution((int)Screen.width, (int)Screen.height, true);
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
+        int targetHeight = 1990;
+        float aspectRatio = 9f / 16f;  // Portrait (e.g., 9:16)
+
+        int calculatedWidth = Mathf.RoundToInt(targetHeight * aspectRatio);
+
+        Screen.SetResolution(calculatedWidth, targetHeight, false);
+#endif
 
         Scene currentScene = SceneManager.GetActiveScene();
         sceneName = currentScene.name;

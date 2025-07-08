@@ -13,161 +13,191 @@ MonoBehaviour:
   m_Name: Level_35
   m_EditorClassIdentifier: 
   columns: 7
-  rows: 8
+  rows: 9
+  xmlLayoutFile: {fileID: 4900000, guid: 763945eef9b12df4c911451496bb9efa, type: 3}
   boardLayout:
   - columnX: 0
-    rowY: 0
-    tileKind: 5
-  - columnX: 6
-    rowY: 0
-    tileKind: 5
-  - columnX: 0
-    rowY: 4
-    tileKind: 5
-  - columnX: 6
-    rowY: 4
-    tileKind: 5
-  - columnX: 0
-    rowY: 5
-    tileKind: 5
-  - columnX: 0
-    rowY: 6
-    tileKind: 5
-  - columnX: 6
-    rowY: 6
-    tileKind: 5
-  - columnX: 0
-    rowY: 7
-    tileKind: 5
-  - columnX: 6
-    rowY: 7
-    tileKind: 5
-  - columnX: 6
-    rowY: 5
+    rowY: 8
     tileKind: 5
   - columnX: 1
-    rowY: 6
+    rowY: 8
     tileKind: 5
-  - columnX: 1
-    rowY: 7
-    tileKind: 5
-  - columnX: 5
-    rowY: 6
-    tileKind: 5
-  - columnX: 5
-    rowY: 7
-    tileKind: 5
-  - columnX: 1
-    rowY: 0
-    tileKind: 6
-  - columnX: 5
-    rowY: 0
-    tileKind: 6
   - columnX: 2
-    rowY: 7
-    tileKind: 6
-  - columnX: 4
-    rowY: 7
-    tileKind: 6
-  - columnX: 1
-    rowY: 1
-    tileKind: 6
-  - columnX: 1
-    rowY: 2
-    tileKind: 6
-  - columnX: 1
-    rowY: 3
-    tileKind: 6
-  - columnX: 1
-    rowY: 4
-    tileKind: 6
-  - columnX: 1
-    rowY: 5
-    tileKind: 6
-  - columnX: 5
-    rowY: 1
-    tileKind: 6
-  - columnX: 5
-    rowY: 2
-    tileKind: 6
-  - columnX: 5
-    rowY: 3
-    tileKind: 6
-  - columnX: 5
-    rowY: 4
-    tileKind: 6
-  - columnX: 5
-    rowY: 5
-    tileKind: 6
-  - columnX: 2
-    rowY: 1
-    tileKind: 6
+    rowY: 8
+    tileKind: 5
   - columnX: 3
-    rowY: 1
-    tileKind: 6
+    rowY: 8
+    tileKind: 18
   - columnX: 4
-    rowY: 1
-    tileKind: 6
+    rowY: 8
+    tileKind: 5
+  - columnX: 5
+    rowY: 8
+    tileKind: 5
+  - columnX: 6
+    rowY: 8
+    tileKind: 5
+  - columnX: 0
+    rowY: 7
+    tileKind: 5
+  - columnX: 1
+    rowY: 7
+    tileKind: 5
   - columnX: 2
-    rowY: 0
-    tileKind: 6
-  - columnX: 4
-    rowY: 0
-    tileKind: 6
+    rowY: 7
+    tileKind: 18
   - columnX: 3
-    rowY: 2
+    rowY: 7
+    tileKind: 7
+  - columnX: 4
+    rowY: 7
+    tileKind: 18
+  - columnX: 5
+    rowY: 7
+    tileKind: 5
+  - columnX: 6
+    rowY: 7
+    tileKind: 5
+  - columnX: 0
+    rowY: 6
+    tileKind: 5
+  - columnX: 1
+    rowY: 6
+    tileKind: 18
+  - columnX: 2
+    rowY: 6
+    tileKind: 7
+  - columnX: 3
+    rowY: 6
     tileKind: 10
-  - columnX: 2
+  - columnX: 4
+    rowY: 6
+    tileKind: 7
+  - columnX: 5
+    rowY: 6
+    tileKind: 18
+  - columnX: 6
+    rowY: 6
+    tileKind: 5
+  - columnX: 0
+    rowY: 5
+    tileKind: 18
+  - columnX: 1
     rowY: 5
     tileKind: 6
-  - columnX: 4
-    rowY: 5
-    tileKind: 6
   - columnX: 2
-    rowY: 3
-    tileKind: 6
-  - columnX: 4
-    rowY: 3
+    rowY: 5
     tileKind: 6
   - columnX: 3
-    rowY: 3
+    rowY: 5
     tileKind: 6
-  elementsBack:
-    gameBoardBackSprite: {fileID: 21300000, guid: 78bf1863817c67743bf87b789f298c4b, type: 3}
-  preloadBoardLayout:
+  - columnX: 4
+    rowY: 5
+    tileKind: 6
+  - columnX: 5
+    rowY: 5
+    tileKind: 6
+  - columnX: 6
+    rowY: 5
+    tileKind: 18
+  - columnX: 1
+    rowY: 4
+    tileKind: 6
+  - columnX: 2
+    rowY: 4
+    tileKind: 14
   - columnX: 3
     rowY: 4
-    tileKind: 2
-  - columnX: 3
-    rowY: 5
-    tileKind: 2
-  - columnX: 2
-    rowY: 6
-    tileKind: 2
+    tileKind: 14
   - columnX: 4
-    rowY: 6
-    tileKind: 2
+    rowY: 4
+    tileKind: 14
+  - columnX: 5
+    rowY: 4
+    tileKind: 6
+  - columnX: 1
+    rowY: 3
+    tileKind: 6
+  - columnX: 2
+    rowY: 3
+    tileKind: 14
   - columnX: 3
-    rowY: 7
-    tileKind: 2
+    rowY: 3
+    tileKind: 10
+  - columnX: 4
+    rowY: 3
+    tileKind: 14
+  - columnX: 5
+    rowY: 3
+    tileKind: 6
+  - columnX: 1
+    rowY: 2
+    tileKind: 6
+  - columnX: 2
+    rowY: 2
+    tileKind: 14
   - columnX: 3
-    rowY: 6
-    tileKind: 1
+    rowY: 2
+    tileKind: 14
+  - columnX: 4
+    rowY: 2
+    tileKind: 14
+  - columnX: 5
+    rowY: 2
+    tileKind: 6
+  - columnX: 1
+    rowY: 1
+    tileKind: 6
+  - columnX: 2
+    rowY: 1
+    tileKind: 6
+  - columnX: 3
+    rowY: 1
+    tileKind: 6
+  - columnX: 4
+    rowY: 1
+    tileKind: 6
+  - columnX: 5
+    rowY: 1
+    tileKind: 6
+  - columnX: 0
+    rowY: 0
+    tileKind: 12
+  - columnX: 1
+    rowY: 0
+    tileKind: 12
+  - columnX: 2
+    rowY: 0
+    tileKind: 12
+  - columnX: 3
+    rowY: 0
+    tileKind: 12
+  - columnX: 4
+    rowY: 0
+    tileKind: 12
+  - columnX: 5
+    rowY: 0
+    tileKind: 12
+  - columnX: 6
+    rowY: 0
+    tileKind: 12
+  preloadBoardLayout: []
   element:
+  - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
-  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
+  - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
   scoreGoals: 3c0000005a00000078000000
-  goalsDescription: Destroy gum blockers, and caps
+  goalsDescription: Break the ice floes, and collect pom-pom beanie
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 15
+    counterValue: 18
   levelGoals:
-  - numberGoalsNeeded: 24
-    numberCollectedGoals: 20
-    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
-    matchValue: blocker_01
-  - numberGoalsNeeded: 3
-    numberCollectedGoals: 2
-    goalSprite: {fileID: 21300000, guid: e356b17f335b22547a69e50bc85ad612, type: 3}
-    matchValue: WrapBomb
+  - numberGoalsNeeded: 10
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 061307213cefab644acb79f0d872c6a6, type: 3}
+    matchValue: element_05
+  - numberGoalsNeeded: 15
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

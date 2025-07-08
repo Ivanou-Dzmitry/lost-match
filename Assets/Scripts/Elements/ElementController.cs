@@ -209,7 +209,7 @@ public class ElementController : MonoBehaviour
     {
         float mousePathY = Mathf.Abs(finalTouchPos.y - firstTouchPos.y);
         float mousePathX = Mathf.Abs(finalTouchPos.x - firstTouchPos.x);
-        Debug.Log($"{finalTouchPos.y} : {firstTouchPos.y} : res {mousePathY}, swipe= {adjustedSwipeResist}");
+        //Debug.Log($"{finalTouchPos.y} : {firstTouchPos.y} : res {mousePathY}, swipe= {adjustedSwipeResist}");
 
         //work with swipe only
         if (mousePathY > adjustedSwipeResist || mousePathX > adjustedSwipeResist)

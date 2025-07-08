@@ -82,10 +82,6 @@ public class ScoreManager : MonoBehaviour
     {
         score += amountToIncrease; //score
 
-        //tempScore += amountToIncrease;
-
-        //gameDataClass.saveData.credits += amountToIncrease;
-
         //for stars
         for (int i = 0; i < gameBoardClass.scoreGoals.Length; i++)
         {

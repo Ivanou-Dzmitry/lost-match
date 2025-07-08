@@ -32,6 +32,9 @@ public class GoalManager : MonoBehaviour
 {
     public BlankGoalClass[] levelGoals;
     public List<GoalPanel> currentGoals = new List<GoalPanel>();
+    private MatchFinder matchFinderClass;
+    private ScoreManager scoreManagerClass;
+
 
     //UI
     public GameObject goalPrefab;
@@ -60,6 +63,11 @@ public class GoalManager : MonoBehaviour
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+
+
+        
+        matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();        
+        scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
 
         //get canvas
         pnlGoalItems = goalGameParent.GetComponent<Canvas>();
@@ -148,6 +156,78 @@ public class GoalManager : MonoBehaviour
         {
             if (endGameManagerClass != null)
             {
+
+                for (int i = 0; i < gameBoardClass.column; i++)
+                {
+                    for (int j = 0; j < gameBoardClass.row; j++)
+                    {
+                        if (gameBoardClass.allElements[i, j] != null)
+                        {                            
+                            ElementController bombElem = gameBoardClass.allElements[i, j].GetComponent<ElementController>();
+
+                            int thisColumn = bombElem.column;
+                            int thisRow = bombElem.row;
+
+                            if (bombElem.isColorBomb)
+                            {
+                                int randomIndex = UnityEngine.Random.Range(0, gameBoardClass.elements.Length);
+                                var randomElement = gameBoardClass.elements[randomIndex];
+                                string randomTag = randomElement.tag;
+
+                                Debug.Log($"Color BOMB! {bombElem.row}, {bombElem.column}, {randomTag}");
+                                
+                                bombElem.isMatched = true;
+                                matchFinderClass.MatchColorPieces(randomTag);
+                            }
+                                
+
+                            if (bombElem.isWrapBomb)
+                            {
+                                Debug.Log($"Wrap BOMB! {bombElem.row}, {bombElem.column}");
+                                matchFinderClass.MatchWrapPieces(thisColumn, thisRow);
+                                bombElem.isMatched = true;
+                            }
+                                
+
+                            if (bombElem.isRowBomb)
+                            {                                 
+                                Debug.Log($"Row BOMB! {bombElem.row}");
+                                bombElem.isMatched = true;
+                                matchFinderClass.MatchRowPieces(thisRow);                                
+                            }
+                                
+
+                            if (bombElem.isColumnBomb)
+                            {
+                                Debug.Log($"Column BOMB! {bombElem.column}");
+                                bombElem.isMatched = true;
+                                matchFinderClass.MatchColPieces(thisColumn);
+                            }
+                        }
+                    }
+                }
+
+
+                for (int i = 0; i < gameBoardClass.column; i++)
+                {
+                    for (int j = 0; j < gameBoardClass.row; j++)
+                    {
+                        var obj = gameBoardClass.allElements[i, j];
+
+                        if (obj != null)
+                        {
+                            ElementController elemToDestroy = obj.GetComponent<ElementController>();
+
+                            if (elemToDestroy != null && elemToDestroy.isMatched)
+                            {
+                                gameBoardClass.RunParticles(elemToDestroy, i, j);
+                                Destroy(obj);
+                                scoreManagerClass.IncreaseScore(1);
+                            }
+                        }
+                    }
+                }
+
                 StartCoroutine(DelayedWin());
             }
         }

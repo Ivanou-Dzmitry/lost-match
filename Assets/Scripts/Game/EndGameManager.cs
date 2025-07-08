@@ -30,7 +30,6 @@ public class EndGameManager : MonoBehaviour
     private BonusShop bonusShopClass;
     private GoalManager goalManagerClass;
 
-
     //panels
     public GameObject winPanel;
     public GameObject tryPanel;
@@ -46,9 +45,6 @@ public class EndGameManager : MonoBehaviour
     public Animator animatorAlarm; //animator
     public AudioClip levelMusic;
 
-    [Header("Moves Shop")]
-
-
     [Header("Win Panel")]
     public TMP_Text levelNumber;
     public TMP_Text creditsCount;
@@ -61,8 +57,6 @@ public class EndGameManager : MonoBehaviour
     public ParticleSystem[] congratPart;
 
     [Header("Lose Panel")]
-    //public TMP_Text levelNumberLose;
-    //public TMP_Text creditsCountLose;
     public Button retryLooseButton;
     public AudioClip loseMusic;
 
@@ -218,14 +212,8 @@ public class EndGameManager : MonoBehaviour
             bonusShopClass.IntToShopType(2);
         }           
 
-/*        if(levelNumberLose !=null)
-            levelNumberLose.text = "LEVEL " + (gameBoardClass.level + 1);*/
-
         //stop animation
         AlarmAnimation(curCounterVal, false);
-
-/*        int currentCreditsCount = scoreManagerClass.score;
-        creditsCountLose.text = "You collect " + currentCreditsCount;*/
 
         //zero moves
         curCounterVal = 0;
@@ -354,14 +342,5 @@ public class EndGameManager : MonoBehaviour
 
         gameBoardClass.log.EndSession();
     }
-
-/*    public void QuitAndLooseLife()
-    {
-        if (gameDataClass.saveData.bonuses[5] > 0)
-        {
-            gameDataClass.saveData.bonuses[5] -= 1; //minus 1 life
-            gameDataClass.SaveToFile();
-        }
-    }*/
 
 }

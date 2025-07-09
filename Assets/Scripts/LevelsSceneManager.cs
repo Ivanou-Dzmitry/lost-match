@@ -39,6 +39,7 @@ public class LevelsSceneManager : MonoBehaviour
     //for swipe
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
+
     private float swipeThreshold = 0.5f; // Minimum distance for a swipe
     private float maxSwipeLenght = 2000.0f;
     
@@ -53,6 +54,7 @@ public class LevelsSceneManager : MonoBehaviour
     public TMP_Text debugTxt;
 
     public GameObject levelCylinder; // Reference to your cylinder object
+
     public float rotationAmount = 45f; // Rotation amount in degrees
     public float rotationSpeed = 5f; // Speed for smooth rotation
     private float targetRotationX;     // Desired X-axis rotation
@@ -104,9 +106,9 @@ public class LevelsSceneManager : MonoBehaviour
         //important each level - 2 steps
         maxSteps = (levelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
         
+        //Debug.Log($"levelSegmentsCount:{levelSegmentsCount}, maxSteps:{maxSteps}, levelsCount:{levelsCount}");
 
-        Debug.Log($"levelSegmentsCount:{levelSegmentsCount}, maxSteps:{maxSteps}, levelsCount:{levelsCount}");
-
+        //music
         if (soundManagerClass != null)
         {
             soundManagerClass.PlayMusic(thisSceneMusic);
@@ -114,8 +116,11 @@ public class LevelsSceneManager : MonoBehaviour
 
         DeleteCurrentLevelButtons();
 
+        //current screen
         currentScreenNumber = GetRoundedValue(lastLevel, levelButtonsOnScreen);
-        
+
+        totalSteps = GetTotalSteps(currentScreenNumber);
+
         //debug info
         levelTxt.text = "Map " + currentScreenNumber;
 
@@ -131,9 +136,7 @@ public class LevelsSceneManager : MonoBehaviour
         //load buttons
         LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, 0);
 
-        totalSteps = GetTotalSteps(currentScreenNumber);
-
-        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max{maxSteps}");
+        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}");
     }
 
 
@@ -147,6 +150,7 @@ public class LevelsSceneManager : MonoBehaviour
     {
         Quaternion segRotation = Quaternion.Euler(rotation, 0f, 0f); // 90 degrees on X-axis
         GameObject segment = Instantiate(levelBackSegment, parentTransform3D.position, segRotation);
+
         segment.transform.SetParent(parentTransform3D);
         segment.transform.localScale = Vector3.one;  // (1, 1, 1)               
 
@@ -210,7 +214,7 @@ public class LevelsSceneManager : MonoBehaviour
         int startNumber = currentScreenNumber * levelButtonsOnScreen;      // Upper bound
         int endNumber = startNumber - 4;                // Lower bound
 
-        Debug.Log($"startNumber:{startNumber}, endNumber:{endNumber}");
+        //Debug.Log($"startNumber:{startNumber}, endNumber:{endNumber}");
 
         InstantiateLevelButtons(startNumber, endNumber, parentTransform, rotation);        
     }
@@ -229,6 +233,7 @@ public class LevelsSceneManager : MonoBehaviour
         {
             // Create the base name for the button
             string baseName = "Button3d_" + i;
+
             GameObject existingButton = GameObject.Find(baseName);
             if (existingButton != null)
             {

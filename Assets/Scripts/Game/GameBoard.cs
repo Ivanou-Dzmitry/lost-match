@@ -198,7 +198,7 @@ public class GameBoard : MonoBehaviour
     private int matchLimit = 81; 
 
     private int matchForLineBomb = 4;
-    private int matchForWrapBomb = 2;
+    //private int matchForWrapBomb = 2;
     private int matchForColorBomb = 5;
 
     private List<List<GameObject>> contiguousGroups;
@@ -813,6 +813,7 @@ public class GameBoard : MonoBehaviour
             condition = true;
         }
 
+
         // here start refill
         if (condition)
             StartCoroutine(DecreaseRowCo());
@@ -848,6 +849,7 @@ public class GameBoard : MonoBehaviour
             condition = true;
         }
 
+        //delay
         yield return new WaitForSeconds(refillDelay);
        
         //step 2 refill
@@ -1032,11 +1034,13 @@ public class GameBoard : MonoBehaviour
                 goalManagerClass.UpdateGoals();
             }
 
+            //for lockers
             DamageLockers(thisColumn, thisRow);
 
             //for blockers
             DamageBlockers(thisColumn, thisRow);      
-            
+
+            //for expand
             DamageExpandable(thisColumn, thisRow);  
 
             //sound
@@ -1062,7 +1066,7 @@ public class GameBoard : MonoBehaviour
             currentElement.DestroyAnimation();
 
             //main destroy
-            Destroy(allElements[thisColumn, thisRow], .4f); //!Important
+            Destroy(allElements[thisColumn, thisRow]); //!Important
             
             allElements[thisColumn, thisRow] = null;
 
@@ -1143,10 +1147,11 @@ public class GameBoard : MonoBehaviour
     private IEnumerator FillBoardCo()
     {
         //need to avoid bugs
-        yield return new WaitForSeconds(refillDelay);
+        //yield return new WaitForSeconds(refillDelay);
 
         RefillBoard(); //refil board
 
+        //delay 02
         yield return new WaitForSeconds(refillDelay);
 
         matchState = MatchState.matching_inprogress;        
@@ -1246,7 +1251,7 @@ public class GameBoard : MonoBehaviour
 
             //Debug.Log($"CM: {columnMatch}, RM: {rowMatch}, CE: {currentElement}");
 
-            // First: T-shape or Cross — both row and column have 3+
+            // First: T-shape or Cross ï¿½ both row and column have 3+
             if (columnMatch >= 2 && rowMatch >= 2) // 3 in both directions including center
             {
                 matchTypeClass.type = 2; // Wrap bomb
@@ -1255,7 +1260,7 @@ public class GameBoard : MonoBehaviour
                 return matchTypeClass;
             }
 
-            // Second: Color bomb — 5 in a row or column
+            // Second: Color bomb ï¿½ 5 in a row or column
             if (columnMatch >= matchForColorBomb || rowMatch >= matchForColorBomb)
             {
                 matchTypeClass.type = 1; // Color bomb
@@ -1264,7 +1269,7 @@ public class GameBoard : MonoBehaviour
                 return matchTypeClass;
             }
 
-            // Third: Line bomb — 4 in a row or column
+            // Third: Line bomb ï¿½ 4 in a row or column
             if (columnMatch >= matchForLineBomb || rowMatch >= matchForLineBomb)
             {
                 matchTypeClass.type = 3; // Line bomb
@@ -2041,12 +2046,6 @@ public class GameBoard : MonoBehaviour
         int dRow = Mathf.Abs(a.row - b.row);
         int dCol = Mathf.Abs(a.column - b.column);
         return (dRow == 1 && dCol == 0) || (dRow == 0 && dCol == 1);
-    }
-
-    public void speedUpDestroy()
-    {
-        refillDelay = 0.1f;
-        destroyDelay = 0.5f;
     }
 
 }

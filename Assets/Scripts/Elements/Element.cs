@@ -14,10 +14,4 @@ public class Element : MonoBehaviour
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 }

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 8
   rows: 7
+  xmlLayoutFile: {fileID: 4900000, guid: a4cf3368be9a03c4ab3990c691dca8cd, type: 3}
   boardLayout:
   - columnX: 6
     rowY: 0
@@ -111,8 +112,6 @@ MonoBehaviour:
   - columnX: 7
     rowY: 4
     tileKind: 6
-  elementsBack:
-    gameBoardBackSprite: {fileID: 21300000, guid: 1eba05605e62f6140aa782c473ca0bb0, type: 3}
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}

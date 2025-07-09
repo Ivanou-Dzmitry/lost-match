@@ -225,7 +225,7 @@ public class ElementController : MonoBehaviour
         }
         else
         {
-            gameBoardClass.currentState = GameState.move; 
+            gameBoardClass.currentState = GameState.move;
         }
     }
 
@@ -635,7 +635,8 @@ public class ElementController : MonoBehaviour
 
         Vector2 targetPosition = new Vector2(targetX, targetY);
 
-       // Move towards the target position
+
+        // Move towards the target position
         if (Vector2.Distance(transform.position, targetPosition) > 0.1f)
         {
             transform.position = Vector2.Lerp(transform.position, targetPosition, movementSpeed * Time.deltaTime);

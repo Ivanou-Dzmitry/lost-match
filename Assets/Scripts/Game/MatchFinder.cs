@@ -43,7 +43,7 @@ public class MatchFinder : MonoBehaviour
     //for match - step 1 - run coroutine
     public void FindAllMatches()
     {
-        StartCoroutine(FindAllMatchesCo());
+        StartCoroutine(FindAllMatchesCo());        
     }
 
     //list of matches
@@ -106,6 +106,7 @@ public class MatchFinder : MonoBehaviour
     {
         yield return null;
 
+        //important
         gameBoardClass.matchState = MatchState.matching_inprogress;
 
         for (int i = 0; i < gameBoardClass.column; i++)
@@ -189,6 +190,8 @@ public class MatchFinder : MonoBehaviour
                 }
             }
         }
+
+        gameBoardClass.matchState = MatchState.matching_stop;
     }
 
     //bomb gen part 4

@@ -210,11 +210,13 @@ public class GameBoard : MonoBehaviour
     private Dictionary<TileKind, GameObject> lockersDict; //lockers
     private Dictionary<TileKind, GameObject> expandDict; //expand
 
-    [Header("Busters")]
+    [Header("Boosters")]
     public bool colorBusterInUse;
     public bool lineBusterInUse;
     private int initialMoves; //for time booster run
     private int boosterValue = 10; //value when buster run
+
+    public Button btnSpeedUp;
 
     private Coroutine updateCoroutine;
 
@@ -846,7 +848,7 @@ public class GameBoard : MonoBehaviour
             condition = true;
         }
 
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(refillDelay);
        
         //step 2 refill
         if (condition)
@@ -1113,7 +1115,7 @@ public class GameBoard : MonoBehaviour
             }
         }
         
-        matchState = MatchState.matching_inprogress;
+        matchState = MatchState.matching_inprogress;        
 
         matchFinderClass.FindAllMatches(); //find match 2
     }
@@ -1147,7 +1149,7 @@ public class GameBoard : MonoBehaviour
 
         yield return new WaitForSeconds(refillDelay);
 
-        matchState = MatchState.matching_inprogress;
+        matchState = MatchState.matching_inprogress;        
 
         while (MatchesOnBoard())
         {
@@ -2039,6 +2041,12 @@ public class GameBoard : MonoBehaviour
         int dRow = Mathf.Abs(a.row - b.row);
         int dCol = Mathf.Abs(a.column - b.column);
         return (dRow == 1 && dCol == 0) || (dRow == 0 && dCol == 1);
+    }
+
+    public void speedUpDestroy()
+    {
+        refillDelay = 0.1f;
+        destroyDelay = 0.5f;
     }
 
 }

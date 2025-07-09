@@ -156,7 +156,7 @@ public class GoalManager : MonoBehaviour
         {
             if (endGameManagerClass != null)
             {
-
+                //run bombs on level
                 for (int i = 0; i < gameBoardClass.column; i++)
                 {
                     for (int j = 0; j < gameBoardClass.row; j++)
@@ -207,7 +207,7 @@ public class GoalManager : MonoBehaviour
                     }
                 }
 
-
+                //destroy
                 for (int i = 0; i < gameBoardClass.column; i++)
                 {
                     for (int j = 0; j < gameBoardClass.row; j++)
@@ -220,7 +220,15 @@ public class GoalManager : MonoBehaviour
 
                             if (elemToDestroy != null && elemToDestroy.isMatched)
                             {
+                                //run particles
                                 gameBoardClass.RunParticles(elemToDestroy, i, j);
+                             
+                                //run sound
+                                if (elemToDestroy.elementSound != null)
+                                {
+                                    soundManagerClass.PlaySound(elemToDestroy.elementSound);
+                                }
+                                
                                 Destroy(obj);
                                 scoreManagerClass.IncreaseScore(1);
                             }

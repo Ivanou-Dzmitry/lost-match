@@ -24,13 +24,22 @@ MonoBehaviour:
     tileKind: 5
   - columnX: 2
     rowY: 9
-    tileKind: 14
+    tileKind: 12
   - columnX: 3
     rowY: 9
-    tileKind: 17
+    tileKind: 12
   - columnX: 4
     rowY: 9
-    tileKind: 19
+    tileKind: 12
+  - columnX: 5
+    rowY: 9
+    tileKind: 12
+  - columnX: 6
+    rowY: 9
+    tileKind: 12
+  - columnX: 7
+    rowY: 9
+    tileKind: 5
   - columnX: 0
     rowY: 8
     tileKind: 5
@@ -39,181 +48,112 @@ MonoBehaviour:
     tileKind: 14
   - columnX: 2
     rowY: 8
-    tileKind: 17
+    tileKind: 14
   - columnX: 3
     rowY: 8
-    tileKind: 19
+    tileKind: 14
   - columnX: 4
     rowY: 8
-    tileKind: 17
+    tileKind: 14
   - columnX: 5
+    rowY: 8
+    tileKind: 14
+  - columnX: 6
     rowY: 8
     tileKind: 14
   - columnX: 7
     rowY: 8
-    tileKind: 14
+    tileKind: 10
   - columnX: 0
     rowY: 7
     tileKind: 14
   - columnX: 1
     rowY: 7
-    tileKind: 17
-  - columnX: 2
-    rowY: 7
-    tileKind: 19
-  - columnX: 3
-    rowY: 7
-    tileKind: 17
-  - columnX: 4
-    rowY: 7
     tileKind: 14
-  - columnX: 5
-    rowY: 7
-    tileKind: 17
   - columnX: 6
     rowY: 7
-    tileKind: 11
+    tileKind: 14
   - columnX: 7
     rowY: 7
-    tileKind: 7
+    tileKind: 14
   - columnX: 0
     rowY: 6
-    tileKind: 9
-  - columnX: 1
-    rowY: 6
-    tileKind: 19
+    tileKind: 14
   - columnX: 2
     rowY: 6
-    tileKind: 17
-  - columnX: 3
-    rowY: 6
     tileKind: 14
-  - columnX: 4
-    rowY: 6
-    tileKind: 17
   - columnX: 5
     rowY: 6
     tileKind: 14
-  - columnX: 6
-    rowY: 6
-    tileKind: 7
   - columnX: 7
     rowY: 6
     tileKind: 14
   - columnX: 0
     rowY: 5
-    tileKind: 19
-  - columnX: 1
-    rowY: 5
-    tileKind: 17
-  - columnX: 2
-    rowY: 5
     tileKind: 14
   - columnX: 3
     rowY: 5
-    tileKind: 17
-  - columnX: 4
-    rowY: 5
     tileKind: 14
-  - columnX: 5
-    rowY: 5
-    tileKind: 7
-  - columnX: 6
+  - columnX: 4
     rowY: 5
     tileKind: 14
   - columnX: 7
     rowY: 5
-    tileKind: 17
+    tileKind: 14
   - columnX: 0
     rowY: 4
-    tileKind: 9
-  - columnX: 1
-    rowY: 4
     tileKind: 14
-  - columnX: 2
-    rowY: 4
-    tileKind: 17
   - columnX: 3
     rowY: 4
     tileKind: 14
   - columnX: 4
     rowY: 4
-    tileKind: 7
-  - columnX: 5
-    rowY: 4
     tileKind: 14
-  - columnX: 6
-    rowY: 4
-    tileKind: 17
   - columnX: 7
     rowY: 4
-    tileKind: 18
+    tileKind: 14
   - columnX: 0
     rowY: 3
     tileKind: 14
-  - columnX: 1
-    rowY: 3
-    tileKind: 17
   - columnX: 2
-    rowY: 3
-    tileKind: 14
-  - columnX: 3
-    rowY: 3
-    tileKind: 7
-  - columnX: 4
     rowY: 3
     tileKind: 14
   - columnX: 5
     rowY: 3
-    tileKind: 17
-  - columnX: 6
-    rowY: 3
-    tileKind: 18
+    tileKind: 14
   - columnX: 7
     rowY: 3
-    tileKind: 17
+    tileKind: 14
   - columnX: 0
     rowY: 2
-    tileKind: 9
+    tileKind: 14
   - columnX: 1
     rowY: 2
     tileKind: 14
-  - columnX: 2
-    rowY: 2
-    tileKind: 7
-  - columnX: 3
-    rowY: 2
-    tileKind: 14
-  - columnX: 4
-    rowY: 2
-    tileKind: 17
-  - columnX: 5
-    rowY: 2
-    tileKind: 18
   - columnX: 6
     rowY: 2
-    tileKind: 17
+    tileKind: 14
   - columnX: 7
     rowY: 2
     tileKind: 14
   - columnX: 0
     rowY: 1
-    tileKind: 14
+    tileKind: 10
   - columnX: 1
     rowY: 1
-    tileKind: 7
+    tileKind: 14
   - columnX: 2
     rowY: 1
     tileKind: 14
   - columnX: 3
     rowY: 1
-    tileKind: 17
+    tileKind: 14
   - columnX: 4
     rowY: 1
-    tileKind: 18
+    tileKind: 14
   - columnX: 5
     rowY: 1
-    tileKind: 17
+    tileKind: 14
   - columnX: 6
     rowY: 1
     tileKind: 14
@@ -222,22 +162,22 @@ MonoBehaviour:
     tileKind: 5
   - columnX: 0
     rowY: 0
-    tileKind: 7
+    tileKind: 5
   - columnX: 1
     rowY: 0
-    tileKind: 14
+    tileKind: 12
   - columnX: 2
     rowY: 0
-    tileKind: 17
+    tileKind: 12
   - columnX: 3
     rowY: 0
-    tileKind: 18
+    tileKind: 12
   - columnX: 4
     rowY: 0
-    tileKind: 17
+    tileKind: 12
   - columnX: 5
     rowY: 0
-    tileKind: 14
+    tileKind: 12
   - columnX: 6
     rowY: 0
     tileKind: 5
@@ -247,16 +187,16 @@ MonoBehaviour:
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
-  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
+  - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 78000000a0000000c8000000
-  goalsDescription: Collect the socks
+  scoreGoals: 96000000c8000000fa000000
+  goalsDescription: Break the ice floes
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 14
+    counterValue: 23
   levelGoals:
-  - numberGoalsNeeded: 29
-    numberCollectedGoals: 29
-    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
-    matchValue: blocker_01
+  - numberGoalsNeeded: 36
+    numberCollectedGoals: 36
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

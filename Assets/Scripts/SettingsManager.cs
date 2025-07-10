@@ -80,7 +80,7 @@ public class SettingsManager : MonoBehaviour
         Application.targetFrameRate = 30;
 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
-        int targetHeight = 1990;
+        int targetHeight = 1600;
         float aspectRatio = 9f / 16f;  // Portrait (e.g., 9:16)
 
         int calculatedWidth = Mathf.RoundToInt(targetHeight * aspectRatio);

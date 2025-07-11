@@ -1588,7 +1588,14 @@ public class GameBoard : MonoBehaviour
                 int valueY = preloadBoardLayout[i].rowY;
 
                 // Delete old random elements
-                Destroy(allElements[valueX, valueY].gameObject);
+                if (allElements != null && allElements[valueX, valueY] != null)
+                {
+                    Destroy(allElements[valueX, valueY].gameObject);
+                }
+                else
+                {
+                    Debug.Log($"enPreloadLayout > No preload object at: {valueX} {valueY}");
+                }
 
                 // Create preload
                 //GameObject preloadElements = Instantiate(elements[preloadDict[kind]], tempPos, Quaternion.identity);

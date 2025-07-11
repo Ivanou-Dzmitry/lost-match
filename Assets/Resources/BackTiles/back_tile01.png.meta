@@ -539,6 +539,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: back_tile01_18
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 0
+        width: 100
+        height: 100
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3093a00836e9e6478afc0ddfa1b8bcf
+      internalID: 763104067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -560,6 +581,7 @@ TextureImporter:
       back_tile01_15: -1863465590
       back_tile01_16: -327056218
       back_tile01_17: -1147134966
+      back_tile01_18: 763104067
       back_tile01_2: -622593171
       back_tile01_3: 1459511423
       back_tile01_4: -1984102474

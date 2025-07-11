@@ -22,9 +22,12 @@ MonoBehaviour:
   - columnX: 1
     rowY: 8
     tileKind: 7
+  - columnX: 6
+    rowY: 8
+    tileKind: 6
   - columnX: 7
     rowY: 8
-    tileKind: 5
+    tileKind: 8
   - columnX: 0
     rowY: 7
     tileKind: 9
@@ -33,7 +36,7 @@ MonoBehaviour:
     tileKind: 7
   - columnX: 7
     rowY: 7
-    tileKind: 7
+    tileKind: 5
   - columnX: 0
     rowY: 6
     tileKind: 5
@@ -96,7 +99,7 @@ MonoBehaviour:
     tileKind: 7
   - columnX: 7
     rowY: 4
-    tileKind: 5
+    tileKind: 8
   - columnX: 0
     rowY: 3
     tileKind: 5
@@ -144,16 +147,19 @@ MonoBehaviour:
     tileKind: 7
   - columnX: 7
     rowY: 1
-    tileKind: 7
+    tileKind: 5
   - columnX: 0
     rowY: 0
     tileKind: 5
   - columnX: 1
     rowY: 0
     tileKind: 7
+  - columnX: 6
+    rowY: 0
+    tileKind: 6
   - columnX: 7
     rowY: 0
-    tileKind: 5
+    tileKind: 8
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}

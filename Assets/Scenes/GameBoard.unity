@@ -7092,7 +7092,7 @@ MonoBehaviour:
   matchState: 0
   column: 0
   row: 0
-  refillDelay: 0.4
+  refillDelay: 0.6
   destroyDelay: 1
   boardLayout:
   - columnX: 0

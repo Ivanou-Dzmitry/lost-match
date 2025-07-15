@@ -204,7 +204,9 @@ public class GameBoard : MonoBehaviour
     //private int matchForWrapBomb = 2;
     private int matchForColorBomb = 5;
 
-    private List<List<GameObject>> contiguousGroups;
+    //private List<List<GameObject>> contiguousGroups;
+
+    private int destroyCall;
 
     //dict
     private Dictionary<TileKind, int> preloadDict;
@@ -754,7 +756,62 @@ public class GameBoard : MonoBehaviour
         bool condition = false;
         
         //remove doubles
-        matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);        
+        matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
+
+
+        //debug block
+        Debug.Log($"In match: {matchFinderClass.currentMatch.Count}");
+
+        var tagGroups = matchFinderClass.currentMatch
+            .GroupBy(obj => obj.tag)
+            .ToList(); // Materialize once to avoid re-enumeration
+
+
+        var filteredList = matchFinderClass.currentMatch
+            .GroupBy(obj => obj.tag)
+            .Where(group => group.Count() > 3)
+            .SelectMany(group =>
+            {
+                // Group objects by same X position
+                var sameXGroups = group
+                    .GroupBy(obj => Mathf.RoundToInt(obj.transform.position.x))
+                    .Where(g => g.Count() > 3);
+
+                // Group objects by same Y position
+                var sameYGroups = group
+                    .GroupBy(obj => Mathf.RoundToInt(obj.transform.position.y))
+                    .Where(g => g.Count() > 3);
+
+                // Combine all matching horizontal/vertical groups
+                return sameXGroups
+                    .Concat(sameYGroups)
+                    .SelectMany(g => g);
+            })
+            .Distinct() // Avoid duplicates (in case one obj appears in both x and y groups)
+            .ToList();
+
+        bool genBomb = false;
+        int bombMatches = 0;
+
+        foreach (var group in tagGroups)
+        {
+            int count = group.Count();
+            Debug.Log($"Tag: {group.Key}, Count: {count}");
+
+            if (count >= minMatchForBomb)
+            {
+                bombMatches++;
+                genBomb = true;
+            }
+        }
+
+        if(genBomb)
+            Debug.Log("Tags with more than 3 matches: " + bombMatches+ ". Gen Bomb: " + genBomb);
+
+        if(filteredList.Count>0)
+            Debug.Log("Filtered List Count: " + filteredList.Count);
+
+        //debug end
 
         // Count elements by tag
         foreach (var obj in matchFinderClass.currentMatch)
@@ -784,7 +841,10 @@ public class GameBoard : MonoBehaviour
 
         CongratInfo(matchFinderClass.currentMatch.Count);
 
-        CheckToGenerateBombs();
+        if(genBomb)
+            CheckToGenerateBombs(filteredList);
+
+        destroyCall = 0;
 
         for (int i = 0; i < column; i++)
         {
@@ -797,6 +857,8 @@ public class GameBoard : MonoBehaviour
                 }
             }            
         }
+
+        Debug.Log($"Out match: {destroyCall}");
 
         //for blockers
         for (int i = 0; i < column; i++)
@@ -1074,6 +1136,7 @@ public class GameBoard : MonoBehaviour
 
             //main destroy
             Destroy(allElements[thisColumn, thisRow]); //!Important
+            destroyCall++;
             
             allElements[thisColumn, thisRow] = null;
 
@@ -1207,9 +1270,9 @@ public class GameBoard : MonoBehaviour
 
 
     //gen bombs part 3
-    private MatchType ColumnOrRow()
+    private MatchType ColumnOrRow(List<GameObject> matchGroup)
     {
-        List<GameObject> matchGroup = new List<GameObject>(matchFinderClass.currentMatch);
+        //List<GameObject> matchGroup = new List<GameObject>(matchFinderClass.currentMatch);
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
         matchTypeClass.curElem = null;
@@ -1323,10 +1386,32 @@ public class GameBoard : MonoBehaviour
 
 
     //gen bomb part 2 // GameObject sourceDot
-    public void CheckToGenerateBombs()
+    public void CheckToGenerateBombs(List<GameObject> bombCandidates)
     {
-        MatchType typeOfMatch = ColumnOrRow();
+        // Group bomb candidates by tag (so each group has the same element type)
+        var groupedCandidates = bombCandidates
+            .GroupBy(obj => obj.tag);
 
+
+        // MatchType typeOfMatch = ColumnOrRow();
+        MatchType typeOfMatch = null;
+        int counter = 0;
+        foreach (var group in groupedCandidates)
+        {
+            // Only one call to ColumnOrRow per group
+            typeOfMatch = ColumnOrRow(group.ToList());
+            counter++;
+            if(typeOfMatch.type > 0)
+            {
+                BombConstructor(typeOfMatch);
+                Debug.Log($"{counter}. Generating bomb for tag: {group.Key} with match type: {typeOfMatch.type}");
+                Debug.Break();
+            }
+        }
+    }
+
+    private void BombConstructor(MatchType typeOfMatch)
+    {
         // 1. Handle cascade mode: no player move
         if (currentElement == null && typeOfMatch.type != 0 && typeOfMatch.curElem != null)
         {
@@ -1371,8 +1456,6 @@ public class GameBoard : MonoBehaviour
                 break;
         }
     }
-
-
 
 
     void GenerateBomb(ElementController dot, Action<ElementController> generator)

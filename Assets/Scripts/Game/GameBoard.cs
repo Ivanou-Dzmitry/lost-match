@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using Unity.VisualScripting;
+using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 public enum GameState
@@ -195,7 +196,9 @@ public class GameBoard : MonoBehaviour
     //bombs values    
     private int minMatchCount = 3;
     //awoid match bomb bugs
-    private int matchLimit = 81; 
+    private int matchLimit = 81;
+
+    private HashSet<GameObject> usedObjects = new HashSet<GameObject>();
 
     private int matchForLineBomb = 4;
     //private int matchForWrapBomb = 2;
@@ -214,7 +217,7 @@ public class GameBoard : MonoBehaviour
     public bool colorBusterInUse;
     public bool lineBusterInUse;
     private int initialMoves; //for time booster run
-    private int boosterValue = 10; //value when buster run
+    private int boosterValue = 10; //value when buster run TIME boosters
 
     public Button btnSpeedUp;
 
@@ -613,7 +616,7 @@ public class GameBoard : MonoBehaviour
             GenPreloadLayout();
         }
 
-        //like color bomb
+        //like color bomb  TIME boosters
         if (colorBusterInUse || lineBusterInUse)
             SetTimlessBuster();
 
@@ -630,6 +633,7 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    //TIME booster 1st.
     private void SetTimlessBuster()
     {
         //list for elements
@@ -750,9 +754,7 @@ public class GameBoard : MonoBehaviour
         bool condition = false;
         
         //remove doubles
-        matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
-
-        contiguousGroups = GetContiguousGroups(matchFinderClass.currentMatch);
+        matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);        
 
         // Count elements by tag
         foreach (var obj in matchFinderClass.currentMatch)
@@ -780,25 +782,9 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-
         CongratInfo(matchFinderClass.currentMatch.Count);
 
-
-        foreach (var group in contiguousGroups)
-        {
-            GameObject anyDot = null;
-
-            //for auto bomb generation
-            if (group.Count() > 3)
-            {
-                var groupList = group.ToList();
-                int randomIndex = UnityEngine.Random.Range(0, groupList.Count);
-                anyDot = groupList[randomIndex];
-            }
-
-            CheckToGenerateBombs(anyDot);
-        }
-
+        CheckToGenerateBombs();
 
         for (int i = 0; i < column; i++)
         {
@@ -807,17 +793,35 @@ public class GameBoard : MonoBehaviour
                 if (allElements[i, j] != null)
                 {                    
                     DestroyMatchesAt(i, j);
+                    condition = true;
                 }
-            }
-
-            condition = true;
+            }            
         }
 
+        //for blockers
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (blockerCells[i, j] != null)
+                {
+                    SpecialElements blocker = blockerCells[i, j].GetComponent<SpecialElements>();
+
+                    if (blocker != null && blocker.isMatched)
+                    {
+                        blocker.isMatched = false;
+                        DamageBlockerAt(i, j);
+                        condition = true;
+                    }
+                }
+            }
+        }
 
         // here start refill
         if (condition)
             StartCoroutine(DecreaseRowCo());
     }
+
 
 
     //Important!
@@ -990,16 +994,19 @@ public class GameBoard : MonoBehaviour
                 matchFinderClass.MatchWrapPieces(thisColumn, thisRow);
             }
 
+            //colum bomb match
             if (currentElement.isColumnBomb)
             {
                 matchFinderClass.MatchColPieces(thisColumn);
             }
 
+            //row bomb
             if (currentElement.isRowBomb)
             {
                 matchFinderClass.MatchRowPieces(thisRow);
             }
 
+            //color
             if (currentElement.isColorBomb)
             {
                 int randomIndex = UnityEngine.Random.Range(0, elements.Length);
@@ -1038,7 +1045,7 @@ public class GameBoard : MonoBehaviour
             DamageLockers(thisColumn, thisRow);
 
             //for blockers
-            DamageBlockers(thisColumn, thisRow);      
+            DamageBlockers(thisColumn, thisRow);            
 
             //for expand
             DamageExpandable(thisColumn, thisRow);  
@@ -1119,9 +1126,10 @@ public class GameBoard : MonoBehaviour
             }
         }
         
-        matchState = MatchState.matching_inprogress;        
+        matchState = MatchState.matching_inprogress;
 
-        matchFinderClass.FindAllMatches(); //find match 2
+        //find match 2
+        matchFinderClass.FindAllMatches(); 
     }
 
     private bool MatchesOnBoard()
@@ -1147,8 +1155,7 @@ public class GameBoard : MonoBehaviour
     private IEnumerator FillBoardCo()
     {
         //need to avoid bugs
-        //yield return new WaitForSeconds(refillDelay);
-
+        //yield return new WaitForSeconds(refillDelay);        
         RefillBoard(); //refil board
 
         //delay 02
@@ -1156,11 +1163,12 @@ public class GameBoard : MonoBehaviour
 
         matchState = MatchState.matching_inprogress;        
 
+        //destroy2
         while (MatchesOnBoard())
         {
-            streakValue++; //for score
-            //DebugLogAllMatchGroups();
-            DestroyMatches();     //run decrease columns       
+            streakValue++; //for score            
+            //call #3 run decrease columns      
+            DestroyMatches();      
             yield break;
         }
 
@@ -1184,9 +1192,10 @@ public class GameBoard : MonoBehaviour
 
         goalManagerClass.UpdateGoals();
 
-        //run booster generator
+        //run booster generator TIME
         int movesMade = initialMoves - endGameManagerClass.curCounterVal; // Moves used so far
 
+        //TIME boosters
         if (movesMade % boosterValue == 0) // Run every 10 moves
         {
             if (colorBusterInUse || lineBusterInUse)
@@ -1200,85 +1209,104 @@ public class GameBoard : MonoBehaviour
     //gen bombs part 3
     private MatchType ColumnOrRow()
     {
-        List<GameObject> matchCopy = contiguousGroups.SelectMany(group => group).ToList();
-
-
-        //Debug.Log($"Total contiguous groups: {contiguousGroups.Count}");
-
-        // Log details of each group
-/*        for (int i = 0; i < contiguousGroups.Count; i++)
-        {
-            var group = contiguousGroups[i];
-            string commonTag = group.FirstOrDefault()?.tag ?? "null";
-            Debug.Log($"Group {i + 1}: Count = {group.Count}, Tag = {commonTag}");
-        }*/
-
+        List<GameObject> matchGroup = new List<GameObject>(matchFinderClass.currentMatch);
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
         matchTypeClass.curElem = null;
 
-        foreach (GameObject matchObject in matchCopy)
+        foreach (GameObject centerDot in matchGroup)
         {
-            if (matchObject == null) continue;
+            if (centerDot == null || usedObjects.Contains(centerDot)) continue;
 
-            ElementController thisDot = matchObject.GetComponent<ElementController>();
+            ElementController center = centerDot.GetComponent<ElementController>();
+            if (center == null) continue;
 
-            if (thisDot == null) continue; // Early exit if null
+            string color = centerDot.tag;
+            int col = center.column;
+            int row = center.row;
 
-            string color = matchObject.tag;
-            int column = thisDot.column;
-            int row = thisDot.row;
-
-            int columnMatch = 1;
-            int rowMatch = 1;
-
-            //Debug.Log($"This dot: {thisDot.name}");
-
-            foreach (GameObject otherMatchObject in matchCopy)
+            List<GameObject> horizontalMatches = matchGroup.Where(obj =>
             {
-                if (otherMatchObject == null || otherMatchObject == matchObject) continue;
+                if (obj == null || obj == centerDot || !obj.CompareTag(color)) return false;
+                ElementController ec = obj.GetComponent<ElementController>();
+                return ec != null && ec.row == row;
+            }).ToList();
 
-                ElementController nextDot = otherMatchObject.GetComponent<ElementController>();
-
-                if (nextDot.column == column && nextDot.CompareTag(color))
-                    columnMatch++;
-
-                if (nextDot.row == row && nextDot.CompareTag(color))
-                    rowMatch++;
-
-                //Debug.Log($"Next: {nextDot}");
-            }
-
-            //Debug.Log($"CM: {columnMatch}, RM: {rowMatch}, CE: {currentElement}");
-
-            // First: T-shape or Cross � both row and column have 3+
-            if (columnMatch >= 2 && rowMatch >= 2) // 3 in both directions including center
+            List<GameObject> verticalMatches = matchGroup.Where(obj =>
             {
-                matchTypeClass.type = 2; // Wrap bomb
+                if (obj == null || obj == centerDot || !obj.CompareTag(color)) return false;
+                ElementController ec = obj.GetComponent<ElementController>();
+                return ec != null && ec.column == col;
+            }).ToList();
+
+            horizontalMatches.Add(centerDot);
+            verticalMatches.Add(centerDot);
+
+            bool hasRow = horizontalMatches.Count >= 3;
+            bool hasCol = verticalMatches.Count >= 3;
+
+            // WRAP: L or T shape
+            if (hasRow && hasCol)
+            {
+                matchTypeClass.type = 2;
+                matchTypeClass.curElem = centerDot;
                 matchTypeClass.color = color;
-                matchTypeClass.curElem = matchObject;
+
+                // mark used (optional: could merge both groups)
+                foreach (GameObject obj in horizontalMatches.Concat(verticalMatches))
+                {
+                    if (!usedObjects.Contains(obj)) usedObjects.Add(obj);
+                }
+
                 return matchTypeClass;
             }
 
-            // Second: Color bomb � 5 in a row or column
-            if (columnMatch >= matchForColorBomb || rowMatch >= matchForColorBomb)
+            // COLOR BOMB: Big match
+            if (horizontalMatches.Count >= matchForColorBomb || verticalMatches.Count >= matchForColorBomb)
             {
-                matchTypeClass.type = 1; // Color bomb
+                matchTypeClass.type = 1;
+                matchTypeClass.curElem = centerDot;
                 matchTypeClass.color = color;
-                matchTypeClass.curElem = matchObject;
+
+                foreach (GameObject obj in horizontalMatches.Concat(verticalMatches))
+                {
+                    if (!usedObjects.Contains(obj)) usedObjects.Add(obj);
+                }
+
                 return matchTypeClass;
             }
 
-            // Third: Line bomb � 4 in a row or column
-            if (columnMatch >= matchForLineBomb || rowMatch >= matchForLineBomb)
+            // LINE BOMB
+            if (horizontalMatches.Count >= matchForLineBomb)
             {
-                matchTypeClass.type = 3; // Line bomb
+                matchTypeClass.type = 3; // Horizontal line
+                matchTypeClass.curElem = centerDot;
                 matchTypeClass.color = color;
-                matchTypeClass.curElem = matchObject;
+
+                foreach (GameObject obj in horizontalMatches)
+                {
+                    if (!usedObjects.Contains(obj)) usedObjects.Add(obj);
+                }
+
+                return matchTypeClass;
+            }
+
+            if (verticalMatches.Count >= matchForLineBomb)
+            {
+                matchTypeClass.type = 3; // Vertical line
+                matchTypeClass.curElem = centerDot;
+                matchTypeClass.color = color;
+
+                foreach (GameObject obj in verticalMatches)
+                {
+                    if (!usedObjects.Contains(obj)) usedObjects.Add(obj);
+                }
+
                 return matchTypeClass;
             }
         }
 
+        // No special match found
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
         matchTypeClass.curElem = null;
@@ -1286,85 +1314,65 @@ public class GameBoard : MonoBehaviour
     }
 
 
+    ElementController GetSafeOtherElement(ElementController element)
+    {
+        if (element == null || element.otherElement == null) return null;
+        if (element.otherElement.Equals(null)) return null; // destroyed check
+        return element.otherElement.GetComponent<ElementController>();
+    }
 
-    //gen bomb part 2
-    public void CheckToGenerateBombs(GameObject sourceDot)
-    {       
-        if (matchFinderClass.currentMatch.Count > minMatchCount && matchFinderClass.currentMatch.Count < matchLimit)
+
+    //gen bomb part 2 // GameObject sourceDot
+    public void CheckToGenerateBombs()
+    {
+        MatchType typeOfMatch = ColumnOrRow();
+
+        // 1. Handle cascade mode: no player move
+        if (currentElement == null && typeOfMatch.type != 0 && typeOfMatch.curElem != null)
         {
-            // Determine match type
-            MatchType typeOfMatch = ColumnOrRow();
+            currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
+            currentElement.otherElement = null;
+        }
 
-            //for auto
-            if (currentElement == null && typeOfMatch.type != 0)
-            {
-                currentElement = sourceDot.GetComponent<ElementController>();
-                //currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
-                currentElement.otherElement = null;
-            }
+        ElementController otherDot = GetSafeOtherElement(currentElement);
 
-            if (currentElement != null)
-            {
-                bool currentDotMatched = currentElement.isMatched && currentElement.tag == typeOfMatch.color;
-                ElementController otherDot = currentElement.otherElement != null ? currentElement.otherElement.GetComponent<ElementController>() : null;
-                bool otherDotMatched = otherDot != null && otherDot.isMatched && otherDot.tag == typeOfMatch.color;
+        bool currentDotMatched = currentElement != null && currentElement.isMatched && currentElement.tag == typeOfMatch.color;
+        bool otherDotMatched = otherDot != null && otherDot.isMatched && otherDot.tag == typeOfMatch.color;
 
-                //Debug.Log($"curDot: {currentDotMatched}, other:{otherDotMatched}");
-                //Debug.Break();
+        // 2. Handle cascade fallback
+        bool cascadeMode = !currentDotMatched && !otherDotMatched && typeOfMatch.curElem != null;
+        ElementController fallbackDot = cascadeMode ? typeOfMatch.curElem.GetComponent<ElementController>() : null;
 
-                switch (typeOfMatch.type)
-                {
-                    case 1:
-                        // Color bomb
-                        if (currentDotMatched)
-                        {
-                            GenerateBomb(currentElement, e => e.GenerateColorBomb());
-                        }
-                        else if (otherDotMatched)
-                        {
-                            GenerateBomb(otherDot, e => e.GenerateColorBomb());
-                        }
-                        else
-                        {
-                            ElementController srcDot = sourceDot.GetComponent<ElementController>();
-                            GenerateBomb(srcDot, e => e.GenerateColorBomb());
-                        }
-                        break;
-                    case 2:
-                        //WRAP
-                        if (currentDotMatched)
-                        {
-                            GenerateBomb(currentElement, e => e.GenerateWrapBomb());
-                        }
-                        else if (otherDotMatched)
-                        {
-                            GenerateBomb(otherDot, e => e.GenerateWrapBomb());
-                        }
-                        else
-                        {
-                            ElementController srcDot = sourceDot.GetComponent<ElementController>();
-                            GenerateBomb(srcDot, e => e.GenerateWrapBomb());
-                        }
-                        break;
-                    case 3:
-                        // Column/Row bomb
-                        if (currentDotMatched == false && otherDotMatched == false)
-                        {
-                            ElementController srcDot = sourceDot.GetComponent<ElementController>();
-                            currentElement = srcDot;
-                            matchFinderClass.LineBombCheck(typeOfMatch);
-                        }
-                        else
-                        {
-                            matchFinderClass.LineBombCheck(typeOfMatch);
-                        }                        
-                        break;
-                    default:
-                        break;
-                }
-            }
+        switch (typeOfMatch.type)
+        {
+            case 1: // Color bomb
+                if (currentDotMatched)
+                    GenerateBomb(currentElement, e => e.GenerateColorBomb());
+                else if (otherDotMatched)
+                    GenerateBomb(otherDot, e => e.GenerateColorBomb());
+                else if (cascadeMode)
+                    GenerateBomb(fallbackDot, e => e.GenerateColorBomb());
+                break;
+
+            case 2: // Wrap bomb
+                if (currentDotMatched)
+                    GenerateBomb(currentElement, e => e.GenerateWrapBomb());
+                else if (otherDotMatched)
+                    GenerateBomb(otherDot, e => e.GenerateWrapBomb());
+                else if (cascadeMode)
+                    GenerateBomb(fallbackDot, e => e.GenerateWrapBomb());
+                break;
+
+            case 3: // Line bomb (horizontal/vertical)
+                matchFinderClass.LineBombCheck(typeOfMatch);
+                break;
+
+            default:
+                break;
         }
     }
+
+
 
 
     void GenerateBomb(ElementController dot, Action<ElementController> generator)
@@ -1429,6 +1437,8 @@ public class GameBoard : MonoBehaviour
         DamageBlockerAt(column + 1, row);
         DamageBlockerAt(column, row - 1);
         DamageBlockerAt(column, row + 1);
+
+        //Debug.Log("Damage blocker at DamageBlockers");
     }
 
     //blockers
@@ -1441,7 +1451,14 @@ public class GameBoard : MonoBehaviour
             if (blockerCells[thisColumn, thisRow])
             {
                 // Apply damage
-                blockerCells[thisColumn, thisRow].TakeDamage(1);
+                if (!blockerCells[thisColumn, thisRow].wasHitThisFrame)
+                {
+                    blockerCells[thisColumn, thisRow].TakeDamage(1);
+                    blockerCells[thisColumn, thisRow].wasHitThisFrame = true;
+                }
+               
+                //Debug.Log($"Hit-{blockerCells[thisColumn, thisRow].hitPoints}, name {blockerCells[thisColumn, thisRow].name}");
+                //Debug.Break();
 
                 // Log the current blocker
                 SpecialElements currentBlocker = blockerCells[thisColumn, thisRow];
@@ -1971,7 +1988,7 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-
+    //TIME boosters
     private IEnumerator UpdatePerSec()
     {
         while (true)
@@ -1985,74 +2002,6 @@ public class GameBoard : MonoBehaviour
 
             yield return new WaitForSeconds(1f); // Wait for 1 second
         }        
-    }
-
-    private List<List<GameObject>> GetContiguousGroups(List<GameObject> allMatches)
-    {
-        List<List<GameObject>> resultGroups = new List<List<GameObject>>();
-        HashSet<GameObject> visited = new HashSet<GameObject>();
-
-        foreach (var go in allMatches)
-        {
-            if (go == null || visited.Contains(go)) continue;
-
-            List<GameObject> group = new List<GameObject>();
-            DFS(go, allMatches, visited, group);
-
-            if (group.Count > 3)
-            {
-                resultGroups.Add(group);
-            }
-        }
-
-        return resultGroups;
-    }
-
-    private void DFS(GameObject start, List<GameObject> pool, HashSet<GameObject> visited, List<GameObject> group)
-    {
-        Stack<GameObject> stack = new Stack<GameObject>();
-        stack.Push(start);
-
-        while (stack.Count > 0)
-        {
-            var current = stack.Pop();
-            if (visited.Contains(current)) continue;
-
-            visited.Add(current);
-            group.Add(current);
-
-            ElementController ec = current.GetComponent<ElementController>();
-            string tag = current.tag;
-
-            foreach (var neighbor in GetAdjacent(ec, pool, tag))
-            {
-                if (!visited.Contains(neighbor))
-                    stack.Push(neighbor);
-            }
-        }
-    }
-
-    private List<GameObject> GetAdjacent(ElementController center, List<GameObject> pool, string tag)
-    {
-        List<GameObject> adjacent = new List<GameObject>();
-
-        foreach (var go in pool)
-        {
-            if (go == null || go.tag != tag || go == center.gameObject) continue;
-
-            ElementController ec = go.GetComponent<ElementController>();
-            if (IsAdjacent(center, ec))
-                adjacent.Add(go);
-        }
-
-        return adjacent;
-    }
-
-    private bool IsAdjacent(ElementController a, ElementController b)
-    {
-        int dRow = Mathf.Abs(a.row - b.row);
-        int dCol = Mathf.Abs(a.column - b.column);
-        return (dRow == 1 && dCol == 0) || (dRow == 0 && dCol == 1);
     }
 
 }

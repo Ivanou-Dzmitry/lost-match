@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class HintManager : MonoBehaviour
 {
@@ -11,31 +13,17 @@ public class HintManager : MonoBehaviour
     private float hintDelaySec;
     public GameObject hintParticle;
     public GameObject currentHint;
+    private int columns, rows;
+    private Coroutine hintCoroutine;
 
     void Start()
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
-        hintDelaySec = hintDelay;
+        columns = gameBoardClass.column;
+        rows = gameBoardClass.row;
+        hintCoroutine = StartCoroutine(HintChecker());
     }
 
-    void Update()
-    {
-        hintDelaySec -= Time.deltaTime;
-
-        if (hintDelaySec <= 0 && currentHint == null)
-        {
-            if (gameBoardClass.matchState == MatchState.matching_stop && gameBoardClass.currentState == GameState.move)
-            {
-                MarkHint();
-                hintDelaySec = hintDelay;
-            }
-            else
-            {
-                DestroyHint();
-                hintDelaySec = hintDelay;
-            }
-        }            
-    }
 
     //all posible matches
     List<GameObject> FindAllMatches()
@@ -75,18 +63,14 @@ public class HintManager : MonoBehaviour
     //pick match
     GameObject PickRandomMatch()
     {
-        List<GameObject> possibleMoves = new List<GameObject>();
+        if (gameBoardClass.currentState != GameState.move || gameBoardClass.matchState != MatchState.matching_stop)
+            return null;
 
-        possibleMoves.Clear();
+        List<GameObject> possibleMoves = FindAllMatches();
 
-        if (gameBoardClass.matchState == MatchState.matching_stop)
-            possibleMoves = FindAllMatches();
-
-        if (possibleMoves.Count > 0 && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop)
+        if (possibleMoves.Count > 0)
         {
-            int pieceToUse = UnityEngine.Random.Range(0, possibleMoves.Count);
-
-            return possibleMoves[pieceToUse];
+            return possibleMoves[UnityEngine.Random.Range(0, possibleMoves.Count)];
         }
 
         return null;
@@ -117,6 +101,34 @@ public class HintManager : MonoBehaviour
             Destroy(currentHint);
             currentHint = null;
             hintDelaySec = hintDelay;
+        }
+    }
+
+
+    IEnumerator HintChecker()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.25f); // check every 250ms instead of every frame
+
+            if (currentHint == null && hintDelaySec > 0)
+            {
+                hintDelaySec -= 0.25f;
+            }
+
+            if (hintDelaySec <= 0 && currentHint == null)
+            {
+                if (gameBoardClass.matchState == MatchState.matching_stop && gameBoardClass.currentState == GameState.move)
+                {
+                    MarkHint();
+                }
+                else
+                {
+                    DestroyHint();
+                }
+
+                hintDelaySec = hintDelay;
+            }
         }
     }
 

@@ -47,7 +47,11 @@ public class EndGameManager : MonoBehaviour
 
     [Header("Win Panel")]
     public TMP_Text levelNumber;
+    
     public TMP_Text creditsCount;
+    public TMP_Text starBonusCountText;
+    public TMP_Text totalCredits;
+
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
     public ParticleSystem[] starsPart;
@@ -177,10 +181,28 @@ public class EndGameManager : MonoBehaviour
 
         levelNumber.text = "LEVEL " + (gameBoardClass.level + 1);
 
-        //credits. saved if close, but not save if retry
-        int currentCreditsCount = scoreManagerClass.score;
+        //show stars binus
+        // Show star bonus if 1–3 stars are earned
+        int stars = scoreManagerClass.numberStars;
+        int bonus = 0;
 
-        creditsCount.text = "+" + currentCreditsCount; //show earned credits
+        if (stars >= 1 && stars <= 3 && starBonusCountText != null)
+        {
+            bonus = gameBoardClass.scoreGoals[stars - 1];
+            scoreManagerClass.score += bonus;            
+        }
+
+        //credits. saved if close, but not save if retry
+        int currentCreditsCount = scoreManagerClass.score - bonus;
+
+        //show earned credits
+        creditsCount.text = $"{currentCreditsCount}";
+        starBonusCountText.text = $"{bonus}";
+        
+        //total
+        if(totalCredits != null)
+            totalCredits.text = $"{scoreManagerClass.score}";
+
 
         //turn on stars
         for (int i = 0; i < scoreManagerClass.numberStars; i++)

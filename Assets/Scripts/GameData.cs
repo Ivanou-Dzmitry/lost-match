@@ -128,10 +128,10 @@ public class GameData : MonoBehaviour
         
         //set prices
         saveData.bonusesPrice[0] = 150; //refresh
-        saveData.bonusesPrice[1] = 1500; //color buster
+        saveData.bonusesPrice[1] = 1500; //color buster TIME
         saveData.bonusesPrice[2] = 350; //wrap
-        saveData.bonusesPrice[3] = 250; //line
-        saveData.bonusesPrice[4] = 250; //line
+        saveData.bonusesPrice[3] = 250; //line column
+        saveData.bonusesPrice[4] = 250; //line row
 
         //for game
         saveData.bonusesPrice[5] = 100; //energy battery 1
@@ -145,12 +145,12 @@ public class GameData : MonoBehaviour
         saveData.bonusesPrice[9] = 270; //move x
         saveData.bonusesPrice[10] = 430; //move xx
 
-        saveData.bonusesPrice[11] = 1300; //line buster
+        saveData.bonusesPrice[11] = 1300; //line buster TIME
 
 
         //set MAX COUNT
         saveData.maxBonusCount[0] = 2; //refresh
-        saveData.maxBonusCount[1] = 1; //color
+        saveData.maxBonusCount[1] = 1; //color booster TIME
         saveData.maxBonusCount[2] = 3; //wrap
         saveData.maxBonusCount[3] = 3; //line
         saveData.maxBonusCount[4] = 3; //line
@@ -166,7 +166,7 @@ public class GameData : MonoBehaviour
         saveData.maxBonusCount[9] = 1; //move x
         saveData.maxBonusCount[10] = 1; //move xx
 
-        saveData.maxBonusCount[11] = 1; //line buster
+        saveData.maxBonusCount[11] = 1; //line booster TIME
 
 
         //start=0

@@ -566,7 +566,7 @@ public class LevelsSceneManager : MonoBehaviour
         // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
         if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold)
         {
-            Debug.Log($"totalSteps:{totalSteps}, maxSteps:{maxSteps}");
+            //Debug.Log($"totalSteps:{totalSteps}, maxSteps:{maxSteps}");
 
             if (verticalSwipeDistance > 0)
             {

@@ -197,6 +197,7 @@ public class MatchFinder : MonoBehaviour
     //bomb gen part 4
     public void LineBombCheck(MatchType matchType)
     {
+        //Debug.Log($"LineBombCheck: {gameBoardClass.currentElement}");
         //move or not move?
         if (gameBoardClass.currentElement != null)
         {           
@@ -281,6 +282,7 @@ public class MatchFinder : MonoBehaviour
     public void MatchColPieces(int col)
     {
         currentMatch.AddRange(GetColumnPieces(col));
+        //Debug.Log($"MatchColPieces: {col}");
     }
 
     public void MatchWrapPieces(int col, int row)
@@ -309,12 +311,22 @@ public class MatchFinder : MonoBehaviour
 
                 localElement.isMatched = true; //match here
             }
+            else
+            {
+                if (gameBoardClass.blockerCells[i, row] != null)
+                {
+                    SpecialElements localBlocker = gameBoardClass.blockerCells[i, row].GetComponent<SpecialElements>();
+                    localBlocker.isMatched = true;
+                    //Debug.Log("isMatched Row blocker");
+                }
+            }
 
             //add for blockers
-            if (gameBoardClass.blockerCells[i, row] != null)
-            {
-                gameBoardClass.DamageBlockerAt(i, row);
-            }
+            /*            if (gameBoardClass.blockerCells[i, row] != null)
+                        {
+                            gameBoardClass.DamageBlockerAt(i, row);
+                            Debug.Log("Damage blocker at GetRowPieces");
+                        }*/
         }
 
         return elements;
@@ -358,7 +370,6 @@ public class MatchFinder : MonoBehaviour
 
                 ElementController localElement = gameBoardClass.allElements[column, i].GetComponent<ElementController>();
 
-
                 if (localElement.isRowBomb)
                 {
                     elements.Union(GetRowPieces(i)).ToList();
@@ -369,12 +380,23 @@ public class MatchFinder : MonoBehaviour
                 localElement.isMatched = true; //match here
 
             }
+            else
+            {
+                if (gameBoardClass.blockerCells[column, i] != null)
+                {
+                    SpecialElements localBlocker = gameBoardClass.blockerCells[column, i].GetComponent<SpecialElements>();
+                    localBlocker.isMatched = true;
+                    //Debug.Log("isMatched column blocker");
+                }
+            }
+
 
             //add for blockers
-            if (gameBoardClass.blockerCells[column, i] != null)
-            {               
-                gameBoardClass.DamageBlockerAt(column, i);
-            }
+                /*            if (gameBoardClass.blockerCells[column, i] != null)
+                            {               
+                                gameBoardClass.DamageBlockerAt(column, i);
+                                Debug.Log("Damage at GetColumnPieces");
+                            }*/
         }
 
         return elements;
@@ -452,10 +474,11 @@ public class MatchFinder : MonoBehaviour
                     }
 
                     //add for blockers
-                    if (gameBoardClass.blockerCells[i, j] != null)
+/*                    if (gameBoardClass.blockerCells[i, j] != null)
                     {
                         gameBoardClass.DamageBlockerAt(i, j);
-                    }
+                        Debug.Log("Damage at GetWrapPieces");
+                    }*/
                 }
             }
         }

@@ -23,6 +23,8 @@ public class SpecialElements : MonoBehaviour
     [Header("Layers")]
     public GameObject[] elementLayers;
 
+    public bool wasHitThisFrame = false;
+    public bool isMatched = false;   
 
     // Start is called before the first frame update
     void Start()
@@ -56,6 +58,11 @@ public class SpecialElements : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        int Column = 0;
+        int Row = 0;
+
+        this.wasHitThisFrame = false;
+
         if (hitPoints <= 0)
         {
             //for goals for breakable
@@ -63,8 +70,8 @@ public class SpecialElements : MonoBehaviour
             {
                 string tagForCompare = this.gameObject.tag;
 
-                int Column = (int)this.gameObject.transform.position.x;
-                int Row = (int)this.gameObject.transform.position.y;
+                Column = (int)this.gameObject.transform.position.x;
+                Row = (int)this.gameObject.transform.position.y;
 
                 //hack for various breakable
                 if (this.gameObject.tag == "breakable_02" || this.gameObject.tag == "breakable_03" && this.gameObject.tag != null)

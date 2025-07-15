@@ -183,6 +183,8 @@ public class ElementController : MonoBehaviour
         bonusShopClass.shopState = BonusShop.ShopState.Game;
 
         gameBoardClass.currentState = GameState.wait;
+        
+        //for bonus only - call #3
         gameBoardClass.DestroyMatches();
     }
 
@@ -290,16 +292,35 @@ public class ElementController : MonoBehaviour
 
     }
 
-    private void ColorBombRaysCooker(Vector2 startPoint)
+
+/*    public void StartColorBombRays(Vector2 startPoint)
+    {
+        StartCoroutine(ColorBombRaysCookerCo(startPoint));
+    }
+
+    private IEnumerator ColorBombRaysCookerCo(Vector2 startPoint)
     {
         if (colorBombElements.Count > 0)
         {
             for (int i = 0; i < colorBombElements.Count; i++)
             {
                 fxManagerClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
+                yield return null; // wait 1 frame between each creation
             }
         }
-    }
+    }*/
+
+
+       private void ColorBombRaysCooker(Vector2 startPoint)
+        {
+            if (colorBombElements.Count > 0)
+            {
+                for (int i = 0; i < colorBombElements.Count; i++)
+                {
+                    fxManagerClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
+                }
+            }
+        }
 
     //setp 7
     public IEnumerator CheckMoveCo()
@@ -407,7 +428,8 @@ public class ElementController : MonoBehaviour
                     }
                 }
 
-                gameBoardClass.DestroyMatches();  //destroy 2  -- step 8                                                  
+                //destroy call# 2  -- step 8 
+                gameBoardClass.DestroyMatches();                                                   
             }
         }
     }

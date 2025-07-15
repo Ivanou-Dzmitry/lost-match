@@ -105,7 +105,14 @@ public class BonusShop : MonoBehaviour
     public string[] bonusDescString;
 
     [Header("Busters")]
-    private List<int> bustersTime = new List<int>();    
+    private List<int> bustersTime = new List<int>();    //TIME
+
+    //TIME boosters
+    [Header("TIME")]
+    public int lifeTime = 30;
+    public int colorTime = 600;
+    public int lineTime = 500;
+
 
     private List<string> defInfoText = new List<string>();
     
@@ -122,10 +129,10 @@ public class BonusShop : MonoBehaviour
         
         ZeroBonus();
 
-        //time for busters and life
-        bustersTime.Add(30); //life sec
-        bustersTime.Add(600); //color sec 60x?
-        bustersTime.Add(500); //line sec 60x?
+        //time for busters and life TIME Important
+        bustersTime.Add(lifeTime); //life sec
+        bustersTime.Add(colorTime); //color sec /60 -> 10 min
+        bustersTime.Add(lineTime); //line sec /60 -> Example: 500/ 60 = 8 minutes and 20 seconds
     }
 
     void OnEnable()
@@ -196,19 +203,19 @@ public class BonusShop : MonoBehaviour
      
     }
 
-
+    //TIME booster
     public void UseTimeBuster(string busterName)
     {
         int colorBusterCount = gameDataClass.saveData.bonuses[1];
         if (busterName == "colorBuster" && colorBusterCount > 0)
         {
-            timeManagerClass.CreateTimer("colorBuster", bustersTime[1], TimerStart, TimerEnd);
+            timeManagerClass.CreateTimer("colorBuster", bustersTime[1], TimerStart, TimerEnd); //TIME
         }
 
         int lineBusterCount = gameDataClass.saveData.bonuses[11];
         if (busterName == "lineBuster" && lineBusterCount > 0)
         {
-            timeManagerClass.CreateTimer("lineBuster", bustersTime[2], TimerStart, TimerEnd);
+            timeManagerClass.CreateTimer("lineBuster", bustersTime[2], TimerStart, TimerEnd); //TIME
         }
 
     }

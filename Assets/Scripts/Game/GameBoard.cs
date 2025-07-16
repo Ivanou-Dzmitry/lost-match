@@ -402,9 +402,20 @@ public class GameBoard : MonoBehaviour
     {
         for (int i = 0; i < boardLayout.Length; i++)
         {
+            int x = boardLayout[i].columnX;
+            int y = boardLayout[i].rowY;
+
             if (boardLayout[i].tileKind == TileKind.Empty)
             {
-                emptyElement[boardLayout[i].columnX, boardLayout[i].rowY] = true;
+                if (x >= 0 && x < emptyElement.GetLength(0) &&
+                    y >= 0 && y < emptyElement.GetLength(1))
+                {
+                    emptyElement[x, y] = true;
+                }
+                else
+                {
+                    Debug.LogWarning($"Skipped empty cell: ({x}, {y}) is out of bounds.");
+                }
             }
         }
     }
@@ -1675,7 +1686,18 @@ public class GameBoard : MonoBehaviour
             int row = layout.rowY;
 
             // Get current dot
-            GameObject currentDot = allElements[column, row];
+            GameObject currentDot = null;
+
+            try
+            {
+                currentDot = allElements[column, row];
+                // Continue processing currentDot if needed...
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                Debug.LogWarning($"Index out of bounds: column={column}, row={row}. Exception: {ex.Message}");
+            }
+
 
             if (currentDot != null)
             {

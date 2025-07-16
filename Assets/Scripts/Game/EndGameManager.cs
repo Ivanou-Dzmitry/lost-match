@@ -182,7 +182,7 @@ public class EndGameManager : MonoBehaviour
         levelNumber.text = "LEVEL " + (gameBoardClass.level + 1);
 
         //show stars binus
-        // Show star bonus if 1–3 stars are earned
+        // Show star bonus if 1ï¿½3 stars are earned
         int stars = scoreManagerClass.numberStars;
         int bonus = 0;
 
@@ -350,13 +350,23 @@ public class EndGameManager : MonoBehaviour
 
         int goalsCount = goalManagerClass.levelGoals.Length;
 
-        gameBoardClass.log.goal1 = goalManagerClass.levelGoals[0].numberCollectedGoals;
-        
-        if (goalsCount > 1)
-            gameBoardClass.log.goal2 = goalManagerClass.levelGoals[1].numberCollectedGoals;
-        
-        if (goalsCount > 2)
-            gameBoardClass.log.goal3 = goalManagerClass.levelGoals[2].numberCollectedGoals;
+        try
+        {
+            gameBoardClass.log.goal1 = goalManagerClass.levelGoals[0].numberCollectedGoals;
+
+            if (goalsCount > 1)
+                gameBoardClass.log.goal2 = goalManagerClass.levelGoals[1].numberCollectedGoals;
+
+            if (goalsCount > 2)
+                gameBoardClass.log.goal3 = goalManagerClass.levelGoals[2].numberCollectedGoals;
+        }
+        catch
+        {
+            gameBoardClass.log.goal1 = 0;
+            gameBoardClass.log.goal2 = 0;
+            gameBoardClass.log.goal3 = 0;
+        }
+
 
         gameBoardClass.log.moves = curCounterVal;
 

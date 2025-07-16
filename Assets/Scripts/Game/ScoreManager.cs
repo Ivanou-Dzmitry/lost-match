@@ -61,7 +61,14 @@ public class ScoreManager : MonoBehaviour
         for (int i = 0; i < starCount; i++)
         {
             // Calculate the position for the star based on the score goal
-            starPosition[i] = onePercent * gameBoardClass.scoreGoals[i];
+            if (i >= 0 && i < starPosition.Length && i < gameBoardClass.scoreGoals.Length)
+            {
+                starPosition[i] = onePercent * gameBoardClass.scoreGoals[i];
+            }
+            else
+            {
+                Debug.LogWarning($"Index {i} out of bounds. starPosition.Length={starPosition.Length}, scoreGoals.Length={gameBoardClass.scoreGoals.Length}");
+            }
 
             // Cache RectTransform for each star (avoid GetComponent inside the loop)
             RectTransform rectTransformStar = levelStars[i].GetComponent<RectTransform>();
@@ -71,7 +78,18 @@ public class ScoreManager : MonoBehaviour
             Vector3 currentPosition = rectTransformStar.localPosition;
 
             // Update the position of the star on the progress bar
-            rectTransformStar.localPosition = new Vector3(starPosition[i]+imageWidth, currentPosition.y, currentPosition.z);
+            float x = starPosition[i] + imageWidth;
+            Vector3 newPos = new Vector3(x, currentPosition.y, currentPosition.z);
+
+            if (!float.IsNaN(newPos.x) && !float.IsNaN(newPos.y) && !float.IsNaN(newPos.z))
+            {
+                rectTransformStar.localPosition = newPos;
+            }
+            else
+            {
+                Debug.LogWarning($"Invalid position for Star01Image: {newPos} (i={i}, starPos={starPosition[i]}, imageWidth={imageWidth})");
+            }
+
         }
 
 

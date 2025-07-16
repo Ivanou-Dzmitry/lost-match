@@ -758,9 +758,8 @@ public class GameBoard : MonoBehaviour
         //remove doubles
         matchFinderClass.currentMatch = GameObjectUtils.RemoveDuplicatesByName(matchFinderClass.currentMatch);
 
-
         //debug block
-        Debug.Log($"In match: {matchFinderClass.currentMatch.Count}");
+        //Debug.Log($"In match: {matchFinderClass.currentMatch.Count}");
 
         var tagGroups = matchFinderClass.currentMatch
             .GroupBy(obj => obj.tag)
@@ -770,25 +769,14 @@ public class GameBoard : MonoBehaviour
         var filteredList = matchFinderClass.currentMatch
             .GroupBy(obj => obj.tag)
             .Where(group => group.Count() > 3)
-            .SelectMany(group =>
+            .SelectMany(group => group)
+            .Where(obj =>
             {
-                // Group objects by same X position
-                var sameXGroups = group
-                    .GroupBy(obj => Mathf.RoundToInt(obj.transform.position.x))
-                    .Where(g => g.Count() > 3);
-
-                // Group objects by same Y position
-                var sameYGroups = group
-                    .GroupBy(obj => Mathf.RoundToInt(obj.transform.position.y))
-                    .Where(g => g.Count() > 3);
-
-                // Combine all matching horizontal/vertical groups
-                return sameXGroups
-                    .Concat(sameYGroups)
-                    .SelectMany(g => g);
+                var element = obj.GetComponent<ElementController>();
+                return element != null && element.matchedByBomb == false;
             })
-            .Distinct() // Avoid duplicates (in case one obj appears in both x and y groups)
             .ToList();
+
 
         bool genBomb = false;
         int bombMatches = 0;
@@ -796,7 +784,7 @@ public class GameBoard : MonoBehaviour
         foreach (var group in tagGroups)
         {
             int count = group.Count();
-            Debug.Log($"Tag: {group.Key}, Count: {count}");
+            //Debug.Log($"Tag: {group.Key}, Count: {count}");
 
             if (count >= minMatchForBomb)
             {
@@ -806,9 +794,9 @@ public class GameBoard : MonoBehaviour
         }
 
         if(genBomb)
-            Debug.Log("Tags with more than 3 matches: " + bombMatches+ ". Gen Bomb: " + genBomb);
+            Debug.Log("Tags with more than 3 matches: " + bombMatches+ ". Ready to gen bomb: " + genBomb);
 
-        if(filteredList.Count>0)
+        if(filteredList.Count > 0)
             Debug.Log("Filtered List Count: " + filteredList.Count);
 
         //debug end
@@ -841,7 +829,8 @@ public class GameBoard : MonoBehaviour
 
         CongratInfo(matchFinderClass.currentMatch.Count);
 
-        if(genBomb)
+        //run bomb generation
+        if(genBomb && filteredList.Count > 0)
             CheckToGenerateBombs(filteredList);
 
         destroyCall = 0;
@@ -858,9 +847,9 @@ public class GameBoard : MonoBehaviour
             }            
         }
 
-        Debug.Log($"Out match: {destroyCall}");
+        //Debug.Log($"Out match: {destroyCall}");
 
-        //for blockers
+        //destroy for blockers
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
@@ -1392,33 +1381,91 @@ public class GameBoard : MonoBehaviour
         var groupedCandidates = bombCandidates
             .GroupBy(obj => obj.tag);
 
-
         // MatchType typeOfMatch = ColumnOrRow();
         MatchType typeOfMatch = null;
         int counter = 0;
+        
         foreach (var group in groupedCandidates)
         {
             // Only one call to ColumnOrRow per group
             typeOfMatch = ColumnOrRow(group.ToList());
+            
             counter++;
+            
             if(typeOfMatch.type > 0)
             {
-                BombConstructor(typeOfMatch);
-                Debug.Log($"{counter}. Generating bomb for tag: {group.Key} with match type: {typeOfMatch.type}");
-                Debug.Break();
+                //Debug.Log($"{counter}. Generating bomb for tag: {group.Key} with match type: {typeOfMatch.type}");
+
+                BombConstructor(typeOfMatch, group.ToList());                               
             }
         }
     }
 
-    private void BombConstructor(MatchType typeOfMatch)
+    private void BombConstructor(MatchType typeOfMatch, List<GameObject> matchGroup)
     {
-        // 1. Handle cascade mode: no player move
-        if (currentElement == null && typeOfMatch.type != 0 && typeOfMatch.curElem != null)
-        {
-            currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
-            currentElement.otherElement = null;
-        }
 
+        //Debug.Log($" DEBUG: type={typeOfMatch.type}, curname={typeOfMatch.curElem.name}, count={matchGroup.Count}");
+
+        string groupNames = string.Join(", ", matchGroup
+            .Where(obj => obj != null)
+            .Select(obj => obj.name));
+            //Debug.Log($"Match Group elements: [{groupNames}]");
+
+
+        // 1. Handle cascade mode: no player move
+        /*        if (currentElement == null && typeOfMatch.type != 0 && typeOfMatch.curElem != null)
+                {
+                    currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
+                    currentElement.otherElement = null;
+
+                    Debug.Log($"Assign current element: {currentElement}");
+                }*/
+
+            bool isInMatchGroup = false;
+
+            if (currentElement != null)
+            {
+                isInMatchGroup = matchGroup.Contains(currentElement.gameObject);
+                //Debug.Log($"Is currentElement in matchGroup? {isInMatchGroup}");
+            }
+
+            if (isInMatchGroup)
+            {
+                Debug.Log($"Normal logic");
+                BombCreationSwitch(typeOfMatch);                
+            }
+            else
+            {
+                //Debug.Log("currentElement is null");
+
+                // Get all non-null GameObjects with ElementController
+                var validElements = matchGroup
+                    .Where(obj => obj != null && obj.GetComponent<ElementController>() != null)
+                    .ToList();
+
+                if (validElements.Count > 0)
+                {
+                    int randomIndex = UnityEngine.Random.Range(0, validElements.Count);
+                    GameObject randomObj = validElements[randomIndex];
+
+                    currentElement = randomObj.GetComponent<ElementController>();
+                    currentElement.otherElement = null;
+
+                    BombCreationSwitch(typeOfMatch);
+
+                    Debug.Log($"Assigned random currentElement: {currentElement.name}");
+                }
+                else
+                {
+                    Debug.LogWarning("No valid elements found in matchGroup to assign as currentElement.");
+                }
+            }
+
+
+    }
+
+    private void BombCreationSwitch(MatchType typeOfMatch)
+    {
         ElementController otherDot = GetSafeOtherElement(currentElement);
 
         bool currentDotMatched = currentElement != null && currentElement.isMatched && currentElement.tag == typeOfMatch.color;

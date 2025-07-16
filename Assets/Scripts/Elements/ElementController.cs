@@ -15,6 +15,7 @@ public class ElementController : MonoBehaviour
 
     [Header("Board Variables")]
     public bool isMatched = false;
+    public bool matchedByBomb=false;
     public int previousColumn, previousRow;
     public int column, row;
     public int targetX, targetY;

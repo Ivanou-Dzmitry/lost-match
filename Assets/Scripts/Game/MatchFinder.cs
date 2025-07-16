@@ -197,12 +197,14 @@ public class MatchFinder : MonoBehaviour
     //bomb gen part 4
     public void LineBombCheck(MatchType matchType)
     {
-        //Debug.Log($"LineBombCheck: {gameBoardClass.currentElement}");
+        //Debug.Log($"LineBombCheck. Current: {gameBoardClass.currentElement}, Other: {gameBoardClass.currentElement.otherElement}");
         //move or not move?
         if (gameBoardClass.currentElement != null)
         {           
             if (gameBoardClass.currentElement.isMatched && gameBoardClass.currentElement.tag == matchType.color)
             {
+                Debug.Log($"V1.step1");
+                
                 //unmatch
                 gameBoardClass.currentElement.isMatched = false;
 
@@ -212,22 +214,26 @@ public class MatchFinder : MonoBehaviour
 
                 if(angle1 == 0)
                 {
-                    angle1 = UnityEngine.Random.Range(-135f, 135);
+                    Debug.Log($"V1.step2");
+                    angle1 = UnityEngine.Random.Range(-135f, 135);                    
                 }
 
                 //for swipe
                 if ((angle1 > -45 && angle1 <= 45) || (angle1 < -135 || angle1 >= 135))
                 {
+                    Debug.Log($"V1.step3");
                     gameBoardClass.currentElement.GenerateRowBomb();                    
                 }
                 else
                 {
+                    Debug.Log($"V1.step4");
                     gameBoardClass.currentElement.GenerateColumnBomb();
                 }
 
             }
             else if (gameBoardClass.currentElement.otherElement != null)
             {
+                Debug.Log($"V2.step1");
                 ElementController otherDot = gameBoardClass.currentElement.otherElement.GetComponent<ElementController>();
 
                 //if other dots matched
@@ -241,36 +247,44 @@ public class MatchFinder : MonoBehaviour
 
                     if (angle2 == 0)
                     {
+                        Debug.Log($"V2.step2");
                         angle2 = UnityEngine.Random.Range(-135f, 135);
                     }
 
                     //for swipe
                     if ((angle2 > -45 && angle2 <= 45) || (angle2 < -135 || angle2 >= 135))
                     {
+                        Debug.Log($"V2.step3");
                         otherDot.GenerateRowBomb();
                     }
                     else
                     {
+                        Debug.Log($"V2.step4");
                         otherDot.GenerateColumnBomb();
                     }
                 }
             }
             else
             {
+                Debug.Log($"V3.step1");
                 int Random = UnityEngine.Random.Range(0, 2);
 
                 gameBoardClass.currentElement.isMatched = false;
 
                 if (Random == 0)
                 {
+                    Debug.Log($"V3.step2");
                     gameBoardClass.currentElement.GenerateColumnBomb();
                 }
                 else
                 {
+                    Debug.Log($"V3.step3");
                     gameBoardClass.currentElement.GenerateRowBomb();
                 }
             }
         }
+
+        //Debug.Break();
     }
 
     //simple bomb logic
@@ -295,6 +309,8 @@ public class MatchFinder : MonoBehaviour
     {
         List<GameObject> elements = new List<GameObject>();
 
+        int rowBombCounter = 0;
+
         for (int i = 0; i < gameBoardClass.column; i++)
         {
             if (gameBoardClass.allElements[i, row] != null)
@@ -307,9 +323,19 @@ public class MatchFinder : MonoBehaviour
                     elements.Union(GetColumnPieces(i)).ToList();
                 }
 
+                //avoid bomb bug when many row bomb in 1 row Not combo!
+                if (localElement.isRowBomb)
+                {
+                    rowBombCounter++;
+
+                    if (rowBombCounter > 1)
+                        localElement.isRowBomb = false;                    
+                }
+
                 elements.Add(gameBoardClass.allElements[i, row]);
 
                 localElement.isMatched = true; //match here
+                localElement.matchedByBomb = true;
             }
             else
             {
@@ -363,6 +389,8 @@ public class MatchFinder : MonoBehaviour
     {
         List<GameObject> elements = new List<GameObject>();
 
+        int colBombCounter = 0;
+
         for (int i = 0; i < gameBoardClass.row; i++)
         {
             if (gameBoardClass.allElements[column, i] != null)
@@ -375,9 +403,19 @@ public class MatchFinder : MonoBehaviour
                     elements.Union(GetRowPieces(i)).ToList();
                 }
 
+                //avoid bug with manu bombs in column
+                if (localElement.isColumnBomb)
+                {
+                    colBombCounter++;
+
+                    if (colBombCounter > 1)
+                        localElement.isColumnBomb = false;
+                }
+
                 elements.Add(gameBoardClass.allElements[column, i]);
 
                 localElement.isMatched = true; //match here
+                localElement.matchedByBomb = true;
 
             }
             else
@@ -470,7 +508,12 @@ public class MatchFinder : MonoBehaviour
                     if (gameBoardClass.allElements[i,j] != null)
                     {
                         elements.Add(gameBoardClass.allElements[i, j]);
-                        gameBoardClass.allElements[i, j].GetComponent<ElementController>().isMatched = true;
+
+                        ElementController localElement = gameBoardClass.allElements[i, j].GetComponent<ElementController>();
+                        
+                        //match
+                        localElement.isMatched = true;
+                        localElement.matchedByBomb = true;
                     }
 
                     //add for blockers
@@ -501,7 +544,9 @@ public class MatchFinder : MonoBehaviour
                     {
                         ElementController elemControl = gameBoardClass.allElements[i, j].GetComponent<ElementController>();
 
+                        //match
                         elemControl.isMatched = true;
+                        elemControl.matchedByBomb = true;
 
                         Vector2 endPoint = new Vector2(elemControl.column, elemControl.row);                        
                         

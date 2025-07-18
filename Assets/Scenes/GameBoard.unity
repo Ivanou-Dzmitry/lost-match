@@ -835,7 +835,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa605b3200ad66f4d86f45f349a971d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldClass: {fileID: 11400000, guid: 472323b8b05ec7348902226c4e9418f3, type: 2}
+  worldClass: {fileID: 0}
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
+  level: {fileID: 0}
   levelGoals: []
   goalDescription: 
 --- !u!1 &96270043

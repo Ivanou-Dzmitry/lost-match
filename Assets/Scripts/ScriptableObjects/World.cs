@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "World", menuName = "World")]
@@ -7,5 +5,6 @@ using UnityEngine;
 public class World : ScriptableObject
 
 {
-    public Level[] levels;
+    public int worldNumber;
+    public Level[] levels;    
 }

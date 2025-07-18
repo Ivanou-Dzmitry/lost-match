@@ -173,7 +173,7 @@ public class LevelButton : MonoBehaviour
         {
             confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
 
-            levelGoalsClass.GetGoals(level - 1);
+            levelGoalsClass.GetGoals(level); //get goals
    
             confirmPanel.SetActive(true);
         }

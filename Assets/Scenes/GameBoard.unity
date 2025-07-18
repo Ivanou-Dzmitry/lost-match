@@ -7361,7 +7361,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldClass: {fileID: 11400000, guid: 472323b8b05ec7348902226c4e9418f3, type: 2}
-  level: 0
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
+  level: {fileID: 0}
+  loadedLevel: 0
+  totalLevels: 0
   levelNumberTxt: {fileID: 753349682}
   levelMusic: {fileID: 8300000, guid: 44b07b32979ceef49947898663a1692d, type: 3}
   currentState: 1
@@ -15340,6 +15343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26428a61e82ede4b9b1ca68ae8f77ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
   saveData:
     levelToLoad: 0
     isActive: 

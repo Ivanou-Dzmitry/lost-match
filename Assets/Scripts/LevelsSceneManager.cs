@@ -13,7 +13,7 @@ public class LevelsSceneManager : MonoBehaviour
     private UIManager uiManagerClass;
     private GameData gameDataClass;
     private int lastLevel;
-    private int levelsCount;
+    private int activeLevelsCount;
     public int currentScreenNumber;
 
     [Header("Music")]
@@ -97,14 +97,16 @@ public class LevelsSceneManager : MonoBehaviour
             }
 
             //get levels count
-            levelsCount = gameDataClass.saveData.isActive.Length;            
+            activeLevelsCount = gameDataClass.saveData.isActive.Length;
+
+            //Debug.Log($"{lastLevel},{activeLevelsCount}");
         }
 
         //each segment levelButtonsOnScreen levels
-        levelSegmentsCount = levelsCount / levelButtonsOnScreen;
+        levelSegmentsCount = activeLevelsCount / levelButtonsOnScreen;
 
         //important each level - 2 steps
-        maxSteps = (levelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
+        maxSteps = (activeLevelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
         
         //Debug.Log($"levelSegmentsCount:{levelSegmentsCount}, maxSteps:{maxSteps}, levelsCount:{levelsCount}");
 
@@ -235,6 +237,7 @@ public class LevelsSceneManager : MonoBehaviour
             string baseName = "Button3d_" + i;
 
             GameObject existingButton = GameObject.Find(baseName);
+
             if (existingButton != null)
             {
                 // If the object exists, destroy it

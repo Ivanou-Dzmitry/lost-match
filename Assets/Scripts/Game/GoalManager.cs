@@ -1,13 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using Microsoft.Win32.SafeHandles;
-using UnityEngine.UI;
-using System.Net;
-using System.Xml.Linq;
-using Unity.VisualScripting;
-using System;
 
 
 [System.Serializable]
@@ -80,26 +73,19 @@ public class GoalManager : MonoBehaviour
 
     void GetGoals()
     {
-        if (gameBoardClass != null)
+        if (gameBoardClass != null && gameBoardClass.worldClass != null && gameBoardClass.level != null)
         {
-            if (gameBoardClass.level < gameBoardClass.worldClass.levels.Length)
+
+            levelGoals = gameBoardClass.level.levelGoals;
+
+            for (int i = 0; i < levelGoals.Length; i++)
             {
-                if (gameBoardClass.worldClass.levels[gameBoardClass.level] != null)
-                {
-                    levelGoals = gameBoardClass.worldClass.levels[gameBoardClass.level].levelGoals;
+                levelGoals[i].numberCollectedGoals = 0;
+            }
 
-                    //reset goals
-                    for (int i = 0; i < levelGoals.Length; i++)
-                    {
-                        levelGoals[i].numberCollectedGoals = 0;
-                    }
-
-                    //check goals
-                    if(levelGoals.Length == 0)
-                    {
-                        Debug.LogWarning("Set level Goals!");
-                    }
-                }
+            if (levelGoals.Length == 0)
+            {
+                Debug.LogWarning("Set level Goals!");
             }
         }
     }

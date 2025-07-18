@@ -7,17 +7,46 @@ public class LevelGoals : MonoBehaviour
 {
     [Header("Scriptable Objects")]
     public World worldClass;
+    public WorldManager worldManager;
+    public Level level;
     public BlankGoalClass[] levelGoals;
     public string goalDescription;
-    
-    public void GetGoals(int level)
+    private int totalLevels;
+    private const string className = "LevelGoals";
+
+
+    public void GetGoals(int levelN)
     {
+
+        if (worldManager != null)
+        {
+            level = worldManager.GetLevel(levelN, out World foundWorld);
+            totalLevels = worldManager.GetTotalLevelsCount();
+
+            worldClass = foundWorld;
+        }
+        else
+        {
+            Debug.LogError($"{className}: worldManager in NULL here");
+        }
+
+        if (level == null)
+        {
+            Debug.LogError($"{className}: Failed to load level {levelN}");
+            return;
+        }
+
+
         if (worldClass != null)
         {
-            if (level < worldClass.levels.Length)
+            if (levelN < totalLevels)
             {
-                levelGoals = worldClass.levels[level].levelGoals;
-                goalDescription = worldClass.levels[level].goalsDescription;
+                levelGoals = level.levelGoals;
+                goalDescription = level.goalsDescription;
+            }
+            else
+            {
+                Debug.LogError($"{className}: worldClass is NULL here");
             }
         }        
     }

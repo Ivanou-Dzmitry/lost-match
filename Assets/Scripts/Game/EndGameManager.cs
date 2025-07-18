@@ -64,7 +64,7 @@ public class EndGameManager : MonoBehaviour
     public Button retryLooseButton;
     public AudioClip loseMusic;
 
-    public int finalLevelNumber = 50; //!Important
+    public int finalLevelNumber; //!Important
 
     private bool thisRetry = false;
     private bool thisInterrupt = false;
@@ -90,26 +90,23 @@ public class EndGameManager : MonoBehaviour
             levelStars[i].sprite = levelStarsSpite[1];
         }
 
-        finalLevelNumber = gameDataClass.saveData.isActive.Length;
+        //get count
+        finalLevelNumber = gameBoardClass.totalLevels;
     }
 
     public void SetGameType()
     {
-        if (gameBoardClass != null)
+        if (gameBoardClass != null && gameBoardClass.worldManager != null && gameBoardClass.worldClass != null && gameBoardClass.level != null)
         {
-            if (gameBoardClass.level < gameBoardClass.worldClass.levels.Length)
-            {
-                if (gameBoardClass.worldClass.levels[gameBoardClass.level] != null)
-                {
-                    EndGameReqClass = gameBoardClass.worldClass.levels[gameBoardClass.level].endGameRequrimentsForLevel;
 
-                    //check description
-                    if (EndGameReqClass.counterValue == 0)
-                    {
-                        Debug.LogWarning("Counter Value = 0. Set Counter Value for level!");
-                    }
-                }
+            EndGameReqClass = gameBoardClass.level.endGameRequrimentsForLevel;
+
+            //check description
+            if (EndGameReqClass.counterValue == 0)
+            {
+                Debug.LogWarning("Counter Value = 0. Set Counter Value for level!");
             }
+
         }
     }
 
@@ -179,7 +176,7 @@ public class EndGameManager : MonoBehaviour
 
         movesCounter.text = "" + curCounterVal;
 
-        levelNumber.text = "LEVEL " + (gameBoardClass.level + 1);
+        levelNumber.text = "LEVEL " + (gameBoardClass.loadedLevel);
 
         //show stars binus
         // Show star bonus if 1�3 stars are earned
@@ -267,10 +264,11 @@ public class EndGameManager : MonoBehaviour
 
 
     public void PlayNext()
-    {
-        int nextLevelNumber = gameBoardClass.level + 1;
+    {                
+        int nextLevelNumber = gameBoardClass.loadedLevel + 1;
 
         thisWin = true;
+
         //get moves
         if (nextLevelNumber < finalLevelNumber)
         {
@@ -278,7 +276,7 @@ public class EndGameManager : MonoBehaviour
 
             LevelConfirmPanel lCP = confirmPanel.GetComponent<LevelConfirmPanel>();
 
-            lCP.level = nextLevelNumber + 1;
+            lCP.level = nextLevelNumber;
             lCP.levelToLoad = nextLevelNumber;
 
             levelGoalsClass.GetGoals(nextLevelNumber);
@@ -298,9 +296,10 @@ public class EndGameManager : MonoBehaviour
 
     public void RetryLevel()
     {
+        //if enought lifes - reload
         if (gameDataClass.saveData.bonuses[5] > 0)
         {
-            gameDataClass.saveData.levelToLoad = (gameBoardClass.level);
+            gameDataClass.saveData.levelToLoad = (gameBoardClass.loadedLevel);
             gameDataClass.SaveToFile();
             
             //log
@@ -335,7 +334,7 @@ public class EndGameManager : MonoBehaviour
     public void Log()
     {
         //lvl
-        gameBoardClass.log.levelNumber = gameBoardClass.level;
+        gameBoardClass.log.levelNumber = gameBoardClass.loadedLevel;
 
         //size
         gameBoardClass.log.col = gameBoardClass.column;

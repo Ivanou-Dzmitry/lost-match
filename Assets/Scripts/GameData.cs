@@ -28,11 +28,12 @@ public class SaveData
 public class GameData : MonoBehaviour
 {
     public static GameData gameData;
+    public WorldManager worldManager;
     public SaveData saveData;
     public string fileName = "lm_player_saves.json";
 
     private int bonusCount = 12;
-    private int levelsCount = 51; //important
+    private int levelsCount; //important
 
 
     private void Awake()
@@ -47,8 +48,22 @@ public class GameData : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        if (worldManager == null)
+        {
+            worldManager = FindObjectOfType<WorldManager>();
+            if (worldManager == null)
+            {
+                Debug.LogError("WorldManager not found!");
+                return;
+            }
+        }
+
+        levelsCount = worldManager.GetTotalLevelsCount();
+
         LoadFromFile();
     }
+
+
 
     public void SaveToFile()
     {
@@ -81,6 +96,8 @@ public class GameData : MonoBehaviour
         {
             string loadedData = File.ReadAllText(filePath);
             saveData = JsonUtility.FromJson<SaveData>(loadedData);
+
+            PatchSavedData(); // Fix any size mismatch
         }
         else
         {
@@ -223,6 +240,40 @@ public class GameData : MonoBehaviour
             saveData.isActive[i] = true;
         }
         SaveToFile();
+    }
+
+    private void PatchSavedData()
+    {
+        int currentCount = levelsCount;
+
+        // Patch isActive
+        if (saveData.isActive.Length < currentCount)
+        {
+            bool[] newArray = new bool[currentCount];
+            saveData.isActive.CopyTo(newArray, 0);
+            saveData.isActive = newArray;
+            Debug.Log($"Patching isActive data to fit {currentCount} levels");
+        }
+
+        // Patch stars
+        if (saveData.stars.Length < currentCount)
+        {
+            int[] newArray = new int[currentCount];
+            saveData.stars.CopyTo(newArray, 0);
+            saveData.stars = newArray;
+            Debug.Log($"Patching stars data to fit {currentCount} levels");
+        }
+
+        // Patch highScore
+        if (saveData.highScore.Length < currentCount)
+        {
+            int[] newArray = new int[currentCount];
+            saveData.highScore.CopyTo(newArray, 0);
+            saveData.highScore = newArray;
+            Debug.Log($"Patching highScore data to fit {currentCount} levels");
+        }
+
+        
     }
 
 }

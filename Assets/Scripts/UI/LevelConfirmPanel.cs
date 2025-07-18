@@ -65,12 +65,14 @@ public class LevelConfirmPanel : MonoBehaviour
             stars[i].sprite = starOffSprite;
         }
 
+        //simple load
         if (gameDataClass != null)
             LoadData(); //from file
 
         if (levelGoalsClass != null)
             SetupIntroGoals();
 
+        //booster shop
         buster01 = buster01Prefab.GetComponent<BonusButton>();
         buster11 = buster11Prefab.GetComponent<BonusButton>();
 
@@ -227,7 +229,7 @@ public class LevelConfirmPanel : MonoBehaviour
         activeStars = 0;
 
         //game data check
-        if (gameDataClass != null)
+/*        if (gameDataClass != null)
         {
             activeStars = gameDataClass.saveData.stars[level - 1];
             highScore = gameDataClass.saveData.highScore[level - 1];
@@ -236,29 +238,29 @@ public class LevelConfirmPanel : MonoBehaviour
         {
             activeStars = 3;
             highScore = 9999;
-        }
+        }*/
 
-        levelToLoad = level - 1;
+        levelToLoad = level;
 
         //confirmPanel.SetActive(true);
 
         //set text
-        if(highScore > 0)
+/*        if(highScore > 0)
         {
             highScoreText.text = "Records: " + highScore + " items, " + activeStars + " stars";
         }
         else
         {
             highScoreText.text = "There are no records set at this level yet";
-        }
+        }*/
         
         headerText.text = "LEVEL " + level;
 
         //stars turn on
-        for (int i = 0; i < activeStars; i++)
+/*        for (int i = 0; i < activeStars; i++)
         {
             stars[i].sprite = starOnSprite;
-        }
+        }*/
        
     }
 

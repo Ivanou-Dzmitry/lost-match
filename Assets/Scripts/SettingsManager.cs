@@ -79,13 +79,20 @@ public class SettingsManager : MonoBehaviour
         //Set Framerate
         Application.targetFrameRate = 30;
 
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
-        int targetHeight = 1600;
-        float aspectRatio = 9f / 16f;  // Portrait (e.g., 9:16)
+#if UNITY_STANDALONE_WIN
+    int targetHeight = 1024;
+    float aspectRatio = 9f / 16f;  // Portrait
 
-        int calculatedWidth = Mathf.RoundToInt(targetHeight * aspectRatio);
+    int calculatedWidth = Mathf.RoundToInt(targetHeight * aspectRatio);
 
-        Screen.SetResolution(calculatedWidth, targetHeight, false);
+    Screen.SetResolution(calculatedWidth, targetHeight, false);
+#elif UNITY_STANDALONE_OSX
+    int targetHeight = 1600;  // You can choose a different height for macOS
+    float aspectRatio = 9f / 16f;
+
+    int calculatedWidth = Mathf.RoundToInt(targetHeight * aspectRatio);
+
+    Screen.SetResolution(calculatedWidth, targetHeight, false);
 #endif
 
         Scene currentScene = SceneManager.GetActiveScene();
@@ -245,7 +252,7 @@ public class SettingsManager : MonoBehaviour
     {
         if (gameDataClass != null)
         {
-            gameDataClass.saveData.isActive[gameBoardClass.level + 1] = true;
+            gameDataClass.saveData.isActive[gameBoardClass.loadedLevel + 1] = true; //open new level
             gameDataClass.SaveToFile();
         }
     }

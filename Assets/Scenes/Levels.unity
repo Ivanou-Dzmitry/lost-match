@@ -1375,6 +1375,9 @@ MonoBehaviour:
   bonusPicture: []
   bonusNameString: []
   bonusDescString: []
+  lifeTime: 30
+  colorTime: 600
+  lineTime: 500
   coverL: {fileID: 954358849}
   coverR: {fileID: 1810671181}
 --- !u!4 &347628252
@@ -8616,6 +8619,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldClass: {fileID: 11400000, guid: 472323b8b05ec7348902226c4e9418f3, type: 2}
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
+  level: {fileID: 0}
   levelGoals:
   - numberGoalsNeeded: 0
     numberCollectedGoals: 0
@@ -10575,6 +10580,9 @@ MonoBehaviour:
   bonusPicture: []
   bonusNameString: []
   bonusDescString: []
+  lifeTime: 30
+  colorTime: 600
+  lineTime: 500
   coverL: {fileID: 0}
   coverR: {fileID: 0}
 --- !u!1 &1785199367
@@ -11016,6 +11024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26428a61e82ede4b9b1ca68ae8f77ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
   saveData:
     levelToLoad: 0
     isActive: 

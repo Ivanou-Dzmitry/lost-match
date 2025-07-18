@@ -98,9 +98,14 @@ public class GameBoard : MonoBehaviour
 {
     [Header("Scriptable Objects")]
     public World worldClass;
+    public WorldManager worldManager;
+
 
     [Header("Level Info")]
-    public int level;
+    //public int level;
+    public Level level;
+    public int loadedLevel;
+    public int totalLevels;
     public TMP_Text levelNumberTxt;
     public AudioClip levelMusic;
 
@@ -235,50 +240,47 @@ public class GameBoard : MonoBehaviour
         if (gameDataClass != null)
         {
             gameDataClass.LoadFromFile();
-            level = gameDataClass.saveData.levelToLoad; //load level number
+            loadedLevel = gameDataClass.saveData.levelToLoad;
         }
 
-        //setup world class
-        if (worldClass != null)
+        if (worldManager != null)
         {
-            if (level < worldClass.levels.Length)
+            level = worldManager.GetLevel(loadedLevel, out World foundWorld);
+
+            totalLevels = worldManager.GetTotalLevelsCount();
+            Debug.Log($"totalLevels: {totalLevels}");
+
+            if (level == null)
             {
-                if (worldClass.levels[level] != null)
-                {
-                    column = worldClass.levels[level].columns;
-
-                    row = worldClass.levels[level].rows;
-
-                    //elements check
-                    elements = worldClass.levels[level].element;                    
-                    if (elements.Length == 0)
-                    {
-                        Debug.LogError("No elements added to level!");
-                    }
-                    
-                    //goals check
-                    scoreGoals = worldClass.levels[level].scoreGoals; //get score goals for stars
-                    if (scoreGoals.Length == 0)
-                    {
-                        Debug.LogError("No Score goals added to level!");
-                    }
-
-                    //desc check
-                    goalsDescription = worldClass.levels[level].goalsDescription;
-                    if(goalsDescription.Length == 0)
-                    {
-                        Debug.LogError("No Level Description added to level!");
-                    }
-
-                    //gameBoardBack = worldClass.levels[level].elementsBack; //back
-
-                    boardLayout = worldClass.levels[level].boardLayout;
-
-                    preloadBoardLayout = worldClass.levels[level].preloadBoardLayout;
-
-                    xmlDocWithBackTileLayout = worldClass.levels[level].xmlLayoutFile;
-                }
+                Debug.LogError($"Failed to load level {loadedLevel}");
+                return;
             }
+
+            worldClass = foundWorld;
+
+            // Read level data
+            column = level.columns;
+            row = level.rows;
+
+            elements = level.element;
+            if (elements == null || elements.Length == 0)
+                Debug.LogError($"No elements added to level {loadedLevel}!");
+
+            scoreGoals = level.scoreGoals;
+            if (scoreGoals == null || scoreGoals.Length == 0)
+                Debug.LogError($"No score goals added to level {loadedLevel}!");
+
+            goalsDescription = level.goalsDescription;
+            if (goalsDescription == null || goalsDescription.Length == 0)
+                Debug.LogError($"No Level Description added to level {loadedLevel}!");
+
+            boardLayout = level.boardLayout;
+            preloadBoardLayout = level.preloadBoardLayout;
+            xmlDocWithBackTileLayout = level.xmlLayoutFile;
+        }
+        else
+        {
+            Debug.LogError("WorldManager not assigned!");
         }
 
         //for blockers
@@ -391,7 +393,7 @@ public class GameBoard : MonoBehaviour
         //stop 1
         matchState = MatchState.matching_stop;
 
-        levelNumberTxt.text = "Level " + (level + 1);
+        levelNumberTxt.text = ($"Level {loadedLevel}");
 
         //for time booster
         initialMoves = endGameManagerClass.curCounterVal;       

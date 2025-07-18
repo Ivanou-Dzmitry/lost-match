@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26428a61e82ede4b9b1ca68ae8f77ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
   saveData:
     levelToLoad: 0
     isActive: 

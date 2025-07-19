@@ -64,7 +64,6 @@ public class GameData : MonoBehaviour
     }
 
 
-
     public void SaveToFile()
     {
         if (gameData == null || gameData.saveData == null)
@@ -270,10 +269,10 @@ public class GameData : MonoBehaviour
             int[] newArray = new int[currentCount];
             saveData.highScore.CopyTo(newArray, 0);
             saveData.highScore = newArray;
-            Debug.Log($"Patching highScore data to fit {currentCount} levels");
+            Debug.Log($"Patching highScore data to fit {currentCount} levels");  
         }
 
-        
+        SaveToFile();
     }
 
 }

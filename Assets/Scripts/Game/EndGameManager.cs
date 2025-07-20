@@ -83,8 +83,10 @@ public class EndGameManager : MonoBehaviour
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
 
         SetGameType();
+
         SetupGame();
 
+        //assign stars
         for (int i = 0; i < levelStars.Length; i++)
         {
             levelStars[i].sprite = levelStarsSpite[1];
@@ -179,13 +181,13 @@ public class EndGameManager : MonoBehaviour
         levelNumber.text = "LEVEL " + (gameBoardClass.loadedLevel);
 
         //show stars binus
-        // Show star bonus if 1�3 stars are earned
+        // Show star bonus if 1-3 stars are earned
         int stars = scoreManagerClass.numberStars;
         int bonus = 0;
 
         if (stars >= 1 && stars <= 3 && starBonusCountText != null)
         {
-            bonus = gameBoardClass.scoreGoals[stars - 1];
+            bonus = (gameBoardClass.scoreGoals[stars - 1])/3; //bonus logic
             scoreManagerClass.score += bonus;            
         }
 

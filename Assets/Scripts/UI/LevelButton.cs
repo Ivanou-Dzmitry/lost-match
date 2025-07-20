@@ -99,7 +99,7 @@ public class LevelButton : MonoBehaviour
     void SetStarMaterials()
     {
         // Get the number of active stars for the current level
-        int activeStars = gameDataClass.saveData.stars[level - 1]; // Ensure level index is valid
+        int activeStars = gameDataClass.saveData.stars[level]; // Ensure level index is valid
 
         // Deactivate starsPanel if no stars are active
         if (activeStars == 0)

@@ -247,12 +247,13 @@ public class SettingsManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-
+    //if WIN
     public void WinConfirm()
     {
         if (gameDataClass != null)
         {
-            gameDataClass.saveData.isActive[gameBoardClass.loadedLevel + 1] = true; //open new level
+            //open new level
+            gameDataClass.saveData.isActive[gameBoardClass.loadedLevel] = true; 
             gameDataClass.SaveToFile();
         }
     }

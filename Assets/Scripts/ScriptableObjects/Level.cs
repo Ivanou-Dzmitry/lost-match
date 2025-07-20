@@ -4,12 +4,24 @@ using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "World", menuName = "Level")]
 
-public class Level : ScriptableObject
 
+
+public class Level : ScriptableObject
 {
+
+    public enum LevelDifficulty
+    {
+        Simple,
+        Medium,
+        Hard
+    }
+
     [Header("Size")]
     public int columns;
     public int rows;
+
+    [Header("Difficulty")]
+    public LevelDifficulty levelDifficulty = LevelDifficulty.Simple;
 
     [Header("Back Tile File")]
     public TextAsset xmlLayoutFile;
@@ -35,6 +47,4 @@ public class Level : ScriptableObject
     [Header("End Game Rules")]
     public EndGameRequriments endGameRequrimentsForLevel; //end game manager
     public BlankGoalClass[] levelGoals; // goal manager
-
-
 }

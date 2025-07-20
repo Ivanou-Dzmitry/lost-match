@@ -17,7 +17,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
     [Header("UI")]
     public Image[] stars;
-    public TMP_Text highScoreText;
+    public TMP_Text difficultyText;
     public TMP_Text headerText;
     private int highScore;
 
@@ -254,7 +254,7 @@ public class LevelConfirmPanel : MonoBehaviour
             highScoreText.text = "There are no records set at this level yet";
         }*/
         
-        headerText.text = "LEVEL " + level;
+        headerText.text = "LEVEL " + level;        
 
         //stars turn on
 /*        for (int i = 0; i < activeStars; i++)
@@ -284,6 +284,15 @@ public class LevelConfirmPanel : MonoBehaviour
         }
         
         goalsDescriptionText.text = "" + levelGoalsClass.goalDescription;
+
+        if (difficultyText != null && levelGoalsClass != null && levelGoalsClass.level != null)
+        {
+            difficultyText.text = levelGoalsClass.level.levelDifficulty.ToString();
+        }
+        else
+        {
+            Debug.LogWarning($"One of the references is null! {difficultyText}, {levelGoalsClass}, {levelGoalsClass.level}");
+        }
     }
 
     //delete goals on close panel

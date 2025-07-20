@@ -424,7 +424,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Collect the film bags, and destroy gum blockers
+  m_text: 'GoalsDescriptionText: Loading error!'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 053ec092add73a246941a863906700bf, type: 2}
   m_sharedMaterial: {fileID: 2221511605668306161, guid: 053ec092add73a246941a863906700bf, type: 2}
@@ -1455,7 +1455,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: LEVEL 100
+  m_text: LEVEL XXX
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
   m_sharedMaterial: {fileID: 4117882282613613248, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
@@ -1640,7 +1640,7 @@ GameObject:
   - component: {fileID: 5401347159041911986}
   - component: {fileID: 5148753333449072124}
   m_Layer: 5
-  m_Name: ScoreText
+  m_Name: DifficultyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1693,7 +1693,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Items collected: 000'
+  m_text: 'DifficultyText: Load error'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 053ec092add73a246941a863906700bf, type: 2}
   m_sharedMaterial: {fileID: 2221511605668306161, guid: 053ec092add73a246941a863906700bf, type: 2}
@@ -1702,8 +1702,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 0
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1858,7 +1858,7 @@ MonoBehaviour:
   - {fileID: 3761703738028450712}
   - {fileID: 405954477799173987}
   - {fileID: 4915904589095357340}
-  highScoreText: {fileID: 5148753333449072124}
+  difficultyText: {fileID: 5148753333449072124}
   headerText: {fileID: 1856480894491515495}
   starOffSprite: {fileID: 687784490, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}
   starOnSprite: {fileID: -1220206920, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec35d33c4fbfa5f41bf172df8416c890, type: 3}
   m_Name: World06
   m_EditorClassIdentifier: 
-  worldNumber: 5
+  worldNumber: 6
   levels:
   - {fileID: 11400000, guid: e101ecd7762291a48afa06328e2ecbbe, type: 2}
   - {fileID: 11400000, guid: a20c770263b02444d98f6bcaa5a42c94, type: 2}

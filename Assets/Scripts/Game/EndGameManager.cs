@@ -169,15 +169,18 @@ public class EndGameManager : MonoBehaviour
     }
 
     public void WinGame()
-    {
-        if(winPanel.activeSelf == false)
+    {        
+        //show panel
+        if (winPanel.activeSelf == false)
             winPanel.SetActive(true);
 
         //stop animation finalTextPanel.activeSelf
         AlarmAnimation(curCounterVal, false);
 
+
         movesCounter.text = "" + curCounterVal;
 
+        //level number
         levelNumber.text = "LEVEL " + (gameBoardClass.loadedLevel);
 
         //show stars binus
@@ -185,6 +188,7 @@ public class EndGameManager : MonoBehaviour
         int stars = scoreManagerClass.numberStars;
         int bonus = 0;
 
+        //collect star bonus
         if (stars >= 1 && stars <= 3 && starBonusCountText != null)
         {
             bonus = (gameBoardClass.scoreGoals[stars - 1])/3; //bonus logic

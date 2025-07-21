@@ -61,10 +61,12 @@ public class LevelButton : MonoBehaviour
 
     void LoadData()
     {
+        int levelInList = Mathf.Max(0, level - 1); //important for list
+
         //game data check
         if (gameDataClass != null && level > 0 && level <= gameDataClass.saveData.isActive.Length)
         {
-            if (gameDataClass.saveData.isActive[level - 1])
+            if (gameDataClass.saveData.isActive[levelInList])
             {
                 isActive = true;
 
@@ -98,8 +100,11 @@ public class LevelButton : MonoBehaviour
 
     void SetStarMaterials()
     {
+
+        int starsInList = Mathf.Max(0, level - 1); //important for list
+
         // Get the number of active stars for the current level
-        int activeStars = gameDataClass.saveData.stars[level]; // Ensure level index is valid
+        int activeStars = gameDataClass.saveData.stars[starsInList]; // Ensure level index is valid
 
         // Deactivate starsPanel if no stars are active
         if (activeStars == 0)

@@ -100,6 +100,9 @@ public class ScoreManager : MonoBehaviour
     {
         score += amountToIncrease; //score
 
+        //reduce because 0=1 in list Important!
+        int levelInList = Mathf.Max(0, gameBoardClass.loadedLevel - 1);
+
         //for stars
         for (int i = 0; i < gameBoardClass.scoreGoals.Length; i++)
         {
@@ -117,19 +120,20 @@ public class ScoreManager : MonoBehaviour
 
         if (gameDataClass != null)
         {
-            int hiScore = gameDataClass.saveData.highScore[gameBoardClass.loadedLevel];
-
+            //save score
+            int hiScore = gameDataClass.saveData.highScore[levelInList];
 
             if (score > hiScore)
             {
-                gameDataClass.saveData.highScore[gameBoardClass.loadedLevel] = score;
+                gameDataClass.saveData.highScore[levelInList] = score;
             }
 
-            int currentStarsCount = gameDataClass.saveData.stars[gameBoardClass.loadedLevel];
+            //save stars
+            int currentStarsCount = gameDataClass.saveData.stars[levelInList];
 
             if (numberStars > currentStarsCount)
             {
-                gameDataClass.saveData.stars[gameBoardClass.loadedLevel] = numberStars;
+                gameDataClass.saveData.stars[levelInList] = numberStars;
             }
 
             gameDataClass.SaveToFile();

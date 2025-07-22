@@ -120,25 +120,26 @@ public class ScoreManager : MonoBehaviour
 
         if (gameDataClass != null)
         {
-            //save score
+/*            //save score
             int hiScore = gameDataClass.saveData.highScore[levelInList];
 
             if (score > hiScore)
             {
                 gameDataClass.saveData.highScore[levelInList] = score;
-            }
+            }*/
 
             //save stars
-            int currentStarsCount = gameDataClass.saveData.stars[levelInList];
+/*            int currentStarsCount = gameDataClass.saveData.stars[levelInList];
 
             if (numberStars > currentStarsCount)
             {
                 gameDataClass.saveData.stars[levelInList] = numberStars;
-            }
+            }*/
 
-            gameDataClass.SaveToFile();
+            //gameDataClass.SaveToFile();
         }
 
+        //progress bar with stars
         UpdateBar();
     }
 

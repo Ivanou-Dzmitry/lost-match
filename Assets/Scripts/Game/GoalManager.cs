@@ -216,7 +216,8 @@ public class GoalManager : MonoBehaviour
                                 }
                                 
                                 Destroy(obj);
-                                scoreManagerClass.IncreaseScore(1);
+                                //score 2 final for bomb
+                                scoreManagerClass.IncreaseScore(1); 
                             }
                         }
                     }

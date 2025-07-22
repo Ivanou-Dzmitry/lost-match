@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -186,6 +187,23 @@ public class EndGameManager : MonoBehaviour
         //show stars binus
         // Show star bonus if 1-3 stars are earned
         int stars = scoreManagerClass.numberStars;
+
+        //for save
+        int levelInList = Mathf.Max(0, gameBoardClass.loadedLevel - 1);
+        
+        //get star record
+        int currentStarsCount = gameDataClass.saveData.stars[levelInList];
+
+        //set star record
+        if (stars > currentStarsCount)
+        {
+            gameDataClass.saveData.stars[levelInList] = stars;
+
+            if (gameDataClass != null)
+                gameDataClass.SaveToFile();
+        }
+
+
         int bonus = 0;
 
         //collect star bonus
@@ -205,6 +223,18 @@ public class EndGameManager : MonoBehaviour
         //total
         if(totalCredits != null)
             totalCredits.text = $"{scoreManagerClass.score}";
+
+        //get current hi score
+        int hiScore = gameDataClass.saveData.highScore[levelInList];
+
+        //set hi score
+        if (scoreManagerClass.score > hiScore)
+        {
+            gameDataClass.saveData.highScore[levelInList] = scoreManagerClass.score;
+
+            if (gameDataClass != null)
+                gameDataClass.SaveToFile();
+        }
 
 
         //turn on stars

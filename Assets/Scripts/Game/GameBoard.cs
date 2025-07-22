@@ -247,8 +247,8 @@ public class GameBoard : MonoBehaviour
         {
             level = worldManager.GetLevel(loadedLevel, out World foundWorld);
 
-            totalLevels = worldManager.GetTotalLevelsCount();
-            Debug.Log($"totalLevels: {totalLevels}");
+            //get total levels
+            totalLevels = worldManager.GetTotalLevelsCount();            
 
             if (level == null)
             {
@@ -1126,7 +1126,8 @@ public class GameBoard : MonoBehaviour
                 RunParticles(currentElement, thisColumn, thisRow);
             }
 
-            scoreManagerClass.IncreaseScore(baseValue); //score
+            //main score counter
+            scoreManagerClass.IncreaseScore(baseValue); 
 
             //remove bombs
             if (bombsCells[thisColumn, thisRow] != null)

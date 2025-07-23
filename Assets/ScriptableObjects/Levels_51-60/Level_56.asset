@@ -12,24 +12,105 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_56
   m_EditorClassIdentifier: 
-  columns: 8
-  rows: 10
+  columns: 7
+  rows: 9
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: bbfc0fee1c0095740803f32f51055727, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 0
+    rowY: 8
+    tileKind: 5
+  - columnX: 1
+    rowY: 8
+    tileKind: 15
+  - columnX: 2
+    rowY: 8
+    tileKind: 15
+  - columnX: 3
+    rowY: 8
+    tileKind: 15
+  - columnX: 4
+    rowY: 8
+    tileKind: 15
+  - columnX: 5
+    rowY: 8
+    tileKind: 15
+  - columnX: 6
+    rowY: 8
+    tileKind: 5
+  - columnX: 3
+    rowY: 7
+    tileKind: 14
+  - columnX: 3
+    rowY: 6
+    tileKind: 14
+  - columnX: 3
+    rowY: 5
+    tileKind: 14
+  - columnX: 0
+    rowY: 4
+    tileKind: 14
+  - columnX: 1
+    rowY: 4
+    tileKind: 14
+  - columnX: 2
+    rowY: 4
+    tileKind: 14
+  - columnX: 3
+    rowY: 4
+    tileKind: 5
+  - columnX: 4
+    rowY: 4
+    tileKind: 14
+  - columnX: 5
+    rowY: 4
+    tileKind: 14
+  - columnX: 6
+    rowY: 4
+    tileKind: 14
+  - columnX: 3
+    rowY: 3
+    tileKind: 14
+  - columnX: 3
+    rowY: 2
+    tileKind: 14
+  - columnX: 3
+    rowY: 1
+    tileKind: 14
+  - columnX: 0
+    rowY: 0
+    tileKind: 5
+  - columnX: 1
+    rowY: 0
+    tileKind: 15
+  - columnX: 2
+    rowY: 0
+    tileKind: 15
+  - columnX: 3
+    rowY: 0
+    tileKind: 15
+  - columnX: 4
+    rowY: 0
+    tileKind: 15
+  - columnX: 5
+    rowY: 0
+    tileKind: 15
+  - columnX: 6
+    rowY: 0
+    tileKind: 5
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
-  - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
-  goalsDescription: EMPTY
+  scoreGoals: 3c0000006400000096000000
+  goalsDescription: Collect socks
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 14
   levelGoals:
-  - numberGoalsNeeded: 20
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
-    matchValue: element_02
+  - numberGoalsNeeded: 28
+    numberCollectedGoals: 30
+    goalSprite: {fileID: 21300000, guid: cb8c41659b9f4b840a02b66a497cf4b2, type: 3}
+    matchValue: element_04

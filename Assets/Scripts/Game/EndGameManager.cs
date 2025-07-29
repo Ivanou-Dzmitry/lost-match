@@ -178,7 +178,6 @@ public class EndGameManager : MonoBehaviour
         //stop animation finalTextPanel.activeSelf
         AlarmAnimation(curCounterVal, false);
 
-
         movesCounter.text = "" + curCounterVal;
 
         //level number
@@ -202,7 +201,6 @@ public class EndGameManager : MonoBehaviour
             if (gameDataClass != null)
                 gameDataClass.SaveToFile();
         }
-
 
         int bonus = 0;
 
@@ -235,7 +233,6 @@ public class EndGameManager : MonoBehaviour
             if (gameDataClass != null)
                 gameDataClass.SaveToFile();
         }
-
 
         //turn on stars
         for (int i = 0; i < scoreManagerClass.numberStars; i++)

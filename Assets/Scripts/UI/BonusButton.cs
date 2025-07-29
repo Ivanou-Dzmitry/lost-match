@@ -112,12 +112,13 @@ public class BonusButton : MonoBehaviour
 
         //avoid crash in levels
         GameObject gameBoardObject = GameObject.FindWithTag("GameBoard");
+
         if (gameBoardObject != null)
         {
             gameBoardClass = gameBoardObject.GetComponent<GameBoard>();
         }
 
-            UpdateBonusCount();
+        UpdateBonusCount();
 
         //set bonuce price
         if (gameDataClass.saveData.bonusesPrice != null)
@@ -159,10 +160,6 @@ public class BonusButton : MonoBehaviour
         {
             countPanel.SetActive(false);
         }
-
-
-
-
     }
 
     private void Awake()
@@ -354,8 +351,6 @@ public class BonusButton : MonoBehaviour
         if (debt >= 0 && bonusCount <= maxCount)
             operation_permissible = true;
 
-        //Debug.Log(this.bonusPrice);
-
         if (operation_permissible)
         {
             bonusShopClass.tempBonuses[rootBonus] += thisBonusButton.bundleCount; //add Root bonus
@@ -363,6 +358,27 @@ public class BonusButton : MonoBehaviour
 
            bonusShopClass.BuyBonus();
            bonusShopClass.CloseShop();
+            
+            //open confirm again
+            if (bonusShopClass.needToBuyEnergy)
+            {
+                int lvl = bonusShopClass.selectedLevel;
+
+                LevelGoals levelGoalsClass = GameObject.FindWithTag("LevelGoals").GetComponent<LevelGoals>();
+
+                if(bonusShopClass.confirmPanel != null && lvl > -1)
+                    bonusShopClass.confirmPanel.GetComponent<LevelConfirmPanel>().level = lvl;
+
+                if(levelGoalsClass != null && lvl > -1)
+                    levelGoalsClass.GetGoals(lvl); //get goals
+
+                if (bonusShopClass.confirmPanel != null)
+                    bonusShopClass.confirmPanel.SetActive(true);
+
+                bonusShopClass.needToBuyEnergy = false;
+                bonusShopClass.selectedLevel = -1;
+            }
+
         }
         else
         {
@@ -373,6 +389,7 @@ public class BonusButton : MonoBehaviour
             if (bonusCount >= maxCount)
             {
                 bonusShopClass.ShowInfo(maxCount, "MaxCount", thisBonusButton.busterName);
+
                 if(this.busterType != BusterType.Time)
                     this.maxSign.enabled = true;
             }

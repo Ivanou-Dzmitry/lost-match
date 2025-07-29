@@ -25,10 +25,15 @@ public class BonusShop : MonoBehaviour
         Closed
     }
 
+    [Header("Shop options")]
     public ShopState shopState;
 
     //for different types
     public ShopType shopType;
+
+    public bool needToBuyEnergy=false;
+    public int selectedLevel = -1;
+    public GameObject confirmPanel;
 
     //classes
     private GameData gameDataClass;
@@ -87,7 +92,7 @@ public class BonusShop : MonoBehaviour
 
     public TMP_Text livesCount;
 
-    //!important
+    //!important - total bonuses in game
     int bonusCount = 12;
 
     public ParticleSystem buyParticles01;
@@ -464,6 +469,7 @@ public class BonusShop : MonoBehaviour
 
     public void OpenShop(ShopType type)
     {       
+        //init values
         ZeroBonus();       
         SetupShop();
       
@@ -474,6 +480,7 @@ public class BonusShop : MonoBehaviour
             shopName[0].text = "BOOSTERS";
             shopType = ShopType.Busters;
         }
+
         //for lives shop
         if (type == ShopType.Lives)
         {
@@ -483,7 +490,7 @@ public class BonusShop : MonoBehaviour
             livesCount.text = "" + gameDataClass.saveData.bonuses[5]; //lives in shop
         }
 
-        //for muves shop
+        //for moves shop
         if (type == ShopType.Moves)
         {
             shopPanel[1].SetActive(true);
@@ -511,9 +518,8 @@ public class BonusShop : MonoBehaviour
             infoText.color = defaultInfoTextColor;
         }
 
+        //close time booster buttons in game
         CoverTimeButtons(type);
-
-
     }
 
     private void CoverTimeButtons(ShopType type)

@@ -174,6 +174,7 @@ public class LevelButton : MonoBehaviour
         //chesk lives
         int lives = gameDataClass.saveData.bonuses[5];
 
+
         if (lives > 0)
         {
             confirmPanel.GetComponent<LevelConfirmPanel>().level = level;
@@ -184,8 +185,12 @@ public class LevelButton : MonoBehaviour
         }
         else
         {
+            //set data for future
+            bonusShopClass.needToBuyEnergy = true;
+            bonusShopClass.selectedLevel = level;
+
             //open lives shop
-            bonusShopClass.OpenShop(ShopType.Lives);            
+            bonusShopClass.OpenShop(ShopType.Lives);
 
             StartCoroutine(ShowInfoAfterPanelActive());
         }

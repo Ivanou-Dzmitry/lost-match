@@ -88,9 +88,9 @@ MonoBehaviour:
   goalsDescription: Collect Wrap Caps
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 26
   levelGoals:
   - numberGoalsNeeded: 4
-    numberCollectedGoals: 4
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: e356b17f335b22547a69e50bc85ad612, type: 3}
     matchValue: WrapBomb

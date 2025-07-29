@@ -15,11 +15,17 @@ public class SaveData
     public int[] bonuses;
     public int[] maxBonusCount;
     public int[] bonusesPrice;
+
+    [Header("Credits")]
     public int credits;
+
+    [Header("Volume control")]
     public bool soundToggle;
     public bool musicToggle;
     public float soundVolume;
     public float musicVolume;
+
+    [Header("Timers")]
     public string lifeRecoveryTime;
     public string colorBusterRecoveryTime;
     public string lineBusterRecoveryTime;
@@ -48,9 +54,11 @@ public class GameData : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        //check world manager
         if (worldManager == null)
         {
             worldManager = FindObjectOfType<WorldManager>();
+
             if (worldManager == null)
             {
                 Debug.LogError("WorldManager not found!");
@@ -58,14 +66,17 @@ public class GameData : MonoBehaviour
             }
         }
 
+        //get levels count
         levelsCount = worldManager.GetTotalLevelsCount();
 
+        //load data from file
         LoadFromFile();
     }
 
 
     public void SaveToFile()
     {
+        //check game data and save data
         if (gameData == null || gameData.saveData == null)
         {
             Debug.LogError("gameData or gameData.saveData is null. Cannot save to file.");
@@ -77,8 +88,7 @@ public class GameData : MonoBehaviour
             string savingData = JsonUtility.ToJson(gameData.saveData, true);
             string filePath = Path.Combine(Application.persistentDataPath, fileName);
 
-            File.WriteAllText(filePath, savingData);
-            //Debug.Log("Game data saved successfully to: " + filePath);
+            File.WriteAllText(filePath, savingData);            
         }
         catch (Exception ex)
         {
@@ -96,10 +106,12 @@ public class GameData : MonoBehaviour
             string loadedData = File.ReadAllText(filePath);
             saveData = JsonUtility.FromJson<SaveData>(loadedData);
 
-            PatchSavedData(); // Fix any size mismatch
+            // Fix any size mismatch
+            PatchSavedData();
         }
         else
         {
+            //default values
             AddDefaultData();
         }
     }
@@ -186,7 +198,7 @@ public class GameData : MonoBehaviour
 
 
         //start=0
-        saveData.credits = 10000;
+        saveData.credits = 0;
 
         //saveData.lives = 3;
         saveData.bonuses[5] = 5; //set lives bonus #5
@@ -238,6 +250,7 @@ public class GameData : MonoBehaviour
         {
             saveData.isActive[i] = true;
         }
+
         SaveToFile();
     }
 
@@ -250,8 +263,7 @@ public class GameData : MonoBehaviour
         {
             bool[] newArray = new bool[currentCount];
             saveData.isActive.CopyTo(newArray, 0);
-            saveData.isActive = newArray;
-            Debug.Log($"Patching isActive data to fit {currentCount} levels");
+            saveData.isActive = newArray;            
         }
 
         // Patch stars
@@ -260,7 +272,6 @@ public class GameData : MonoBehaviour
             int[] newArray = new int[currentCount];
             saveData.stars.CopyTo(newArray, 0);
             saveData.stars = newArray;
-            Debug.Log($"Patching stars data to fit {currentCount} levels");
         }
 
         // Patch highScore
@@ -269,7 +280,6 @@ public class GameData : MonoBehaviour
             int[] newArray = new int[currentCount];
             saveData.highScore.CopyTo(newArray, 0);
             saveData.highScore = newArray;
-            Debug.Log($"Patching highScore data to fit {currentCount} levels");  
         }
 
         SaveToFile();

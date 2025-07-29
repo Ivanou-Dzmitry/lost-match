@@ -79,6 +79,7 @@ public class SettingsManager : MonoBehaviour
         //Set Framerate
         Application.targetFrameRate = 30;
 
+        //for desktop builds
 #if UNITY_STANDALONE_WIN
     int targetHeight = 1024;
     float aspectRatio = 9f / 16f;  // Portrait
@@ -210,11 +211,13 @@ public class SettingsManager : MonoBehaviour
     {
         paused = !paused;
 
+        //pause
         if (paused)
         {
             gameBoardClass.currentState = GameState.pause;
         }
 
+        //avoid pause 
         if (!paused && gameBoardClass.currentState != GameState.win)
         {
             if (gameBoardClass.currentState != GameState.lose)

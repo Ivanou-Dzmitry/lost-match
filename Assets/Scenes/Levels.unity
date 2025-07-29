@@ -1343,6 +1343,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shopState: 0
   shopType: 0
+  needToBuyEnergy: 0
+  selectedLevel: -1
+  confirmPanel: {fileID: 1769249765}
   endGameManagerClass: {fileID: 0}
   tempBonuses: 
   tempCreditsCount: 0
@@ -10554,6 +10557,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shopState: 0
   shopType: 0
+  needToBuyEnergy: 0
+  selectedLevel: -1
+  confirmPanel: {fileID: 0}
   endGameManagerClass: {fileID: 0}
   tempBonuses: 
   tempCreditsCount: 0
@@ -13249,6 +13255,34 @@ PrefabInstance:
     - target: {fileID: 3506983475930320965, guid: b699915aa8a473e408d927f8eca28035, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -753.7143
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1553945111}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: ClearGoals
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: LevelGoals, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651319343607288415, guid: b699915aa8a473e408d927f8eca28035, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3936109615456485281, guid: b699915aa8a473e408d927f8eca28035, type: 3}
       propertyPath: m_AnchorMax.y

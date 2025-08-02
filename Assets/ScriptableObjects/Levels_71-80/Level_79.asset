@@ -12,13 +12,130 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_79
   m_EditorClassIdentifier: 
-  columns: 8
-  rows: 10
+  columns: 7
+  rows: 9
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 8baafda0c08760a45b96dc9b3e2df757, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 0
+    rowY: 8
+    tileKind: 14
+  - columnX: 1
+    rowY: 8
+    tileKind: 12
+  - columnX: 2
+    rowY: 8
+    tileKind: 12
+  - columnX: 3
+    rowY: 8
+    tileKind: 12
+  - columnX: 4
+    rowY: 8
+    tileKind: 12
+  - columnX: 5
+    rowY: 8
+    tileKind: 12
+  - columnX: 6
+    rowY: 8
+    tileKind: 14
+  - columnX: 1
+    rowY: 7
+    tileKind: 14
+  - columnX: 2
+    rowY: 7
+    tileKind: 12
+  - columnX: 3
+    rowY: 7
+    tileKind: 12
+  - columnX: 4
+    rowY: 7
+    tileKind: 12
+  - columnX: 5
+    rowY: 7
+    tileKind: 14
+  - columnX: 2
+    rowY: 6
+    tileKind: 14
+  - columnX: 3
+    rowY: 6
+    tileKind: 12
+  - columnX: 4
+    rowY: 6
+    tileKind: 14
+  - columnX: 2
+    rowY: 5
+    tileKind: 19
+  - columnX: 3
+    rowY: 5
+    tileKind: 12
+  - columnX: 4
+    rowY: 5
+    tileKind: 19
+  - columnX: 2
+    rowY: 4
+    tileKind: 19
+  - columnX: 3
+    rowY: 4
+    tileKind: 12
+  - columnX: 4
+    rowY: 4
+    tileKind: 19
+  - columnX: 2
+    rowY: 3
+    tileKind: 19
+  - columnX: 3
+    rowY: 3
+    tileKind: 12
+  - columnX: 4
+    rowY: 3
+    tileKind: 19
+  - columnX: 2
+    rowY: 2
+    tileKind: 14
+  - columnX: 3
+    rowY: 2
+    tileKind: 12
+  - columnX: 4
+    rowY: 2
+    tileKind: 14
+  - columnX: 1
+    rowY: 1
+    tileKind: 14
+  - columnX: 2
+    rowY: 1
+    tileKind: 12
+  - columnX: 3
+    rowY: 1
+    tileKind: 12
+  - columnX: 4
+    rowY: 1
+    tileKind: 12
+  - columnX: 5
+    rowY: 1
+    tileKind: 14
+  - columnX: 0
+    rowY: 0
+    tileKind: 14
+  - columnX: 1
+    rowY: 0
+    tileKind: 12
+  - columnX: 2
+    rowY: 0
+    tileKind: 12
+  - columnX: 3
+    rowY: 0
+    tileKind: 12
+  - columnX: 4
+    rowY: 0
+    tileKind: 12
+  - columnX: 5
+    rowY: 0
+    tileKind: 12
+  - columnX: 6
+    rowY: 0
+    tileKind: 14
   preloadBoardLayout: []
   element:
-  - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
@@ -29,7 +146,7 @@ MonoBehaviour:
     gameType: 0
     counterValue: 25
   levelGoals:
-  - numberGoalsNeeded: 20
+  - numberGoalsNeeded: 21
     numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
-    matchValue: element_02
+    goalSprite: {fileID: 21300000, guid: bb9a65553c30ee54e80ad40813dc433f, type: 3}
+    matchValue: breakable_01

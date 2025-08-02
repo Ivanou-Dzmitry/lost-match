@@ -12,10 +12,101 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_73
   m_EditorClassIdentifier: 
-  columns: 8
+  columns: 7
   rows: 10
+  levelDifficulty: 1
   xmlLayoutFile: {fileID: 4900000, guid: 779d6176900d33348859f1ee3b9d086d, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 2
+    rowY: 9
+    tileKind: 15
+  - columnX: 3
+    rowY: 9
+    tileKind: 17
+  - columnX: 4
+    rowY: 9
+    tileKind: 15
+  - columnX: 2
+    rowY: 8
+    tileKind: 15
+  - columnX: 3
+    rowY: 8
+    tileKind: 6
+  - columnX: 4
+    rowY: 8
+    tileKind: 15
+  - columnX: 2
+    rowY: 7
+    tileKind: 15
+  - columnX: 3
+    rowY: 7
+    tileKind: 6
+  - columnX: 4
+    rowY: 7
+    tileKind: 15
+  - columnX: 2
+    rowY: 6
+    tileKind: 15
+  - columnX: 3
+    rowY: 6
+    tileKind: 6
+  - columnX: 4
+    rowY: 6
+    tileKind: 15
+  - columnX: 2
+    rowY: 5
+    tileKind: 20
+  - columnX: 3
+    rowY: 5
+    tileKind: 7
+  - columnX: 4
+    rowY: 5
+    tileKind: 20
+  - columnX: 2
+    rowY: 4
+    tileKind: 20
+  - columnX: 3
+    rowY: 4
+    tileKind: 7
+  - columnX: 4
+    rowY: 4
+    tileKind: 20
+  - columnX: 2
+    rowY: 3
+    tileKind: 15
+  - columnX: 3
+    rowY: 3
+    tileKind: 6
+  - columnX: 4
+    rowY: 3
+    tileKind: 15
+  - columnX: 2
+    rowY: 2
+    tileKind: 15
+  - columnX: 3
+    rowY: 2
+    tileKind: 6
+  - columnX: 4
+    rowY: 2
+    tileKind: 15
+  - columnX: 2
+    rowY: 1
+    tileKind: 15
+  - columnX: 3
+    rowY: 1
+    tileKind: 6
+  - columnX: 4
+    rowY: 1
+    tileKind: 15
+  - columnX: 2
+    rowY: 0
+    tileKind: 15
+  - columnX: 3
+    rowY: 0
+    tileKind: 17
+  - columnX: 4
+    rowY: 0
+    tileKind: 15
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
@@ -23,13 +114,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
-  goalsDescription: EMPTY
+  scoreGoals: 1e0000003200000064000000
+  goalsDescription: Destroy gum blockers
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 17
   levelGoals:
-  - numberGoalsNeeded: 20
+  - numberGoalsNeeded: 10
     numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
-    matchValue: element_02
+    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
+    matchValue: blocker_01

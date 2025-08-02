@@ -14,8 +14,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 8
   rows: 10
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 638a4266d7cf34845a3f8bcccaa945f4, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 0
+    rowY: 9
+    tileKind: 5
+  - columnX: 7
+    rowY: 9
+    tileKind: 5
+  - columnX: 1
+    rowY: 6
+    tileKind: 7
+  - columnX: 7
+    rowY: 6
+    tileKind: 6
+  - columnX: 0
+    rowY: 5
+    tileKind: 7
+  - columnX: 1
+    rowY: 5
+    tileKind: 18
+  - columnX: 2
+    rowY: 5
+    tileKind: 7
+  - columnX: 4
+    rowY: 5
+    tileKind: 6
+  - columnX: 6
+    rowY: 5
+    tileKind: 6
+  - columnX: 7
+    rowY: 5
+    tileKind: 18
+  - columnX: 0
+    rowY: 4
+    tileKind: 18
+  - columnX: 1
+    rowY: 4
+    tileKind: 7
+  - columnX: 2
+    rowY: 4
+    tileKind: 18
+  - columnX: 3
+    rowY: 4
+    tileKind: 6
+  - columnX: 4
+    rowY: 4
+    tileKind: 18
+  - columnX: 5
+    rowY: 4
+    tileKind: 7
+  - columnX: 6
+    rowY: 4
+    tileKind: 18
+  - columnX: 7
+    rowY: 4
+    tileKind: 6
+  - columnX: 0
+    rowY: 3
+    tileKind: 6
+  - columnX: 2
+    rowY: 3
+    tileKind: 6
+  - columnX: 3
+    rowY: 3
+    tileKind: 18
+  - columnX: 4
+    rowY: 3
+    tileKind: 7
+  - columnX: 5
+    rowY: 3
+    tileKind: 18
+  - columnX: 6
+    rowY: 3
+    tileKind: 7
+  - columnX: 3
+    rowY: 2
+    tileKind: 6
+  - columnX: 5
+    rowY: 2
+    tileKind: 7
+  - columnX: 0
+    rowY: 1
+    tileKind: 5
+  - columnX: 7
+    rowY: 1
+    tileKind: 5
+  - columnX: 0
+    rowY: 0
+    tileKind: 5
+  - columnX: 7
+    rowY: 0
+    tileKind: 5
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
@@ -23,13 +114,17 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
-  goalsDescription: EMPTY
+  scoreGoals: 3c00000078000000c8000000
+  goalsDescription: Break the ice floes, and collect binkies
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 28
   levelGoals:
-  - numberGoalsNeeded: 20
-    numberCollectedGoals: 0
+  - numberGoalsNeeded: 8
+    numberCollectedGoals: 8
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01
+  - numberGoalsNeeded: 24
+    numberCollectedGoals: 37
     goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
     matchValue: element_02

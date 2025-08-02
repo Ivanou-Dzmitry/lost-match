@@ -14,8 +14,81 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 8
   rows: 10
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: f5589c5998277164d8d2e5cb99d9d517, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 1
+    rowY: 8
+    tileKind: 21
+  - columnX: 6
+    rowY: 8
+    tileKind: 21
+  - columnX: 0
+    rowY: 6
+    tileKind: 15
+  - columnX: 1
+    rowY: 6
+    tileKind: 20
+  - columnX: 2
+    rowY: 6
+    tileKind: 15
+  - columnX: 5
+    rowY: 6
+    tileKind: 15
+  - columnX: 6
+    rowY: 6
+    tileKind: 20
+  - columnX: 7
+    rowY: 6
+    tileKind: 15
+  - columnX: 0
+    rowY: 5
+    tileKind: 15
+  - columnX: 2
+    rowY: 5
+    tileKind: 15
+  - columnX: 5
+    rowY: 5
+    tileKind: 15
+  - columnX: 7
+    rowY: 5
+    tileKind: 15
+  - columnX: 0
+    rowY: 4
+    tileKind: 15
+  - columnX: 2
+    rowY: 4
+    tileKind: 15
+  - columnX: 5
+    rowY: 4
+    tileKind: 15
+  - columnX: 7
+    rowY: 4
+    tileKind: 15
+  - columnX: 0
+    rowY: 3
+    tileKind: 15
+  - columnX: 1
+    rowY: 3
+    tileKind: 20
+  - columnX: 2
+    rowY: 3
+    tileKind: 15
+  - columnX: 5
+    rowY: 3
+    tileKind: 15
+  - columnX: 6
+    rowY: 3
+    tileKind: 20
+  - columnX: 7
+    rowY: 3
+    tileKind: 15
+  - columnX: 1
+    rowY: 1
+    tileKind: 21
+  - columnX: 6
+    rowY: 1
+    tileKind: 21
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
@@ -23,13 +96,17 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
-  goalsDescription: EMPTY
+  scoreGoals: 4b0000006400000096000000
+  goalsDescription: Collect pom-pom beanies, and mittens
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 19
   levelGoals:
-  - numberGoalsNeeded: 20
-    numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
+  - numberGoalsNeeded: 25
+    numberCollectedGoals: 26
+    goalSprite: {fileID: 21300000, guid: 712e42154519aea44921eb5619f6b2fe, type: 3}
     matchValue: element_02
+  - numberGoalsNeeded: 25
+    numberCollectedGoals: 34
+    goalSprite: {fileID: 21300000, guid: 061307213cefab644acb79f0d872c6a6, type: 3}
+    matchValue: element_05

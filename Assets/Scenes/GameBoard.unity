@@ -3157,6 +3157,7 @@ GameObject:
   m_Component:
   - component: {fileID: 553865569}
   - component: {fileID: 553865570}
+  - component: {fileID: 553865571}
   m_Layer: 0
   m_Name: GameAreaBack
   m_TagString: Untagged
@@ -3220,7 +3221,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -5
-  m_Sprite: {fileID: 21300000, guid: ee77d2e5914abaa479e5d5d29eb7556b, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3228,9 +3229,34 @@ SpriteRenderer:
   m_Size: {x: 10.8, y: 19.2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &553865571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553865568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7d706cfda84d84b9a59f8594d31b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRendererGameArea: {fileID: 553865570}
+  spriteEasyLevelsBack:
+  - {fileID: 21300000, guid: e56b137fd45efc7448b739b66c973adc, type: 3}
+  - {fileID: 21300000, guid: 54cc3ba765c4afa4986f42457c89d655, type: 3}
+  - {fileID: 21300000, guid: 595613592ac4f8f479213f57f287d669, type: 3}
+  spriteMediumLevelsBack:
+  - {fileID: 21300000, guid: 60883ebe79b19ff449bd8f54ff7328f3, type: 3}
+  - {fileID: 21300000, guid: c26db167d0976af4ea09a5c192df75a6, type: 3}
+  - {fileID: 21300000, guid: 4a6bbed78c5705b448e72bc7c1de4ee2, type: 3}
+  spriteHardLevelsBack:
+  - {fileID: 21300000, guid: 3b25b59e103a7f14fa899819c0be71b9, type: 3}
+  - {fileID: 21300000, guid: a949d3affe57c674a92a37b7a2fdcd25, type: 3}
+  - {fileID: 21300000, guid: e34174f4db77c04409194d054fda9f94, type: 3}
 --- !u!1 &563384041
 GameObject:
   m_ObjectHideFlags: 0
@@ -4515,6 +4541,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shopState: 1
   shopType: 0
+  needToBuyEnergy: 0
+  selectedLevel: -1
+  confirmPanel: {fileID: 0}
   endGameManagerClass: {fileID: 1690637098}
   tempBonuses: 
   tempCreditsCount: 0

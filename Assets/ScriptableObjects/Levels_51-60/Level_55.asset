@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 8
   rows: 10
-  levelDifficulty: 0
+  levelDifficulty: 1
   xmlLayoutFile: {fileID: 4900000, guid: 537551c01a998f0419fac80809854ac9, type: 3}
   boardLayout:
   - columnX: 1

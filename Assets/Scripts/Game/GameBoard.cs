@@ -8,6 +8,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static Level;
 
 
 public enum GameState
@@ -111,6 +112,8 @@ public class GameBoard : MonoBehaviour
 
     public GameState currentState;
     public MatchState matchState;
+
+    public int levelDifficulty;
 
     [Header("Size")]
     public int column;
@@ -261,6 +264,8 @@ public class GameBoard : MonoBehaviour
             // Read level data
             column = level.columns;
             row = level.rows;
+
+            levelDifficulty = (int)level.levelDifficulty; //get difficulty
 
             elements = level.element;
             if (elements == null || elements.Length == 0)

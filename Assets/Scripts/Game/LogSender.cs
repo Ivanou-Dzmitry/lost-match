@@ -4,7 +4,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 
-public class EmailSender : MonoBehaviour
+public class LogSender : MonoBehaviour
 {
     public TMP_Text logText;
 

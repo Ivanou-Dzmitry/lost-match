@@ -12,24 +12,103 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_100
   m_EditorClassIdentifier: 
-  columns: 8
+  columns: 7
   rows: 10
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 38dfdaff1e591064b9162dd656b4f45a, type: 3}
-  boardLayout: []
+  boardLayout:
+  - columnX: 0
+    rowY: 9
+    tileKind: 7
+  - columnX: 6
+    rowY: 9
+    tileKind: 18
+  - columnX: 0
+    rowY: 8
+    tileKind: 7
+  - columnX: 5
+    rowY: 8
+    tileKind: 18
+  - columnX: 0
+    rowY: 7
+    tileKind: 7
+  - columnX: 4
+    rowY: 7
+    tileKind: 18
+  - columnX: 0
+    rowY: 6
+    tileKind: 5
+  - columnX: 1
+    rowY: 6
+    tileKind: 5
+  - columnX: 2
+    rowY: 6
+    tileKind: 5
+  - columnX: 3
+    rowY: 6
+    tileKind: 5
+  - columnX: 2
+    rowY: 5
+    tileKind: 14
+  - columnX: 3
+    rowY: 5
+    tileKind: 5
+  - columnX: 1
+    rowY: 4
+    tileKind: 14
+  - columnX: 3
+    rowY: 4
+    tileKind: 5
+  - columnX: 0
+    rowY: 3
+    tileKind: 14
+  - columnX: 3
+    rowY: 3
+    tileKind: 5
+  - columnX: 3
+    rowY: 2
+    tileKind: 5
+  - columnX: 3
+    rowY: 1
+    tileKind: 5
+  - columnX: 0
+    rowY: 0
+    tileKind: 14
+  - columnX: 1
+    rowY: 0
+    tileKind: 14
+  - columnX: 2
+    rowY: 0
+    tileKind: 14
+  - columnX: 3
+    rowY: 0
+    tileKind: 5
+  - columnX: 4
+    rowY: 0
+    tileKind: 7
+  - columnX: 5
+    rowY: 0
+    tileKind: 7
+  - columnX: 6
+    rowY: 0
+    tileKind: 7
   preloadBoardLayout: []
   element:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
-  - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
-  goalsDescription: EMPTY
+  scoreGoals: 460000006e00000096000000
+  goalsDescription: Break the ice floes, and destroy gum blockers
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 25
   levelGoals:
-  - numberGoalsNeeded: 20
+  - numberGoalsNeeded: 9
     numberCollectedGoals: 0
-    goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
-    matchValue: element_02
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01
+  - numberGoalsNeeded: 6
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
+    matchValue: blocker_01

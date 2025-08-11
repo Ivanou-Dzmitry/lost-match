@@ -20,9 +20,6 @@ MonoBehaviour:
   - columnX: 0
     rowY: 9
     tileKind: 15
-  - columnX: 1
-    rowY: 9
-    tileKind: 15
   - columnX: 2
     rowY: 9
     tileKind: 15
@@ -33,9 +30,6 @@ MonoBehaviour:
     rowY: 9
     tileKind: 15
   - columnX: 5
-    rowY: 9
-    tileKind: 15
-  - columnX: 6
     rowY: 9
     tileKind: 15
   - columnX: 7
@@ -64,7 +58,7 @@ MonoBehaviour:
     tileKind: 5
   - columnX: 3
     rowY: 5
-    tileKind: 15
+    tileKind: 20
   - columnX: 4
     rowY: 5
     tileKind: 15
@@ -79,7 +73,7 @@ MonoBehaviour:
     tileKind: 15
   - columnX: 4
     rowY: 4
-    tileKind: 15
+    tileKind: 20
   - columnX: 7
     rowY: 4
     tileKind: 5
@@ -104,9 +98,6 @@ MonoBehaviour:
   - columnX: 0
     rowY: 0
     tileKind: 15
-  - columnX: 1
-    rowY: 0
-    tileKind: 15
   - columnX: 2
     rowY: 0
     tileKind: 15
@@ -117,9 +108,6 @@ MonoBehaviour:
     rowY: 0
     tileKind: 15
   - columnX: 5
-    rowY: 0
-    tileKind: 15
-  - columnX: 6
     rowY: 0
     tileKind: 15
   - columnX: 7

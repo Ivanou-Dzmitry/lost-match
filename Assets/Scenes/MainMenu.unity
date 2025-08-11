@@ -558,6 +558,22 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 483271435630037471, guid: 9dead62fd44649840ac401d836e80504, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 483271435630037471, guid: 9dead62fd44649840ac401d836e80504, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 483271435630037471, guid: 9dead62fd44649840ac401d836e80504, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 483271435630037471, guid: 9dead62fd44649840ac401d836e80504, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -822
+      objectReference: {fileID: 0}
     - target: {fileID: 556074795186176762, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -656,7 +672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2950657402483463969, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -192
+      value: -196
       objectReference: {fileID: 0}
     - target: {fileID: 4545587249372424350, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMax.y
@@ -672,7 +688,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4545587249372424350, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -348
+      value: -356
       objectReference: {fileID: 0}
     - target: {fileID: 5020641543478655064, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMax.y
@@ -688,7 +704,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020641543478655064, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -504
+      value: -516
       objectReference: {fileID: 0}
     - target: {fileID: 5255769293989554014, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -832,7 +848,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8262271135928991095, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -816
+      value: -676
       objectReference: {fileID: 0}
     - target: {fileID: 8358722055514191025, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMax.y
@@ -861,14 +877,6 @@ PrefabInstance:
     - target: {fileID: 8827413323883812545, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMin.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8827413323883812545, guid: 9dead62fd44649840ac401d836e80504, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 350
-      objectReference: {fileID: 0}
-    - target: {fileID: 8827413323883812545, guid: 9dead62fd44649840ac401d836e80504, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -660
       objectReference: {fileID: 0}
     - target: {fileID: 9188215734163889471, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -2400,7 +2408,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a5f637635ee126e42b94167fe4b193dd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 99
+      value: 99.397
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a5f637635ee126e42b94167fe4b193dd, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2546,7 +2554,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\xA9 frosofco.com, 2025 Version 0.0.8"
+  m_text: "\xA9 frosofco.com, 2025 Version 0.0.9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -160,7 +160,7 @@ MonoBehaviour:
   goalsDescription: Break the ice floes, and collect pom-pom beanie
   endGameRequrimentsForLevel:
     gameType: 0
-    counterValue: 25
+    counterValue: 26
   levelGoals:
   - numberGoalsNeeded: 8
     numberCollectedGoals: 0

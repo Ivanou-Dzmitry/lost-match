@@ -256,8 +256,15 @@ public class SettingsManager : MonoBehaviour
         if (gameDataClass != null)
         {
             //open new level
-            gameDataClass.saveData.isActive[gameBoardClass.loadedLevel] = true; 
-            gameDataClass.SaveToFile();
+            if(gameBoardClass.loadedLevel < gameBoardClass.totalLevels)
+            {
+                gameDataClass.saveData.isActive[gameBoardClass.loadedLevel] = true;
+                gameDataClass.SaveToFile();
+            }
+            else
+            {
+                gameDataClass.SaveToFile();
+            }
         }
     }
 

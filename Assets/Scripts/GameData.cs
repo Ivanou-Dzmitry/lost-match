@@ -41,6 +41,24 @@ public class GameData : MonoBehaviour
     private int bonusCount = 12;
     private int levelsCount; //important
 
+    //booster prices
+    private const int refreshBoosterPrice = 250;
+    private const int colorTimeBoosterPrice = 1500;
+    private const int lineTimeBoosterPrice = 1300;
+    private const int wrapBoosterPrice = 350;
+    private const int columnBoosterPrice = 400;
+    private const int rowBoosterPrice = 400;
+
+    //energy
+    private const int energy01BoosterPrice = 200;
+    private const int energy02BoosterPrice = 350;
+    private const int energy03BoosterPrice = 550;
+
+    //moves
+    private const int moves01BoosterPrice = 200;
+    private const int moves02BoosterPrice = 350;
+    private const int moves03BoosterPrice = 550;
+
 
     private void Awake()
     {
@@ -155,25 +173,25 @@ public class GameData : MonoBehaviour
 
         
         //set prices
-        saveData.bonusesPrice[0] = 250; //refresh
-        saveData.bonusesPrice[1] = 1500; //color buster TIME
-        saveData.bonusesPrice[2] = 350; //wrap
-        saveData.bonusesPrice[3] = 400; //line column
-        saveData.bonusesPrice[4] = 400; //line row
+        saveData.bonusesPrice[0] = refreshBoosterPrice; //refresh
+        saveData.bonusesPrice[1] = colorTimeBoosterPrice; //color buster TIME
+        saveData.bonusesPrice[2] = wrapBoosterPrice; //wrap
+        saveData.bonusesPrice[3] = columnBoosterPrice; //line column
+        saveData.bonusesPrice[4] = rowBoosterPrice; //line row
 
         //for game
-        saveData.bonusesPrice[5] = 200; //energy battery 1
-        saveData.bonusesPrice[6] = 200; //move 1
+        saveData.bonusesPrice[5] = energy01BoosterPrice; //energy battery 1
+        saveData.bonusesPrice[6] = moves01BoosterPrice; //move 1
 
         //bundle lives
-        saveData.bonusesPrice[7] = 350; //energy battery 2
-        saveData.bonusesPrice[8] = 500; //energy battery 3
+        saveData.bonusesPrice[7] = energy02BoosterPrice; //energy battery 2
+        saveData.bonusesPrice[8] = energy03BoosterPrice; //energy battery 3
 
         //bundle moves
-        saveData.bonusesPrice[9] = 350; //move x
-        saveData.bonusesPrice[10] = 550; //move xx
+        saveData.bonusesPrice[9] = moves02BoosterPrice; //move x
+        saveData.bonusesPrice[10] = moves03BoosterPrice; //move xx
 
-        saveData.bonusesPrice[11] = 1300; //line buster TIME
+        saveData.bonusesPrice[11] = lineTimeBoosterPrice; //line buster TIME
 
 
         //set MAX COUNT
@@ -281,6 +299,30 @@ public class GameData : MonoBehaviour
             saveData.highScore.CopyTo(newArray, 0);
             saveData.highScore = newArray;
         }
+
+        //booster price values
+        var boosterData = new (int price, string desc)[]
+        {
+            (refreshBoosterPrice, "refresh"),
+            (colorTimeBoosterPrice, "color booster TIME"),
+            (wrapBoosterPrice, "wrap"),
+            (columnBoosterPrice, "line column"),
+            (rowBoosterPrice, "line row"),
+            (energy01BoosterPrice, "energy battery 1"),
+            (moves01BoosterPrice, "move 1"),
+            (energy02BoosterPrice, "energy battery 2"),
+            (energy03BoosterPrice, "energy battery 3"),
+            (moves02BoosterPrice, "move x"),
+            (moves03BoosterPrice, "move xx"),
+            (lineTimeBoosterPrice, "line booster TIME")
+        };
+
+        for (int i = 0; i < boosterData.Length; i++)
+        {
+            if (saveData.bonusesPrice[i] != boosterData[i].price)
+                saveData.bonusesPrice[i] = boosterData[i].price; // boosterData[i].desc
+        }
+
 
         SaveToFile();
     }

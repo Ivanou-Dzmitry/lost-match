@@ -173,7 +173,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 96000000fa0000002c010000
+  scoreGoals: 96000000dc00000004010000
   goalsDescription: Destroy gum blockers, and collect the film bags
   endGameRequrimentsForLevel:
     gameType: 0

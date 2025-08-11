@@ -37,7 +37,9 @@ public class EndGameManager : MonoBehaviour
 
     //confirm
     public GameObject confirmPanel;
-    private LevelGoals levelGoalsClass;    
+    private LevelGoals levelGoalsClass;
+
+    public GameObject nextButton;
 
     [Header("Alarm")]
     public TMP_Text movesCounter;
@@ -95,6 +97,16 @@ public class EndGameManager : MonoBehaviour
 
         //get count
         finalLevelNumber = gameBoardClass.totalLevels;
+
+        //hide next button on last level
+        if (gameBoardClass.loadedLevel == finalLevelNumber)
+        {
+            nextButton.SetActive(false); // Hide button
+        }
+        else
+        {
+            nextButton.SetActive(true);  // Show button
+        }
     }
 
     public void SetGameType()

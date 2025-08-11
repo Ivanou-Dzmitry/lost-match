@@ -39,16 +39,20 @@ public class LevelGoals : MonoBehaviour
 
         if (worldClass != null)
         {
-            if (levelN < totalLevels)
+            if (levelN <= totalLevels)
             {
                 levelGoals = level.levelGoals;
                 goalDescription = level.goalsDescription;
             }
             else
             {
-                Debug.LogError($"{className}: worldClass is NULL here");
+                Debug.LogError($"{className}: {levelN} is out of {totalLevels} here");
             }
-        }        
+        }
+        else
+        {
+            Debug.LogError($"{className}: {worldClass} worldClass in NULL here");
+        }       
     }
 
 }

@@ -94,7 +94,6 @@ public class GameBoardBack
     public Sprite gameBoardBackSprite;
 }
 
-
 public class GameBoard : MonoBehaviour
 {
     [Header("Scriptable Objects")]
@@ -185,6 +184,10 @@ public class GameBoard : MonoBehaviour
     public GameObject locker02Prefab;
     public GameObject locker03Prefab;
 
+    [Header("Particles")]
+    public GameObject lineBombParticle;
+
+
     //for lock
     public SpecialElements[,] lockedCells;
 
@@ -236,6 +239,8 @@ public class GameBoard : MonoBehaviour
     [Header("LOG")]
     public GameLog log;
 
+    public string levelUID;
+
     private void Awake()
     {
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
@@ -282,6 +287,7 @@ public class GameBoard : MonoBehaviour
             boardLayout = level.boardLayout;
             preloadBoardLayout = level.preloadBoardLayout;
             xmlDocWithBackTileLayout = level.xmlLayoutFile;
+            levelUID = level.uID;
         }
         else
         {
@@ -332,7 +338,11 @@ public class GameBoard : MonoBehaviour
         };
 
         //logger start
-        log = gameObject.AddComponent<GameLog>();
+        if (log == null)
+        {
+           log = gameObject.AddComponent<GameLog>();
+        }
+   
     }
 
     void OnEnable()
@@ -401,7 +411,8 @@ public class GameBoard : MonoBehaviour
         levelNumberTxt.text = ($"Level {loadedLevel}");
 
         //for time booster
-        initialMoves = endGameManagerClass.curCounterVal;       
+        initialMoves = endGameManagerClass.curCounterVal;
+
     }
 
     //empty cells
@@ -564,9 +575,7 @@ public class GameBoard : MonoBehaviour
                     }
                 }
             }
-        }
-
-        
+        }        
     }
 
 
@@ -811,11 +820,11 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        if(genBomb)
+/*        if(genBomb)
             Debug.Log("Tags with more than 3 matches: " + bombMatches+ ". Ready to gen bomb: " + genBomb);
 
         if(filteredList.Count > 0)
-            Debug.Log("Filtered List Count: " + filteredList.Count);
+            Debug.Log("Filtered List Count: " + filteredList.Count);*/
 
         //debug end
 
@@ -933,48 +942,14 @@ public class GameBoard : MonoBehaviour
     public void RunParticles(ElementController element, int thisCol, int thisRow)
     {
         Vector3 elementPosition = allElements[thisCol, thisRow].transform.position;
-
+       
+        //simple row column
         if (element.isColumnBomb || element.isRowBomb)
         {
             Quaternion rotation = element.isRowBomb ? Quaternion.Euler(0, 0, 90) : Quaternion.identity;
             Vector3 particlePosition = elementPosition;
-            fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
 
-            // Handle combo particles
-            if (element.isCombo)
-            {
-                if (element.comboE1 != -1)
-                {
-                    particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE1);
-                    fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
-                }
-
-                if (element.comboE2 != -1)
-                {
-                    particlePosition = UpdatePosition(particlePosition, element.isRowBomb, element.comboE2);
-                    fxManagerClass.InstantiateAndConfigureParticle(element, particlePosition, rotation);
-                }
-            }
-        }
-
-        // Helper to instantiate and configure a particle
-/*        void InstantiateAndConfigureParticle(ElementController element, Vector3 position, Quaternion rotation)
-        {
-            GameObject particle = Instantiate(element.lineBombParticle, position, rotation);
-            SpriteMask spriteMask = particle.GetComponentInChildren<SpriteMask>();
-            if (spriteMask != null)
-                SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
-            Destroy(particle, 1.9f);
-        }*/
-
-        // Helper to update position based on bomb type
-        Vector3 UpdatePosition(Vector3 originalPosition, bool isRowBomb, int comboValue)
-        {
-            if (isRowBomb)
-                originalPosition.y = comboValue;
-            else
-                originalPosition.x = comboValue;
-            return originalPosition;
+            fxManagerClass.InstantiateAndConfigureParticle(lineBombParticle, particlePosition, rotation);            
         }
 
         //wrap part
@@ -984,6 +959,7 @@ public class GameBoard : MonoBehaviour
             elementParticle.name = "wrap_part_" + "_" + thisCol + "_" + thisRow;
             elementParticle.transform.parent = gameArea.transform;
             
+            //combo
             if (element.isCombo)
             {            
                 Transform wrapBombComboPart = elementParticle.transform.Find("wrapbomb_combo_part");
@@ -1010,6 +986,59 @@ public class GameBoard : MonoBehaviour
             elementParticle.transform.parent = gameArea.transform;
             Destroy(elementParticle, .9f);
         }
+    }
+
+    public void RunComboParticles(int posValue01, int posValue02, string type, Vector3 elementPosition)
+    {
+        Quaternion rotation = Quaternion.identity;
+
+        bool isRow = false;
+
+        //set rotation
+        if (type == "row")
+        {
+            rotation = Quaternion.Euler(0, 0, 90); // horizontal
+            isRow = true;
+        }
+        else if (type == "column")
+        {
+            rotation = Quaternion.identity;        // vertical (default)
+        }
+
+        Vector3 particlePosition = elementPosition;
+
+        // Helper to update position based on bomb type
+        Vector3 UpdatePosition(Vector3 originalPosition, bool row, int comboValue)
+        {
+            if (row == true)
+            {
+                // Row bomb affects Y
+                originalPosition.y = comboValue;
+            }
+            else if (row == false)
+            {
+                // Column bomb affects X
+                originalPosition.x = comboValue;
+            }
+            return originalPosition;
+        }
+
+        // Handle combo particles
+        if (type == "column" || type == "row")
+        {
+            if (posValue01 != -1)
+            {
+                particlePosition = UpdatePosition(particlePosition, isRow, posValue01);
+                fxManagerClass.InstantiateAndConfigureParticle(lineBombParticle, particlePosition, rotation);                
+            }
+
+            if (posValue02 != -1)
+            {
+                particlePosition = UpdatePosition(particlePosition, isRow, posValue02);
+                fxManagerClass.InstantiateAndConfigureParticle(lineBombParticle, particlePosition, rotation);                
+            }
+        }
+
     }
 
     private void DestroyBreakableAt(int thisColumn, int thisRow)
@@ -1056,6 +1085,8 @@ public class GameBoard : MonoBehaviour
         if (allElements[thisColumn, thisRow].GetComponent<ElementController>().isMatched)
         {
             ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();
+
+            //Debug.Log($"currentElement {currentElement.name}");
 
             //for bombs in match
             if (currentElement.isWrapBomb)
@@ -1402,19 +1433,14 @@ public class GameBoard : MonoBehaviour
 
         // MatchType typeOfMatch = ColumnOrRow();
         MatchType typeOfMatch = null;
-        int counter = 0;
         
         foreach (var group in groupedCandidates)
         {
             // Only one call to ColumnOrRow per group
             typeOfMatch = ColumnOrRow(group.ToList());
             
-            counter++;
-            
             if(typeOfMatch.type > 0)
             {
-                //Debug.Log($"{counter}. Generating bomb for tag: {group.Key} with match type: {typeOfMatch.type}");
-
                 BombConstructor(typeOfMatch, group.ToList());                               
             }
         }
@@ -1422,41 +1448,23 @@ public class GameBoard : MonoBehaviour
 
     private void BombConstructor(MatchType typeOfMatch, List<GameObject> matchGroup)
     {
-
-        //Debug.Log($" DEBUG: type={typeOfMatch.type}, curname={typeOfMatch.curElem.name}, count={matchGroup.Count}");
-
         string groupNames = string.Join(", ", matchGroup
             .Where(obj => obj != null)
             .Select(obj => obj.name));
-            //Debug.Log($"Match Group elements: [{groupNames}]");
-
-
-        // 1. Handle cascade mode: no player move
-        /*        if (currentElement == null && typeOfMatch.type != 0 && typeOfMatch.curElem != null)
-                {
-                    currentElement = typeOfMatch.curElem.GetComponent<ElementController>();
-                    currentElement.otherElement = null;
-
-                    Debug.Log($"Assign current element: {currentElement}");
-                }*/
 
             bool isInMatchGroup = false;
 
             if (currentElement != null)
             {
                 isInMatchGroup = matchGroup.Contains(currentElement.gameObject);
-                //Debug.Log($"Is currentElement in matchGroup? {isInMatchGroup}");
             }
 
             if (isInMatchGroup)
             {
-                Debug.Log($"Normal logic");
                 BombCreationSwitch(typeOfMatch);                
             }
             else
             {
-                //Debug.Log("currentElement is null");
-
                 // Get all non-null GameObjects with ElementController
                 var validElements = matchGroup
                     .Where(obj => obj != null && obj.GetComponent<ElementController>() != null)
@@ -1470,17 +1478,13 @@ public class GameBoard : MonoBehaviour
                     currentElement = randomObj.GetComponent<ElementController>();
                     currentElement.otherElement = null;
 
-                    BombCreationSwitch(typeOfMatch);
-
-                    Debug.Log($"Assigned random currentElement: {currentElement.name}");
+                    BombCreationSwitch(typeOfMatch);                    
                 }
                 else
                 {
                     Debug.LogWarning("No valid elements found in matchGroup to assign as currentElement.");
                 }
             }
-
-
     }
 
     private void BombCreationSwitch(MatchType typeOfMatch)
@@ -1526,6 +1530,10 @@ public class GameBoard : MonoBehaviour
 
     void GenerateBomb(ElementController dot, Action<ElementController> generator)
     {
+        //avoid bomb creation bug
+        DamageBlockers(dot.column, dot.row);
+        DamageExpandable(dot.column, dot.row);
+
         dot.isMatched = false;
         generator(dot);
     }
@@ -1580,14 +1588,20 @@ public class GameBoard : MonoBehaviour
 
 
     //blockers
-    private void DamageBlockers(int column, int row)
+    public void DamageBlockers(int column, int row)
     {
-        DamageBlockerAt(column - 1, row);
-        DamageBlockerAt(column + 1, row);
-        DamageBlockerAt(column, row - 1);
-        DamageBlockerAt(column, row + 1);
-
-        //Debug.Log("Damage blocker at DamageBlockers");
+        try
+        {
+            DamageBlockerAt(column - 1, row);
+            DamageBlockerAt(column + 1, row);
+            DamageBlockerAt(column, row - 1);
+            DamageBlockerAt(column, row + 1);
+        }
+        catch
+        {
+            Debug.LogWarning("DamageBlockers: errror!");
+        }
+       
     }
 
     //blockers
@@ -1648,6 +1662,10 @@ public class GameBoard : MonoBehaviour
                 }
 
             }
+        }
+        else
+        {
+            Debug.Log("DamageBlockerAt: problems on first step or other generator type.");
         }
     }
 
@@ -2039,7 +2057,7 @@ public class GameBoard : MonoBehaviour
     }
 
 
-    private void DamageExpandable(int thisColumn, int thisRow)
+    public void DamageExpandable(int thisColumn, int thisRow)
     {
         if (thisColumn > 0)
         {

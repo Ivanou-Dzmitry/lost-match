@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_16
   m_EditorClassIdentifier: 
+  uID: 
   columns: 7
   rows: 9
   levelDifficulty: 2
@@ -172,5 +173,5 @@ MonoBehaviour:
     matchValue: blocker_01
   - numberGoalsNeeded: 7
     numberCollectedGoals: 0
-    goalSprite: {fileID: 1713288155, guid: de274c46a30a5d9469076921f85213eb, type: 3}
+    goalSprite: {fileID: 21300000, guid: 9b004a568872f2b45ac925678e91793e, type: 3}
     matchValue: LineBomb

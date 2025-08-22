@@ -32,6 +32,15 @@ public class GameLog : MonoBehaviour
     public int elem3;
     public int elem4;
     public int elem5;
+    
+    //boosters
+    public int lineHB;
+    public int lineVB;
+    public int wrapB;
+    public int colorB;
+
+    //level id
+    public string levelID;
 
     void Start()
     {
@@ -58,9 +67,11 @@ public class GameLog : MonoBehaviour
         buyMoves = false;
         elem1 = 0; elem2 = 0; elem3 = 0; elem4 = 0; elem5 = 0;
 
+        lineHB = 0; lineVB = 0; wrapB = 0; colorB = 0; levelID = "";
+
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Level,Col,Row,Duration(sec),Score,Retry,Interrupted,Win, Goal1,Goal2,Goal3,Moves,BuyMoves,e1,e2,e3,e4,e5\n");
+            File.WriteAllText(filePath, "Level,Col,Row,Duration(sec),Score,Retry,Interrupted,Win, Goal1,Goal2,Goal3,Moves,BuyMoves,e1,e2,e3,e4,e5, lHor, lVert, wrap, clrB, lvlID \n");
         }
     }
 
@@ -76,7 +87,7 @@ public class GameLog : MonoBehaviour
         //Debug.Log("F:" + duration);
 
         //{startTime},{endTime},{ elementsCollectedStr},{ bombsCreatedStr}
-        string logEntry = $"{levelNumber}, {col}, {row}, {secondsOnly},{score},{retry},{interrupt},{win}, {goal1}, {goal2}, {goal3}, {moves},{buyMoves},{elem1},{elem2},{elem3},{elem4},{elem5}";
+        string logEntry = $"{levelNumber}, {col}, {row}, {secondsOnly},{score},{retry},{interrupt},{win}, {goal1}, {goal2}, {goal3}, {moves},{buyMoves},{elem1},{elem2},{elem3},{elem4},{elem5}, {lineHB}, {lineVB}, {wrapB}, {colorB}, {levelID}";
         
         try
         {

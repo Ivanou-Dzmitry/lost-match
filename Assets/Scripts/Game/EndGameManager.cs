@@ -416,6 +416,8 @@ public class EndGameManager : MonoBehaviour
 
         gameBoardClass.log.buyMoves = thisBuyMoves;
 
+        gameBoardClass.log.levelID = gameBoardClass.levelUID;
+
         gameBoardClass.log.EndSession();
     }
 

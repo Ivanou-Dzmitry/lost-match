@@ -20,19 +20,12 @@ public class GameAreaBackLoader : MonoBehaviour
 
         if( gameBoardClass != null)
         {            
-            if (gameBoardClass.levelDifficulty != null)
-            {
-                setGameBackAreaSprite(gameBoardClass.levelDifficulty); //set from file
-            }
-            else
-            {
-                setGameBackAreaSprite(0); //set simple
-            }
-                
+            setGameBackAreaSprite(gameBoardClass.levelDifficulty); //set from file           
         }
         else
         {
-            Debug.LogWarning("GameAreaBackLoader: gameBoardClass=null");
+            Debug.LogWarning("GameAreaBackLoader: gameBoardClass=null");            
+            setGameBackAreaSprite(0); //set simple     
         }
             
     }

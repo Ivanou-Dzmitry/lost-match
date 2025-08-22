@@ -16,6 +16,8 @@ public class Level : ScriptableObject
         Hard
     }
 
+    public string uID;
+
     [Header("Size")]
     public int columns;
     public int rows;

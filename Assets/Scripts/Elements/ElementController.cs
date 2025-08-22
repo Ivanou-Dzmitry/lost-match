@@ -81,7 +81,6 @@ public class ElementController : MonoBehaviour
 
     private float lastCallTime; // Track the last time the function was called
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -293,25 +292,6 @@ public class ElementController : MonoBehaviour
 
     }
 
-
-/*    public void StartColorBombRays(Vector2 startPoint)
-    {
-        StartCoroutine(ColorBombRaysCookerCo(startPoint));
-    }
-
-    private IEnumerator ColorBombRaysCookerCo(Vector2 startPoint)
-    {
-        if (colorBombElements.Count > 0)
-        {
-            for (int i = 0; i < colorBombElements.Count; i++)
-            {
-                fxManagerClass.CreateColorBombLines(startPoint, colorBombElements[i], Color.red, 0.5f);
-                yield return null; // wait 1 frame between each creation
-            }
-        }
-    }*/
-
-
        private void ColorBombRaysCooker(Vector2 startPoint)
         {
             if (colorBombElements.Count > 0)
@@ -459,17 +439,27 @@ public class ElementController : MonoBehaviour
         isMatched = true;
 
         //combo stuff
-        processedRows.Remove(this.row);
+        processedRows.Remove(row);
 
         // Convert HashSet to List
         List<int> processedRowsList = processedRows.ToList();
 
-        if(processedRows.Count>0)
+        //for row combo
+        if(processedRows.Count > 0)
+        {
             isCombo = true;
+        }
 
-        // Assign values to variables by index
-        comboE1 = processedRowsList.Count > 0 ? processedRowsList[0] : -1; // Default value if empty
-        comboE2 = processedRowsList.Count > 1 ? processedRowsList[1] : -1; // Default value if empty
+        if (isCombo)
+        {
+            // Assign values to variables by index
+            comboE1 = processedRowsList.Count > 0 ? processedRowsList[0] : -1; // Default value if empty
+            comboE2 = processedRowsList.Count > 1 ? processedRowsList[1] : -1; // Default value if empty
+
+            gameBoardClass.RunComboParticles(comboE1, comboE2, "row", transform.position);
+
+            //Debug.Log($" GenRowCombo: {gameBoardClass.boosterCombo.comboOnBoard}, {gameBoardClass.boosterCombo.comboElement1}, {gameBoardClass.boosterCombo.comboElement2}, {gameBoardClass.boosterCombo.comboPos}");
+        }          
     }
 
     //combos
@@ -499,17 +489,28 @@ public class ElementController : MonoBehaviour
 
         isMatched = true;
 
-        processedColumns.Remove(this.column);
+        processedColumns.Remove(column);
 
         // Convert HashSet to List
         List<int> processedColumnsList = processedColumns.ToList();
-
+       
+        //for combo
         if (processedColumns.Count > 0)
-            isCombo = true;
+        {
+            isCombo = true;            
+        }
 
-        // Assign values to variables by index
-        comboE1 = processedColumnsList.Count > 0 ? processedColumnsList[0] : -1; // Default value if empty
-        comboE2 = processedColumnsList.Count > 1 ? processedColumnsList[1] : -1; // Default value if empty
+        if (isCombo)
+        {
+            // Assign values to variables by index
+            comboE1 = processedColumnsList.Count > 0 ? processedColumnsList[0] : -1; // Default value if empty
+            comboE2 = processedColumnsList.Count > 1 ? processedColumnsList[1] : -1; // Default value if empty   
+
+            gameBoardClass.RunComboParticles(comboE1, comboE2, "column", transform.position);
+
+            //Debug.Log($" GenColCombo: {gameBoardClass.boosterCombo.comboOnBoard}, {gameBoardClass.boosterCombo.comboElement1}, {gameBoardClass.boosterCombo.comboElement2}, {gameBoardClass.boosterCombo.comboPos}");
+        }
+                       
     }
 
     private void WrapCombo(int[,] directions, int infoIndex = -1)
@@ -692,6 +693,10 @@ public class ElementController : MonoBehaviour
             bombLayer.sprite = lineBombSprite;
 
             this.GetComponent<ElementController>().otherElement = null;
+
+            //log
+            if (gameBoardClass != null && gameBoardClass.log != null)
+                gameBoardClass.log.lineHB++; //log line horizontal bomb
         }            
     }
 
@@ -709,6 +714,12 @@ public class ElementController : MonoBehaviour
             bombLayer.sprite = columnBombSprite;
 
             this.GetComponent<ElementController>().otherElement = null;
+
+            //log
+            if (gameBoardClass != null && gameBoardClass.log != null)
+            {
+                gameBoardClass.log.lineVB++; // log line vertical bomb
+            }
         }            
     }
 
@@ -727,6 +738,10 @@ public class ElementController : MonoBehaviour
             bombLayer.sprite = colorBombSprite;
 
             this.GetComponent<ElementController>().otherElement = null;
+
+            //log
+            if (gameBoardClass != null && gameBoardClass.log != null)
+                gameBoardClass.log.colorB++; //log color bomb
         }            
     }
 
@@ -744,6 +759,10 @@ public class ElementController : MonoBehaviour
             bombLayer.sprite = wrapBombSprite;
 
             this.GetComponent<ElementController>().otherElement = null;
+
+            //log
+            if (gameBoardClass != null && gameBoardClass.log != null)
+                gameBoardClass.log.wrapB++; //log wrap bomb
         }            
     }
 

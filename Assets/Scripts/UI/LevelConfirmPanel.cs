@@ -1,11 +1,12 @@
-using System.Collections;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Linq;
+using UnityEngine.XR;
 
 public class LevelConfirmPanel : MonoBehaviour
 {
@@ -38,8 +39,13 @@ public class LevelConfirmPanel : MonoBehaviour
 
     [Header("GUI")]
     public GameObject confirmPanel;
+    public Image confirmPanelImage;
 
-    [Header("Timless Busters")]    
+    [Header("Difficulty Signs")]
+    public Sprite[] difficultySigns;
+    public Image difficultySignsImage;
+
+    [Header("Time Boosters")]    
     public GameObject buster01Prefab;
     public GameObject buster11Prefab;
 
@@ -47,6 +53,13 @@ public class LevelConfirmPanel : MonoBehaviour
     private BonusButton buster11;
 
     private Coroutine updateCoroutine;
+
+    // Difficulty colors
+    private Color easyBackColor = new Color(0.698f, 0.651f, 0.565f, 1f); // #91B3A1
+    private Color mediumBackColor = new Color(0.569f, 0.627f, 0.702f, 1f); // #91A0B3
+    private Color hardBackColor = new Color(0.651f, 0.569f, 0.702f, 1f); // #A691B3
+
+
 
 
     void OnEnable()
@@ -93,6 +106,7 @@ public class LevelConfirmPanel : MonoBehaviour
     {
         int activeLevels = gameDataClass.saveData.isActive.Count(b => b);
 
+        //set disabled
         buster01.addBusterButton.interactable = false;
         buster11.addBusterButton.interactable = false;
 
@@ -102,19 +116,19 @@ public class LevelConfirmPanel : MonoBehaviour
         b1Img.color = Color.black;
         b11Img.color = Color.black;
 
+        //open busters after opened levels 19 for colorbomb
         if (activeLevels > 19)
         {
             buster01.addBusterButton.interactable = true;
             b1Img.color = Color.white;
         }
 
-
+        //9 for line bomb
         if (activeLevels > 9)
         {
             buster11.addBusterButton.interactable = true;
             b11Img.color = Color.white;
         }
-
     }
 
     private void Update()
@@ -288,10 +302,36 @@ public class LevelConfirmPanel : MonoBehaviour
         if (difficultyText != null && levelGoalsClass != null && levelGoalsClass.level != null)
         {
             difficultyText.text = levelGoalsClass.level.levelDifficulty.ToString();
+            DifficultyAppearance(difficultyText.text);
         }
         else
         {
             Debug.LogWarning($"One of the references is null! {difficultyText}, {levelGoalsClass}, {levelGoalsClass.level}");
+        }
+    }
+
+    private void DifficultyAppearance(string difficulty)
+    {
+        switch (difficulty)
+        {
+            case "Simple":
+                confirmPanelImage.color = easyBackColor;
+                difficultySignsImage.sprite = difficultySigns[0];
+                break;
+
+            case "Medium":
+                confirmPanelImage.color = mediumBackColor;
+                difficultySignsImage.sprite = difficultySigns[1];
+                break;
+
+            case "Hard":
+                confirmPanelImage.color = hardBackColor;
+                difficultySignsImage.sprite = difficultySigns[2];
+                break;
+
+            default:
+                Debug.LogWarning($"Unknown difficulty: {difficulty}");
+                break;
         }
     }
 

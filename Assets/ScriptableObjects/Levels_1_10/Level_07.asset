@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_07
   m_EditorClassIdentifier: 
+  uID: lvl07
   columns: 7
   rows: 7
-  levelDifficulty: 1
+  levelDifficulty: 2
   xmlLayoutFile: {fileID: 4900000, guid: 855802f73119d7447ba577fe85595314, type: 3}
   boardLayout:
   - columnX: 0
@@ -129,13 +130,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 210000004200000064000000
-  goalsDescription: Collect the shoes
+  scoreGoals: 4b0000006400000096000000
+  goalsDescription: Collect the baby booties
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 24
   levelGoals:
   - numberGoalsNeeded: 36
-    numberCollectedGoals: 0
+    numberCollectedGoals: 37
     goalSprite: {fileID: 21300000, guid: 7965554bf0f9b924dbb0d5bc4e54fd12, type: 3}
     matchValue: element_01

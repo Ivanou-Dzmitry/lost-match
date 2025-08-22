@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_14
   m_EditorClassIdentifier: 
+  uID: 
   columns: 7
   rows: 8
   levelDifficulty: 1
-  xmlLayoutFile: {fileID: 4900000, guid: 2c0c0c9a0df113545b5eaf6dee3e4716, type: 3}
+  xmlLayoutFile: {fileID: 4900000, guid: 4c22ab0db9e298a44bba2f6e477af723, type: 3}
   boardLayout:
   - columnX: 1
     rowY: 7
@@ -139,16 +140,16 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   scoreGoals: 320000004600000064000000
-  goalsDescription: Collect binky, and destroy gum blockers
+  goalsDescription: Collect binkies, and the little shoppers
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 18
   levelGoals:
   - numberGoalsNeeded: 10
-    numberCollectedGoals: 10
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: bb9a65553c30ee54e80ad40813dc433f, type: 3}
     matchValue: breakable_01
   - numberGoalsNeeded: 30
-    numberCollectedGoals: 36
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 761fc2d50164fd34895cea29f65abc81, type: 3}
     matchValue: element_02

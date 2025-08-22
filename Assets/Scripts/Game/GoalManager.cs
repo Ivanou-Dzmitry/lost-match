@@ -57,8 +57,6 @@ public class GoalManager : MonoBehaviour
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 
-
-        
         matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();        
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
 
@@ -264,7 +262,7 @@ public class GoalManager : MonoBehaviour
         endGameManagerClass.LoseGame();        
     }
 
-    public void CompareGoal(string goalToCompare, int Column = -1, int Row = -1)
+    public void CompareGoal(string goalToCompare, int Column = -1, int Row = -1, bool simpleMode=false)
     {
         for (int i = 0; i < levelGoals.Length; i++)
         {
@@ -272,18 +270,23 @@ public class GoalManager : MonoBehaviour
             {
                 levelGoals[i].numberCollectedGoals++;
 
-                //play sound
-                if(goalSound != null)
-                    soundManagerClass.PlaySound(goalSound);
+                //avoid combo bugs
+                if (simpleMode) {
 
-                //run text animation
-                StartCoroutine(SmoothScaleText(currentGoals[i].thisText.transform));
+                    //play sound
+                    if (goalSound != null)
+                        soundManagerClass.PlaySound(goalSound);
 
-                //for vfx
-                InstantiateAndMove(i, Column, Row);
+                    //run text animation
+                    StartCoroutine(SmoothScaleText(currentGoals[i].thisText.transform));
+
+                    //for vfx
+                    InstantiateAndMove(i, Column, Row);
+                }
             }
         }
     }
+
 
     public void InstantiateAndMove(int prefabNumber, int Column = -1, int Row = -1)
     {

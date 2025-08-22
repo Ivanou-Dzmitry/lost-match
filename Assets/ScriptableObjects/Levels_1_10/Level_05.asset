@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_05
   m_EditorClassIdentifier: 
+  uID: lvl05
   columns: 7
   rows: 8
   levelDifficulty: 1
@@ -157,8 +158,8 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
-  scoreGoals: 3c0000005a00000078000000
-  goalsDescription: Destroy gum blockers, and collect Wrap caps
+  scoreGoals: 640000008c00000096000000
+  goalsDescription: Smash the gum blocks, and collect wrap caps
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 15

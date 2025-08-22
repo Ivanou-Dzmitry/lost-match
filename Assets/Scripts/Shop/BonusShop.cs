@@ -168,6 +168,7 @@ public class BonusShop : MonoBehaviour
         //run life timer
         int livesCount = gameDataClass.saveData.bonuses[5];
         bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
+
         if (livesCount == 0 && fundsForBooster5)
         {
             timeManagerClass.CreateTimer("lifeRecovery", bustersTime[0], TimerStart, TimerEnd);            

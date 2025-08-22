@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_10
   m_EditorClassIdentifier: 
+  uID: lvl10
   columns: 8
   rows: 9
-  levelDifficulty: 2
+  levelDifficulty: 1
   xmlLayoutFile: {fileID: 4900000, guid: e91fb5b3ec3bffd4f9fbc92fe5b81b0f, type: 3}
   boardLayout:
   - columnX: 0
@@ -215,8 +216,8 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 32000000500000006e000000
-  goalsDescription: Destroy gum blockers
+  scoreGoals: 3c0000005a0000006e000000
+  goalsDescription: Smash the gum blocks
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 22

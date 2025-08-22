@@ -75,6 +75,9 @@ public class LevelsSceneManager : MonoBehaviour
     int levelButtonsOnScreen = 5; //5 or 10
     int stepsToScrollScreen = 2;
 
+    private float swipeVelocity; // current speed
+    private float damping = 2f;  // how quickly it slows down
+
     // Start is called before the first frame update
     void Start()
     {
@@ -125,20 +128,45 @@ public class LevelsSceneManager : MonoBehaviour
 
         //debug info
         levelTxt.text = "Map " + currentScreenNumber;
-
+        
+        float tRotation = 0;
+        
+        //for correct level base rotation
         if (levelCylinder != null)
         {
+            int mod = (lastLevel-1) % 5;                      
+
+            if (mod < 3)
+                tRotation = 0f;      // first 3 levels of the cycle
+            else
+                tRotation = -45f;    // last 2 levels of the cycle
+
+            //Debug.Log($"{mod}, {lastLevel}, {tRotation}");
+
             currentRotationX = levelCylinder.transform.localEulerAngles.x;
             targetRotationX = levelCylinder.transform.eulerAngles.x;
             levelCylinder.transform.eulerAngles = new Vector3(targetRotationX, 0f, 0f); // Fix initial orientation
-            
-            SegmentInsnaciate(0, currentScreenNumber, 0);   // add first segment         
+
+            if (mod < 3)
+            {
+                SegmentInsnaciate(0, currentScreenNumber, 0);   // add first segment         
+                //load buttons
+                LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, 0);
+            }
+            else
+            {
+                SegmentInsnaciate(tRotation, currentScreenNumber, 0);   // add first segment         
+                SegmentInsnaciate(45, currentScreenNumber, 1);   // add first segment
+
+                //load buttons
+                LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, tRotation);                
+                LoadLevelButtons(currentScreenNumber+1, segmentsList[1].transform, 45f);
+
+                totalSteps++;
+            }            
         }
 
-        //load buttons
-        LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, 0);
-
-        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}");
+        //Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}");
     }
 
 
@@ -162,6 +190,7 @@ public class LevelsSceneManager : MonoBehaviour
 
         // Name and add to list
         segment.name = "segment_" + "_" + rotation + "_" + screen;
+
         if (sN == -1) 
         {
             segmentsList.Add(segment);
@@ -207,8 +236,6 @@ public class LevelsSceneManager : MonoBehaviour
 
             obj.name = "levelObj_" + prefabIndex +"_" + counter;
         }
-
-
     }
 
     public void LoadLevelButtons(int currentScreenNumber, Transform parentTransform, float rotation)
@@ -362,7 +389,7 @@ public class LevelsSceneManager : MonoBehaviour
             Rotator("next");
         }
 
-        DebugLogger("NEXT");
+        //DebugLogger("NEXT");
 
     }
 
@@ -401,7 +428,7 @@ public class LevelsSceneManager : MonoBehaviour
             
         levelTxt.text = "Map " + currentScreenNumber;
 
-        DebugLogger("PREV OUT");
+        //DebugLogger("PREV OUT");
     }
 
     private void DebugLogger(string where)
@@ -413,19 +440,22 @@ public class LevelsSceneManager : MonoBehaviour
     void Update()
     {
         bool panelsActivity = true;
+
         panelsActivity = PanelActivity();
         
         if (panelsActivity == false)
         {
             SwipeDetector();
-        }            
+        }
 
-        if (!isRotating) // When rotation stops
+        // When rotation stops
+        if (!isRotating) 
         {
            SnapToNearestAngle();
         }
 
-        if (Input.GetMouseButtonDown(0)) // Detect left mouse button click
+        // Detect left mouse button click
+        if (Input.GetMouseButtonDown(0)) 
         {
             // Create a ray from the camera through the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -473,7 +503,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
         }
 
-        rotationSpeed = 5;
+        //rotationSpeed = 5;
     }
 
     float FindClosestAngle(float value)
@@ -486,6 +516,7 @@ public class LevelsSceneManager : MonoBehaviour
 
         return closest;
     }
+
 
     private void SwipeDetector()
     {
@@ -508,7 +539,6 @@ public class LevelsSceneManager : MonoBehaviour
                 case TouchPhase.Ended:
                     endTouchPosition = touch.position;
                     float swipeTime = Time.time - touchStartTime;
-                    //debugTxt.text = "ST-" + swipeTime;
 
                     if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)
                     {                        
@@ -569,8 +599,6 @@ public class LevelsSceneManager : MonoBehaviour
         // Check if the swipe distance exceeds the threshold. maxSwipeLenght - Avoid button click for Shops
         if (Mathf.Abs(verticalSwipeDistance) > swipeThreshold)
         {
-            //Debug.Log($"totalSteps:{totalSteps}, maxSteps:{maxSteps}");
-
             if (verticalSwipeDistance > 0)
             {
                 if(isRotating)

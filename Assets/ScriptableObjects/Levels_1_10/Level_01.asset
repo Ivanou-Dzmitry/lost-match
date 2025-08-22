@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_01
   m_EditorClassIdentifier: 
+  uID: lvl01
   columns: 5
   rows: 5
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 36f2514453f022c48a5fa00f9f2d330c, type: 3}
   boardLayout: []
   preloadBoardLayout: []
@@ -21,13 +23,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
-  scoreGoals: 140000002800000037000000
+  scoreGoals: 320000005000000064000000
   goalsDescription: Collect the mittens
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 14
   levelGoals:
   - numberGoalsNeeded: 15
-    numberCollectedGoals: 0
+    numberCollectedGoals: 15
     goalSprite: {fileID: 21300000, guid: 712e42154519aea44921eb5619f6b2fe, type: 3}
     matchValue: element_03

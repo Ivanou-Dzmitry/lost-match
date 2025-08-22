@@ -6,6 +6,8 @@ public class FXManager : MonoBehaviour
 {
     private GameBoard gameBoardClass;
 
+    public GameObject particlesFolder;
+
     [Header("ColorBomb Staff")]
     //for colorbomb
     public List<GameObject> createdLines = new List<GameObject>();
@@ -206,12 +208,36 @@ public class FXManager : MonoBehaviour
 
 
     // Helper to instantiate and configure a particle
-    public void InstantiateAndConfigureParticle(ElementController element, Vector3 position, Quaternion rotation)
+    public void InstantiateAndConfigureParticle(GameObject part, Vector3 position, Quaternion rotation)
     {
-        GameObject particle = Instantiate(element.lineBombParticle, position, rotation);
-        SpriteMask spriteMask = particle.GetComponentInChildren<SpriteMask>();
-        if (spriteMask != null)
-            SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
+        //avoid double
+        string nameKey = "combo_particle_" + position + "_" + rotation;
+
+        // check if particle already exists        
+        Transform existing = particlesFolder.transform.Find(nameKey);
+        if (existing != null)
+        {
+            return;
+        }
+
+        GameObject particle = Instantiate(part, position, rotation);
+
+        if (particle != null)
+        {
+            particle.name = "combo_particle_" + position + "_" + rotation;
+
+            //put in spec folder
+            if (particlesFolder != null)
+                particle.transform.SetParent(particlesFolder.transform, worldPositionStays: true);
+
+            SpriteMask spriteMask = particle.GetComponentInChildren<SpriteMask>();
+
+            if (spriteMask != null)
+                SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
+        }
+                                       
+        //Debug.Break();
+
         Destroy(particle, 1.9f);
     }
 

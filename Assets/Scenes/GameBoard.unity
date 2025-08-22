@@ -5961,6 +5961,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7e5c319442a79841ae22bfaa0502f64, type: 3}
+--- !u!1 &961963950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 961963951}
+  m_Layer: 0
+  m_Name: Particles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &961963951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961963950}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1562724694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &971221706 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5001210787428048995, guid: 9b5a850605ee26c4b8fdec70728dec9c, type: 3}
@@ -7137,6 +7168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdbd96d056e7ca34183944c01e5242f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particlesFolder: {fileID: 961963950}
   createdLines: []
   colorBombRayMat: {fileID: 2100000, guid: c9fab8a5642f6cf42b444410c3d4a66e, type: 2}
 --- !u!4 &1141678344
@@ -7445,10 +7477,12 @@ MonoBehaviour:
   locker01Prefab: {fileID: 4965281490884118044, guid: eb6ce12b1aa70d1498c830df64c3a3a8, type: 3}
   locker02Prefab: {fileID: 4965281490884118044, guid: 0061180d37e29374abcec496d631e10b, type: 3}
   locker03Prefab: {fileID: 4965281490884118044, guid: 1a6e283c062e07b4b82b072ec9a0c849, type: 3}
+  lineBombParticle: {fileID: 3413543184670853712, guid: 95e48f46ebe23174b8d7f6bd43edf594, type: 3}
   colorBusterInUse: 0
   lineBusterInUse: 0
   btnSpeedUp: {fileID: 2074963792}
   log: {fileID: 0}
+  levelUID: 
 --- !u!4 &1186150553
 Transform:
   m_ObjectHideFlags: 0
@@ -9469,6 +9503,11 @@ MonoBehaviour:
   elem3: 0
   elem4: 0
   elem5: 0
+  lineHB: 0
+  lineVB: 0
+  wrapB: 0
+  colorB: 0
+  levelID: 
 --- !u!4 &1514661251
 Transform:
   m_ObjectHideFlags: 0
@@ -10339,6 +10378,7 @@ Transform:
   m_Children:
   - {fileID: 1016489732}
   - {fileID: 553865569}
+  - {fileID: 961963951}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1579308718

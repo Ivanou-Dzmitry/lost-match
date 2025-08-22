@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 6
   rows: 9
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 216fe9fb62cda774fa0d8a45e889f037, type: 3}
   boardLayout:
   - columnX: 0
@@ -106,13 +107,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000c8000000
+  scoreGoals: 640000007800000096000000
   goalsDescription: Break the ice floes
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 18
   levelGoals:
   - numberGoalsNeeded: 22
-    numberCollectedGoals: 0
+    numberCollectedGoals: 22
     goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
     matchValue: locker_01

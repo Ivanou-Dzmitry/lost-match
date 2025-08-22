@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class GameObjectUtils
@@ -23,6 +24,7 @@ public class MatchFinder : MonoBehaviour
 {
     //classes
     private GameBoard gameBoardClass;
+    private GoalManager goalManagerClass;
 
     //List for match
     public List<GameObject> currentMatch = new List<GameObject>();
@@ -35,6 +37,7 @@ public class MatchFinder : MonoBehaviour
     {
         //classes
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
+        goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
 
         //list for color bomb
         colorBombElements = new List<Vector2>();
@@ -106,7 +109,7 @@ public class MatchFinder : MonoBehaviour
     {
         yield return null;
 
-        //important
+        //important state
         gameBoardClass.matchState = MatchState.matching_inprogress;
 
         for (int i = 0; i < gameBoardClass.column; i++)
@@ -197,94 +200,98 @@ public class MatchFinder : MonoBehaviour
     //bomb gen part 4
     public void LineBombCheck(MatchType matchType)
     {
-        //Debug.Log($"LineBombCheck. Current: {gameBoardClass.currentElement}, Other: {gameBoardClass.currentElement.otherElement}");
+        //variables
+        int col = gameBoardClass.currentElement.column;
+        int row = gameBoardClass.currentElement.row;
+        ElementController curElem = gameBoardClass.currentElement;
+
         //move or not move?
-        if (gameBoardClass.currentElement != null)
+        if (curElem != null)
         {           
-            if (gameBoardClass.currentElement.isMatched && gameBoardClass.currentElement.tag == matchType.color)
-            {
-                Debug.Log($"V1.step1");
-                
+            if (curElem.isMatched && curElem.tag == matchType.color)
+            {                
+                //avoid bomb creation bug
+                gameBoardClass.DamageBlockers(col, row);
+                gameBoardClass.DamageExpandable(col, row);
+
                 //unmatch
-                gameBoardClass.currentElement.isMatched = false;
+                curElem.isMatched = false;
 
                 float angle1 = 0;
 
-                angle1 = gameBoardClass.currentElement.swipeAngle;
+                angle1 = curElem.swipeAngle;
 
                 if(angle1 == 0)
                 {
-                    Debug.Log($"V1.step2");
                     angle1 = UnityEngine.Random.Range(-135f, 135);                    
                 }
 
                 //for swipe
                 if ((angle1 > -45 && angle1 <= 45) || (angle1 < -135 || angle1 >= 135))
                 {
-                    Debug.Log($"V1.step3");
-                    gameBoardClass.currentElement.GenerateRowBomb();                    
+                    curElem.GenerateRowBomb();                    
                 }
                 else
                 {
-                    Debug.Log($"V1.step4");
-                    gameBoardClass.currentElement.GenerateColumnBomb();
+                    curElem.GenerateColumnBomb();
                 }
 
             }
-            else if (gameBoardClass.currentElement.otherElement != null)
+            else if (curElem.otherElement != null)
             {
-                Debug.Log($"V2.step1");
-                ElementController otherDot = gameBoardClass.currentElement.otherElement.GetComponent<ElementController>();
+                ElementController otherDot = curElem.otherElement.GetComponent<ElementController>();
 
                 //if other dots matched
                 if (otherDot.isMatched && otherDot.tag == matchType.color)
                 {
+                    //avoid bomb creation bug
+                    gameBoardClass.DamageBlockers(otherDot.column, otherDot.row);
+                    gameBoardClass.DamageExpandable(col, row);
+
+                    //unmatch
                     otherDot.isMatched = false;
 
                     float angle2 = 0;
 
-                    angle2 = gameBoardClass.currentElement.swipeAngle;
+                    angle2 = curElem.swipeAngle;
 
                     if (angle2 == 0)
                     {
-                        Debug.Log($"V2.step2");
                         angle2 = UnityEngine.Random.Range(-135f, 135);
                     }
 
                     //for swipe
                     if ((angle2 > -45 && angle2 <= 45) || (angle2 < -135 || angle2 >= 135))
                     {
-                        Debug.Log($"V2.step3");
                         otherDot.GenerateRowBomb();
                     }
                     else
                     {
-                        Debug.Log($"V2.step4");
                         otherDot.GenerateColumnBomb();
                     }
                 }
             }
             else
             {
-                Debug.Log($"V3.step1");
                 int Random = UnityEngine.Random.Range(0, 2);
 
-                gameBoardClass.currentElement.isMatched = false;
+                //avoid bomb creation bug
+                gameBoardClass.DamageBlockers(col, row);
+                gameBoardClass.DamageExpandable(col, row);
+
+                //unmatch
+                curElem.isMatched = false;
 
                 if (Random == 0)
                 {
-                    Debug.Log($"V3.step2");
-                    gameBoardClass.currentElement.GenerateColumnBomb();
+                    curElem.GenerateColumnBomb();
                 }
                 else
                 {
-                    Debug.Log($"V3.step3");
-                    gameBoardClass.currentElement.GenerateRowBomb();
+                    curElem.GenerateRowBomb();
                 }
             }
         }
-
-        //Debug.Break();
     }
 
     //simple bomb logic
@@ -328,8 +335,12 @@ public class MatchFinder : MonoBehaviour
                 {
                     rowBombCounter++;
 
+                    //for line bombs in row
                     if (rowBombCounter > 1)
-                        localElement.isRowBomb = false;                    
+                    {
+                        localElement.isRowBomb = false;
+                        goalManagerClass.CompareGoal("LineBomb", i, row, true); //for line bombs
+                    }                        
                 }
 
                 elements.Add(gameBoardClass.allElements[i, row]);
@@ -403,13 +414,18 @@ public class MatchFinder : MonoBehaviour
                     elements.Union(GetRowPieces(i)).ToList();
                 }
 
-                //avoid bug with manu bombs in column
+                //avoid bug with many bombs in column
                 if (localElement.isColumnBomb)
                 {
                     colBombCounter++;
 
+                    //for line bombs in column
                     if (colBombCounter > 1)
-                        localElement.isColumnBomb = false;
+                    {
+                        localElement.isColumnBomb = false;                        
+                        goalManagerClass.CompareGoal("LineBomb", column, i, true); //for line bombs
+                    }
+                        
                 }
 
                 elements.Add(gameBoardClass.allElements[column, i]);

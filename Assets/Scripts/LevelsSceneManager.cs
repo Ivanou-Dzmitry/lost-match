@@ -12,6 +12,11 @@ public class LevelsSceneManager : MonoBehaviour
 {
     private UIManager uiManagerClass;
     private GameData gameDataClass;
+
+    [Header("WM")]
+    public WorldManager worldManager;
+
+    [Header("Levels")]
     private int lastLevel;
     private int activeLevelsCount;
     public int currentScreenNumber;
@@ -86,6 +91,8 @@ public class LevelsSceneManager : MonoBehaviour
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
+        int totalLevels = worldManager.GetTotalLevelsCount();
+
         lastLevel = 0;
 
         //get last level
@@ -159,14 +166,16 @@ public class LevelsSceneManager : MonoBehaviour
                 SegmentInsnaciate(45, currentScreenNumber, 1);   // add first segment
 
                 //load buttons
-                LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, tRotation);                
-                LoadLevelButtons(currentScreenNumber+1, segmentsList[1].transform, 45f);
+                LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, tRotation);         
+                
+                if(lastLevel+2 < totalLevels)
+                    LoadLevelButtons(currentScreenNumber+1, segmentsList[1].transform, 45f);
 
                 totalSteps++;
             }            
         }
 
-        //Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}");
+        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}, {totalLevels}/{lastLevel}");
     }
 
 

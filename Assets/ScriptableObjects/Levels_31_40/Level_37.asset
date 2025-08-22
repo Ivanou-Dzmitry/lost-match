@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_37
   m_EditorClassIdentifier: 
+  uID: lvl37
   columns: 8
   rows: 8
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: ecd0b9c1f68888a499d9b50b8f9a79ee, type: 3}
   boardLayout:
   - columnX: 0

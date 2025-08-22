@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_28
   m_EditorClassIdentifier: 
+  uID: lvl28
   columns: 8
   rows: 8
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: 1407d41af27987346808e3ed51fd56d4, type: 3}
   boardLayout:
   - columnX: 0
@@ -112,17 +114,17 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 6400000096000000fa000000
-  goalsDescription: Destroy gum blockers, and collect scarves
+  scoreGoals: 6400000096000000e1000000
+  goalsDescription: Smash the gum blocks, and collect snuggly scarves
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 22
   levelGoals:
   - numberGoalsNeeded: 10
-    numberCollectedGoals: 10
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 81d9fe5295406c8489fe9aa74743e6db, type: 3}
     matchValue: blocker_01
   - numberGoalsNeeded: 5
-    numberCollectedGoals: 5
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 9b004a568872f2b45ac925678e91793e, type: 3}
     matchValue: LineBomb

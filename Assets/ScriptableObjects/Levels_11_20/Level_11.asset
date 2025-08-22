@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_11
   m_EditorClassIdentifier: 
+  uID: lvl11
   columns: 6
   rows: 7
   levelDifficulty: 0
@@ -65,7 +66,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
-  scoreGoals: 3c0000005a00000096000000
+  scoreGoals: 4b0000007d00000096000000
   goalsDescription: Break the ice floes
   endGameRequrimentsForLevel:
     gameType: 0

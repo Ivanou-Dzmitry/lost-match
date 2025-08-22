@@ -315,7 +315,7 @@ public class EndGameManager : MonoBehaviour
         thisWin = true;
 
         //get moves
-        if (nextLevelNumber < finalLevelNumber)
+        if (nextLevelNumber <= finalLevelNumber)
         {
             winPanel.SetActive(false);
 

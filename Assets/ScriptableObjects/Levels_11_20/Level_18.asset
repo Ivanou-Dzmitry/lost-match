@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_18
   m_EditorClassIdentifier: 
+  uID: lvl18
   columns: 8
   rows: 10
+  levelDifficulty: 0
   xmlLayoutFile: {fileID: 4900000, guid: bce912df547e88c48bb69db7dfc4e3d5, type: 3}
   boardLayout:
   - columnX: 0
@@ -142,8 +144,8 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
-  scoreGoals: 32000000460000008c000000
-  goalsDescription: Collect the film bags
+  scoreGoals: 640000002c01000090010000
+  goalsDescription: Collect the little shoppers, and smash the gum blocks
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 20

@@ -11454,6 +11454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f6898c7240a5f348aecdef8ee3e4892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldManager: {fileID: 11400000, guid: 7fa05ffedb5bb8a4d83d9b1eb5833a96, type: 2}
   currentScreenNumber: 0
   thisSceneMusic: {fileID: 8300000, guid: f22bc3b86fdb87f4bb20ca9972aee8f9, type: 3}
   levelButtonPrefab: {fileID: 7974508169248037544, guid: c42da3bae3aafeb4da19366a8067dd11, type: 3}

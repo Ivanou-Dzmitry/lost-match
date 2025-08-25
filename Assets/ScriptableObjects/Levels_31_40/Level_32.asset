@@ -72,7 +72,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   scoreGoals: 280000005000000064000000
-  goalsDescription: Collect Wrap Caps
+  goalsDescription: Collect wrap caps
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 18

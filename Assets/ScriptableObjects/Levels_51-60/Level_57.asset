@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_57
   m_EditorClassIdentifier: 
+  uID: lvl57
   columns: 8
   rows: 10
   levelDifficulty: 1
@@ -168,7 +169,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
   scoreGoals: 3c0000005a000000a0000000
-  goalsDescription: Destroy gum blockers
+  goalsDescription: Smash the gum blocks
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 21

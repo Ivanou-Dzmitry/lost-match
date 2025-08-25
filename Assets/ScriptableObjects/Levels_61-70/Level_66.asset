@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_66
   m_EditorClassIdentifier: 
+  uID: lvl66
   columns: 8
   rows: 10
   levelDifficulty: 0
@@ -120,7 +121,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
   scoreGoals: 6400000096000000fa000000
-  goalsDescription: Collect the film bags
+  goalsDescription: Collect the little shoppers
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 19

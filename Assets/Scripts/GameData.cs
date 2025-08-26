@@ -243,35 +243,6 @@ public class GameData : MonoBehaviour
         SaveToFile();
     }
 
-    public void DebugAddCredits()
-    {
-        saveData.credits = 10000;
-        SaveToFile();
-    }
-
-    public void DebugZeroCredit()
-    {
-        saveData.credits = 13;
-        SaveToFile();
-    }
-
-    public void DebugZeroLife()
-    {
-        saveData.bonuses[5] = 1; //set lives bonus 0
-        SaveToFile();
-    }
-
-
-    public void DebugOpenLevels()
-    {
-        for(int i = 0; i< saveData.isActive.Length; i++)
-        {
-            saveData.isActive[i] = true;
-        }
-
-        SaveToFile();
-    }
-
     private void PatchSavedData()
     {
         int currentCount = levelsCount;

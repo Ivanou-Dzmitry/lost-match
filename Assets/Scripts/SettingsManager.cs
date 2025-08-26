@@ -34,6 +34,7 @@ public class SettingsManager : MonoBehaviour
     public Slider musicSlider;
     public TMP_Text musicValueTxt;
     public Sprite[] musicButtonSprites;
+    
 
     public static class SystemInformation
     {

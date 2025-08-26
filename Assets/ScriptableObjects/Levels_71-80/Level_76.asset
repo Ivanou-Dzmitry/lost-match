@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
   m_Name: Level_76
   m_EditorClassIdentifier: 
+  uID: lvl76
   columns: 7
   rows: 9
   levelDifficulty: 2

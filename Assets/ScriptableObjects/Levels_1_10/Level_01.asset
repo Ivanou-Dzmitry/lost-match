@@ -23,13 +23,13 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
   - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
   - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
-  scoreGoals: 200000003200000050000000
+  scoreGoals: 1e0000002d00000037000000
   goalsDescription: Collect the mittens
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 14
   levelGoals:
   - numberGoalsNeeded: 15
-    numberCollectedGoals: 15
+    numberCollectedGoals: 0
     goalSprite: {fileID: 21300000, guid: 712e42154519aea44921eb5619f6b2fe, type: 3}
     matchValue: element_03

@@ -1936,6 +1936,7 @@ MonoBehaviour:
   - {fileID: 4915904589095357340}
   difficultyText: {fileID: 5148753333449072124}
   headerText: {fileID: 1856480894491515495}
+  boosterHeaderText: {fileID: 4568653482380140768}
   starOffSprite: {fileID: 687784490, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}
   starOnSprite: {fileID: -1220206920, guid: ccbdd599a22efc84e8a048f4f16bce5f, type: 3}
   currentGoals: []

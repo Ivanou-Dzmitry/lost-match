@@ -20,6 +20,7 @@ public class LevelConfirmPanel : MonoBehaviour
     public Image[] stars;
     public TMP_Text difficultyText;
     public TMP_Text headerText;
+    public TMP_Text boosterHeaderText;
     private int highScore;
 
     [Header("Stars")]
@@ -58,9 +59,6 @@ public class LevelConfirmPanel : MonoBehaviour
     private Color easyBackColor = new Color(0.698f, 0.651f, 0.565f, 1f); // #91B3A1
     private Color mediumBackColor = new Color(0.569f, 0.627f, 0.702f, 1f); // #91A0B3
     private Color hardBackColor = new Color(0.651f, 0.569f, 0.702f, 1f); // #A691B3
-
-
-
 
     void OnEnable()
     {
@@ -116,11 +114,19 @@ public class LevelConfirmPanel : MonoBehaviour
         b1Img.color = Color.black;
         b11Img.color = Color.black;
 
+        Debug.Log(activeLevels);
+
+        //header
+        if(activeLevels <= 9)
+            boosterHeaderText.text = "Boosters not available";
+
         //open busters after opened levels 19 for colorbomb
         if (activeLevels > 19)
         {
             buster01.addBusterButton.interactable = true;
             b1Img.color = Color.white;
+
+            boosterHeaderText.text = "Select boosters";
         }
 
         //9 for line bomb
@@ -128,7 +134,9 @@ public class LevelConfirmPanel : MonoBehaviour
         {
             buster11.addBusterButton.interactable = true;
             b11Img.color = Color.white;
+            boosterHeaderText.text = "Select booster";
         }
+
     }
 
     private void Update()

@@ -75,10 +75,13 @@ public class ScoreManager : MonoBehaviour
 
             // Calculate new position considering the image width
             float imageWidth = rectTransformStar.rect.width/2;
+            Debug.Log(imageWidth);
+
             Vector3 currentPosition = rectTransformStar.localPosition;
 
             // Update the position of the star on the progress bar
-            float x = starPosition[i] + imageWidth;
+            float x = starPosition[i];
+
             Vector3 newPos = new Vector3(x, currentPosition.y, currentPosition.z);
 
             if (!float.IsNaN(newPos.x) && !float.IsNaN(newPos.y) && !float.IsNaN(newPos.z))
@@ -116,27 +119,6 @@ public class ScoreManager : MonoBehaviour
         for (int i = 0; i < numberStars; i++)
         {
             levelStars[i].sprite = levelStarsSpite[0];
-        }
-
-        if (gameDataClass != null)
-        {
-/*            //save score
-            int hiScore = gameDataClass.saveData.highScore[levelInList];
-
-            if (score > hiScore)
-            {
-                gameDataClass.saveData.highScore[levelInList] = score;
-            }*/
-
-            //save stars
-/*            int currentStarsCount = gameDataClass.saveData.stars[levelInList];
-
-            if (numberStars > currentStarsCount)
-            {
-                gameDataClass.saveData.stars[levelInList] = numberStars;
-            }*/
-
-            //gameDataClass.SaveToFile();
         }
 
         //progress bar with stars

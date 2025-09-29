@@ -55,6 +55,8 @@ public class UIManager : MonoBehaviour
     public List<Sprite> iconsList = new List<Sprite>();
     public GameObject iconInfo;
 
+    public GameLog log;
+
 
     void Start()
     {
@@ -67,8 +69,6 @@ public class UIManager : MonoBehaviour
         //get color from panel
         if (infoPanel != null)
             infoPanelImage = infoPanel.GetComponent<Image>();
-
-        //Debug.Log($"IPI: {infoPanelImage.sprite.name}");
     }
 
     void AdjustPanelPosition()
@@ -83,7 +83,6 @@ public class UIManager : MonoBehaviour
         float unsafeZoneHeight = screenHeight - safeArea.height;
 
         topSafeOffset = (Screen.height - Screen.safeArea.yMax)/2;
-
 
         float panelTopHeight = 0;
 
@@ -111,7 +110,7 @@ public class UIManager : MonoBehaviour
             anchoredPosition.y = 0;
 
             //anchoredPosition.y = -unsafeZoneHeight; // Adjust based on your pivot and alignment
-            panelTop.anchoredPosition = anchoredPosition;            
+            panelTop.anchoredPosition = anchoredPosition;                            
         }
 
         panelCenterHeight = 0;
@@ -124,14 +123,14 @@ public class UIManager : MonoBehaviour
 
             panelCenterHeight = currentSize.y;            
 
-            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y);
+            panelCenter.sizeDelta = new Vector2(currentSize.x, currentSize.y + topSafeOffset);
 
             Vector2 newAnchoredPosition = panelCenter.anchoredPosition;
             newAnchoredPosition.y = -topSafeOffset - topPanelHeight; //set center y position
             panelCenter.anchoredPosition = newAnchoredPosition;
-        }        
+        }
 
-        if(panelLevelButtons != null)
+        if (panelLevelButtons != null)
         {
             Vector2 currentSize = panelLevelButtons.sizeDelta;
             currentSize.y = panelCenterHeight - (controlButtonsHeight*2);

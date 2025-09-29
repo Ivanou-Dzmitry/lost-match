@@ -10,8 +10,6 @@ public class ButtonAutoConnect : MonoBehaviour
         if (btn != null && SoundManager.Instance != null)
         {
             btn.onClick.AddListener(SoundManager.Instance.ButtonClick);
-        }
-
-        //Debug.Log("Click!");
+        }        
     }
 }

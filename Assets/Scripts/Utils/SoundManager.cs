@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SoundManager : MonoBehaviour
 {
@@ -10,17 +9,20 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource effectsSource;
     [SerializeField] private AudioSource musicSource;
 
-    private AudioClip aClip;
-
     private AudioClip lastPlayedClip;
 
     private GameData gameDataClass;
-    private SettingsManager settingsManagerClass;
 
     public float fadeTime = 1.5f; // You can set this in the inspector
 
     private float originalVolume;
     private float savedMusicTime = 0f;
+
+    [Header("Music")]
+    public AudioClip[] musicClips;
+   
+    public GameLog log;
+    private const string className = "SoundManager:";
 
     public static SoundManager Instance;
 
@@ -37,37 +39,44 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-
     // Start is called before the first frame update
     void Start()
     {
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();       
-        settingsManagerClass = GameObject.FindWithTag("SettingsManager").GetComponent<SettingsManager>();
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();               
        
-
         if (gameDataClass != null)
         {
             LoadSoundData();
+        }
+        else
+        {
+            log.WriteSysLog($"{className}ERR: gameDataClass null");
         }
     }
 
 
     private void LoadSoundData()
     {
+        try
+        {
+            //lastPlayedClip = musicClips[gameDataClass.saveData.currentPlayingClipIndex];
+            musicSource.clip = lastPlayedClip;
+        }
+        catch (System.Exception ex)
+        {
+            log.WriteSysLog($"{className}Failed to set music clip: {ex.Message}\n{ex.StackTrace}");
+        }
+
         MuteSound(gameDataClass.saveData.soundToggle);
         MuteMusic(gameDataClass.saveData.musicToggle);
 
         SetVolume("sound");
-        SetVolume("music");
+        SetVolume("music");        
 
-        AudioClip clip = musicSource.clip;
-
-        if (clip != null && musicSource.mute == false)
+        if (lastPlayedClip != null && musicSource.mute == false)
         {
-            PlayMusic(clip);
-        }
-
-        //Debug.Log($"Volume: sound={effectsSource.volume}, music={musicSource.volume}");
+            PlayMusic(lastPlayedClip);
+        }        
     }
 
 
@@ -105,12 +114,15 @@ public class SoundManager : MonoBehaviour
     {
         if(value)
         {            
-            musicSource.mute = false;            
+            musicSource.mute = false;
+            musicSource.time = savedMusicTime;
+            PlayMusic(lastPlayedClip);
         }
         else
         {
             savedMusicTime = musicSource.time;            
             musicSource.mute = true;
+            lastPlayedClip = musicSource.clip;
         }            
     }
 
@@ -135,8 +147,6 @@ public class SoundManager : MonoBehaviour
     {
         if (gameDataClass.saveData.musicToggle == true)
         {
-            //Debug.Log($"{musicSource}, {musicSource.isPlaying}, {musicSource.volume}, {originalVolume}");
-
             if (musicSource != null && musicSource.isPlaying)
             {
                 originalVolume = musicSource.volume;
@@ -169,8 +179,6 @@ public class SoundManager : MonoBehaviour
     {
         float startVolume = musicSource.volume;
         float t = 0f;
-
-        //Debug.Log($"IN Vol: SRC {musicSource.volume},  orig {originalVolume}");
 
         if (fadeType == "fadeOut")
         {
@@ -215,8 +223,22 @@ public class SoundManager : MonoBehaviour
                 }
             }
         }
+    }
 
-        //Debug.Log($"OUT Vol: SRC {musicSource.volume},  orig {originalVolume}");
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+            lastPlayedClip = musicClips[scene.buildIndex];
+            PlayMusic(lastPlayedClip);
     }
 
 

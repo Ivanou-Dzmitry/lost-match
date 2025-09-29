@@ -111,6 +111,5 @@ public class SpecialElements : MonoBehaviour
                 elementLayers[i].gameObject.SetActive(false);
             }
         }
-
     }
 }

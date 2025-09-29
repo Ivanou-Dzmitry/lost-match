@@ -37,6 +37,9 @@ public class LevelButton : MonoBehaviour
     private LevelGoals levelGoalsClass;
     private BonusShop bonusShopClass;
 
+    [Header("Particles")]
+    public ParticleSystem buttonParticles;
+
     [Header("Animation")]
     private Animator animatorElement;   
 
@@ -50,9 +53,22 @@ public class LevelButton : MonoBehaviour
         //myButton = GetComponentInChildren<Button>();
         animatorElement = GetComponent<Animator>();
 
+
+        //get last playing level
+        int activeLevel = 0;
+
+        for (int i = 0; i < gameDataClass.saveData.isActive.Length; i++)
+        {
+            if (gameDataClass.saveData.isActive[i])
+            {
+                activeLevel++;
+            }
+        }
+
         LoadData();
         ChooseSprite();
         ActivateStars();
+        RunParticles(activeLevel);
 
         //fix
         Material material = levelText.fontMaterial;
@@ -132,6 +148,15 @@ public class LevelButton : MonoBehaviour
         }
     }
 
+
+    void RunParticles(int lastLevelNumber)
+    {
+        //turn on particles for new level
+        if (isActive && buttonParticles != null && level == lastLevelNumber)
+        {
+            buttonParticles.Play();
+        }
+    }
 
     void ChooseSprite()
     {

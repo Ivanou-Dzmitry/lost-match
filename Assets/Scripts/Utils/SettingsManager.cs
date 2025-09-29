@@ -34,6 +34,8 @@ public class SettingsManager : MonoBehaviour
     public Slider musicSlider;
     public TMP_Text musicValueTxt;
     public Sprite[] musicButtonSprites;
+
+    public GameLog log;
     
 
     public static class SystemInformation
@@ -113,9 +115,13 @@ public class SettingsManager : MonoBehaviour
         {
             LoadData();
         }
+        else
+        {
+            log.WriteSysLog("ERROR: gameDataClass null");
+        }
 
-        // Update the text value
-        UpdateTextValue();
+            // Update the text value
+            UpdateTextValue();
     }
 
 

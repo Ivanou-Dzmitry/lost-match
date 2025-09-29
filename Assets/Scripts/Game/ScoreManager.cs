@@ -18,6 +18,8 @@ public class ScoreManager : MonoBehaviour
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
 
+    public GameLog log;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -67,7 +69,7 @@ public class ScoreManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Index {i} out of bounds. starPosition.Length={starPosition.Length}, scoreGoals.Length={gameBoardClass.scoreGoals.Length}");
+                log.WriteSysLog($"Index {i} out of bounds. starPosition.Length={starPosition.Length}, scoreGoals.Length={gameBoardClass.scoreGoals.Length}");
             }
 
             // Cache RectTransform for each star (avoid GetComponent inside the loop)
@@ -75,8 +77,7 @@ public class ScoreManager : MonoBehaviour
 
             // Calculate new position considering the image width
             float imageWidth = rectTransformStar.rect.width/2;
-            Debug.Log(imageWidth);
-
+            
             Vector3 currentPosition = rectTransformStar.localPosition;
 
             // Update the position of the star on the progress bar
@@ -90,7 +91,7 @@ public class ScoreManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Invalid position for Star01Image: {newPos} (i={i}, starPos={starPosition[i]}, imageWidth={imageWidth})");
+                log.WriteSysLog($"Invalid position for Star01Image: {newPos} (i={i}, starPos={starPosition[i]}, imageWidth={imageWidth})");
             }
 
         }

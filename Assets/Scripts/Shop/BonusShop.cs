@@ -114,7 +114,7 @@ public class BonusShop : MonoBehaviour
 
     //TIME boosters
     [Header("TIME")]
-    public int lifeTime = 30;
+    public int lifeTime = 300;
     public int colorTime = 600;
     public int lineTime = 500;
 

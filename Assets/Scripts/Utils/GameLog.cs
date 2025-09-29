@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,7 +6,7 @@ using UnityEngine;
 
 public class GameLog : MonoBehaviour
 {
-    private string filePath;
+    private string gameLogFilePath;
     private DateTime startTime;
     public Dictionary<string, int> elementsCollected;
     public Dictionary<string, int> bombsCreated;
@@ -42,14 +41,26 @@ public class GameLog : MonoBehaviour
     //level id
     public string levelID;
 
+    const string SYS_LOG_FILE_NAME = "lm_syslog.csv";
+
+    //app log
+    private string sysLogFilePath;
+    const string GAME_LOG_FILE_NAME = "LM_GameSessionLog.csv";
+
     void Start()
     {
-        string fileName = "LM_GameSessionLog.csv";
-        //filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+        //log for sys
+        sysLogFilePath = Path.Combine(Application.persistentDataPath, SYS_LOG_FILE_NAME);
 
-        filePath = Path.Combine(Application.persistentDataPath, fileName);
+        if (!File.Exists(sysLogFilePath))
+        {
+            File.WriteAllText(sysLogFilePath, "Time, Message\n");
+        }
 
+        //game log
+        gameLogFilePath = Path.Combine(Application.persistentDataPath, GAME_LOG_FILE_NAME);
 
+        //set values
         startTime = DateTime.Now;
         elementsCollected = new Dictionary<string, int>();
         bombsCreated = new Dictionary<string, int>();
@@ -69,10 +80,29 @@ public class GameLog : MonoBehaviour
 
         lineHB = 0; lineVB = 0; wrapB = 0; colorB = 0; levelID = "";
 
-        if (!File.Exists(filePath))
+        //add header of game log
+        if (!File.Exists(gameLogFilePath))
         {
-            File.WriteAllText(filePath, "Level,Col,Row,Duration(sec),Score,Retry,Interrupted,Win, Goal1,Goal2,Goal3,Moves,BuyMoves,e1,e2,e3,e4,e5, lHor, lVert, wrap, clrB, lvlID \n");
+            File.WriteAllText(gameLogFilePath, "Level,Col,Row,Duration(sec),Score,Retry,Interrupted,Win, Goal1,Goal2,Goal3,Moves,BuyMoves,e1,e2,e3,e4,e5, lHor, lVert, wrap, clrB, lvlID \n");
+            WriteSysLog("Game log created");
         }
+        else
+        {
+            WriteSysLog("Game log OK");
+        }
+    }
+
+    /// <summary>
+    /// Write a line into the system log file.
+    /// </summary>
+    public void WriteSysLog(string message)
+    {
+        if(sysLogFilePath==null)            
+            sysLogFilePath = Path.Combine(Application.persistentDataPath, SYS_LOG_FILE_NAME);
+
+        string timeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        string line = $"{timeStamp}, {message}";
+        File.AppendAllText(sysLogFilePath, line + Environment.NewLine);
     }
 
     public void EndSession()
@@ -83,29 +113,24 @@ public class GameLog : MonoBehaviour
 
         string elementsCollectedStr = string.Join(";", elementsCollected);
         string bombsCreatedStr = string.Join(";", bombsCreated);
-
-        //Debug.Log("F:" + duration);
-
+       
         //{startTime},{endTime},{ elementsCollectedStr},{ bombsCreatedStr}
         string logEntry = $"{levelNumber}, {col}, {row}, {secondsOnly},{score},{retry},{interrupt},{win}, {goal1}, {goal2}, {goal3}, {moves},{buyMoves},{elem1},{elem2},{elem3},{elem4},{elem5}, {lineHB}, {lineVB}, {wrapB}, {colorB}, {levelID}";
         
         try
         {
             // Use FileStream with FileShare.ReadWrite to avoid file access conflicts
-            using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            using (FileStream fs = new FileStream(gameLogFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             using (StreamWriter writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 writer.WriteLine(logEntry);
             }
 
-            Debug.Log($"Log file saved at: {filePath}");
+            WriteSysLog($"Log file saved at: {gameLogFilePath}");
         }
         catch (IOException ex)
         {
-            Debug.LogError($"Error writing to log file: {ex.Message}");
-            // Optionally, implement a retry logic or handle the error appropriately.
+            WriteSysLog($"Error writing to log file: {ex.Message}");
         }
     }
-
-
 }

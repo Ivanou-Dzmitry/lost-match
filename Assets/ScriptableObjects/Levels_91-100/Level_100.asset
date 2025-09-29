@@ -100,7 +100,7 @@ MonoBehaviour:
   - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
   - {fileID: 6196800066225916189, guid: fd9958b7b36a35a43bdf9c2e74c23fb0, type: 3}
   scoreGoals: 460000006e00000096000000
-  goalsDescription: Break the ice floes, and destroy gum blockers
+  goalsDescription: Break the ice floes, and smash the gum blocks
   endGameRequrimentsForLevel:
     gameType: 0
     counterValue: 25

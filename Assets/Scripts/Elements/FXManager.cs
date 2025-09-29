@@ -76,10 +76,6 @@ public class FXManager : MonoBehaviour
         int segments = 12;
         lineRenderer.positionCount = segments + 1; // 9 points for 8 segments      
 
-        // Convert Vector2 to Vector3 (z = 0 for 2D lines)
-        //Vector3 startPoint3D = new Vector3(startPoint.x, startPoint.y, 0f);
-        //Vector3 endPoint3D = new Vector3(endPoint.x, endPoint.y, 0f);
-
         // Calculate the total distance between start and end points
         float lineLength = Vector2.Distance(startPoint, endPoint);
 
@@ -235,9 +231,7 @@ public class FXManager : MonoBehaviour
             if (spriteMask != null)
                 SetSpriteMaskToScreenCenter(spriteMask, rotation == Quaternion.identity ? 0 : 90);
         }
-                                       
-        //Debug.Break();
-
+                                      
         Destroy(particle, 1.9f);
     }
 

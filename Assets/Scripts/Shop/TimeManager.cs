@@ -38,8 +38,6 @@ public class TimeManager : MonoBehaviour
     private BonusShop bonusShopClass;
     private DateTime recoveryEndTime;
 
-    //private float waitingTime = 5.0f; //time for bonus waiting
-
     public bool addLifeBonus;
 
     private void Awake()
@@ -99,8 +97,6 @@ public class TimeManager : MonoBehaviour
 
     private void CheckTimers()
     {
-        //Debug.Log("Checking timers...");
-
         List<string> completedTimers = new List<string>();
 
         foreach (var timerEntry in timers)
@@ -224,5 +220,4 @@ public class TimeManager : MonoBehaviour
             }
         }
     }
-
 }

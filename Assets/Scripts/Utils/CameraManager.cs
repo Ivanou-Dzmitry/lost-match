@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -9,14 +7,13 @@ public class CameraManager : MonoBehaviour
 
     [Header("Camera Tuning Stuff")]
     public float cameraOffset;
-    //public float aspectRatio = 1.78f;
-    //public float padding = 1;
     public float yOffset = 1; //!Important
 
     public GameObject backImage;
     public GameObject elementBack;
 
-    // Start is called before the first frame update
+    public GameLog log;
+
     void Start()
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
@@ -25,14 +22,15 @@ public class CameraManager : MonoBehaviour
         {
             CameraPos(gameBoardClass.column - 1, gameBoardClass.row - 1);
         }
+        else
+        {
+            log.WriteSysLog("ERROR: gameBoardClass is null");
+        }
     }
 
     void CameraPos(float x, float y)
     {
         float aspect = (float)Screen.width / Screen.height;
-
-        // Calculate orthographic size based on aspect ratio
-        //float targetOrthoSize = baseOrthographicSize;
 
         float newOrthoSize;
        
@@ -63,16 +61,15 @@ public class CameraManager : MonoBehaviour
 
         backImage.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 
-        //Debug.Log(aspect);
-
         Vector3 temPos = new Vector3(x / 2, y / 2 + yOffset, cameraOffset);
 
         transform.position = temPos;
 
-        //Camera.main.orthographicSize = targetOrthoSize;
-
         //background
         backImage.transform.position = new Vector3(temPos.x, temPos.y, 0);
         elementBack.transform.position = new Vector3(temPos.x, temPos.y - yOffset, 0);
+        
+        if(log!=null)
+            log.WriteSysLog($"{newOrthoSize}, {scaleFactor}");
     }
 }

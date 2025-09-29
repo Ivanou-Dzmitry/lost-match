@@ -1,11 +1,9 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.EventSystems;
 
 
 public class LevelsSceneManager : MonoBehaviour
@@ -25,8 +23,7 @@ public class LevelsSceneManager : MonoBehaviour
     private SoundManager soundManagerClass;
     public AudioClip thisSceneMusic;
 
-    [Header("Load Levels")]
-    public GameObject levelButtonPrefab; // Assign the prefab in the Inspector
+    [Header("Load Levels")]    
     public GameObject levelButton3DPrefab; // Assign the prefab in the Inspector
     public Transform parentTransform3D;
     public GameObject levelBackSegment;
@@ -37,10 +34,9 @@ public class LevelsSceneManager : MonoBehaviour
     [Header("Panels")]  
     public GameObject[] allPanelsList;
 
+    [Header("Material for background")]
     public Material[] levelMaterials;
-
-    //private int elementsPadding;
-
+   
     //for swipe
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
@@ -80,10 +76,8 @@ public class LevelsSceneManager : MonoBehaviour
     int levelButtonsOnScreen = 5; //5 or 10
     int stepsToScrollScreen = 2;
 
-    private float swipeVelocity; // current speed
-    private float damping = 2f;  // how quickly it slows down
+    public GameLog log;
 
-    // Start is called before the first frame update
     void Start()
     {
         //class init
@@ -108,22 +102,26 @@ public class LevelsSceneManager : MonoBehaviour
 
             //get levels count
             activeLevelsCount = gameDataClass.saveData.isActive.Length;
-
-            //Debug.Log($"{lastLevel},{activeLevelsCount}");
+        }
+        else
+        {
+            log.WriteSysLog("ERROR: gameDataClass null");
         }
 
-        //each segment levelButtonsOnScreen levels
-        levelSegmentsCount = activeLevelsCount / levelButtonsOnScreen;
+            //each segment levelButtonsOnScreen levels
+            levelSegmentsCount = activeLevelsCount / levelButtonsOnScreen;
 
         //important each level - 2 steps
         maxSteps = (activeLevelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
-        
-        //Debug.Log($"levelSegmentsCount:{levelSegmentsCount}, maxSteps:{maxSteps}, levelsCount:{levelsCount}");
 
         //music
         if (soundManagerClass != null)
         {
             soundManagerClass.PlayMusic(thisSceneMusic);
+        }
+        else
+        {
+            log.WriteSysLog("ERROR: soundManagerClass null");
         }
 
         DeleteCurrentLevelButtons();
@@ -148,8 +146,6 @@ public class LevelsSceneManager : MonoBehaviour
             else
                 tRotation = -45f;    // last 2 levels of the cycle
 
-            //Debug.Log($"{mod}, {lastLevel}, {tRotation}");
-
             currentRotationX = levelCylinder.transform.localEulerAngles.x;
             targetRotationX = levelCylinder.transform.eulerAngles.x;
             levelCylinder.transform.eulerAngles = new Vector3(targetRotationX, 0f, 0f); // Fix initial orientation
@@ -172,10 +168,12 @@ public class LevelsSceneManager : MonoBehaviour
                     LoadLevelButtons(currentScreenNumber+1, segmentsList[1].transform, 45f);
 
                 totalSteps++;
-            }            
+            }
         }
-
-        Debug.Log($"[INTRO] Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}, Max: {maxSteps}, {totalLevels}/{lastLevel}");
+        else
+        {
+            log.WriteSysLog("ERROR: levelCylinder null");
+        }             
     }
 
 
@@ -250,10 +248,7 @@ public class LevelsSceneManager : MonoBehaviour
     public void LoadLevelButtons(int currentScreenNumber, Transform parentTransform, float rotation)
     {
         int startNumber = currentScreenNumber * levelButtonsOnScreen;      // Upper bound
-        int endNumber = startNumber - 4;                // Lower bound
-
-        //Debug.Log($"startNumber:{startNumber}, endNumber:{endNumber}");
-
+        int endNumber = startNumber - 4;                // Lower bound      
         InstantiateLevelButtons(startNumber, endNumber, parentTransform, rotation);        
     }
 
@@ -264,8 +259,6 @@ public class LevelsSceneManager : MonoBehaviour
 
         float xOffsetEven = 0.4f;   // X-axis offset for even indices
         float xOffsetOdd = -0.4f;   // X-axis offset for odd indices
-
-        //DeleteChildrenWithTag(segmentsList[forwardSegmentIndex], "LevelButton3D");
 
         for (int i = startNumber; i >= endNumber; i--)
         {
@@ -307,7 +300,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("The 3D prefab does not have a LevelButton script attached.");
+                log.WriteSysLog("The 3D prefab does not have a LevelButton script attached.");
             }
 
             MovePivotToCenter(new3DButton);            
@@ -353,7 +346,6 @@ public class LevelsSceneManager : MonoBehaviour
 
     public void  NextLevels()
     {
-        //DebugLogger("NEXT IN");
         targetRotationX -= rotationAmount;
 
         totalSteps++;
@@ -397,15 +389,10 @@ public class LevelsSceneManager : MonoBehaviour
         {
             Rotator("next");
         }
-
-        //DebugLogger("NEXT");
-
     }
 
     public void PreviousLevels()
     {
-        //DebugLogger("PREV IN");
-
         if (totalSteps >= 1)
             targetRotationX += rotationAmount;
 
@@ -436,15 +423,7 @@ public class LevelsSceneManager : MonoBehaviour
         }
             
         levelTxt.text = "Map " + currentScreenNumber;
-
-        //DebugLogger("PREV OUT");
     }
-
-    private void DebugLogger(string where)
-    {
-        Debug.Log($"[PREV] {where} Screen: {currentScreenNumber}, TotalSteps: {totalSteps}, TargetRotationX: {targetRotationX}");
-    }
-
 
     void Update()
     {
@@ -511,8 +490,6 @@ public class LevelsSceneManager : MonoBehaviour
                 }
             }
         }
-
-        //rotationSpeed = 5;
     }
 
     float FindClosestAngle(float value)
@@ -697,12 +674,12 @@ public class LevelsSceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("MeshRenderer not found on the instantiated object.");
+                log.WriteSysLog("MeshRenderer not found on the instantiated object.");
             }
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Material assignment failed: {e.Message}. Using default material.");
+            log.WriteSysLog($"Material assignment failed: {e.Message}. Using default material.");
 
             // Fallback to material[0]
             try
@@ -720,7 +697,7 @@ public class LevelsSceneManager : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.LogError("Fallback material assignment also failed: " + ex.Message);
+                log.WriteSysLog("Fallback material assignment also failed: " + ex.Message);
             }
         }
     }
@@ -753,7 +730,7 @@ public class LevelsSceneManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("MeshFilter or Mesh is missing on the object.");
+            log.WriteSysLog("MeshFilter or Mesh is missing on the object.");
         }
     }
 

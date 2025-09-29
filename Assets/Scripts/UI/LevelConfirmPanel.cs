@@ -113,9 +113,7 @@ public class LevelConfirmPanel : MonoBehaviour
 
         b1Img.color = Color.black;
         b11Img.color = Color.black;
-
-        Debug.Log(activeLevels);
-
+       
         //header
         if(activeLevels <= 9)
             boosterHeaderText.text = "Boosters not available";

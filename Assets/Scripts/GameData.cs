@@ -25,6 +25,9 @@ public class SaveData
     public float soundVolume;
     public float musicVolume;
 
+    [Header("Clip control")]
+    public int currentPlayingClipIndex;
+
     [Header("Timers")]
     public string lifeRecoveryTime;
     public string colorBusterRecoveryTime;
@@ -35,8 +38,7 @@ public class GameData : MonoBehaviour
 {
     public static GameData gameData;
     public WorldManager worldManager;
-    public SaveData saveData;
-    public string fileName = "lm_player_saves.json";
+    public SaveData saveData;    
 
     private int bonusCount = 12;
     private int levelsCount; //important
@@ -59,6 +61,10 @@ public class GameData : MonoBehaviour
     private const int moves02BoosterPrice = 350;
     private const int moves03BoosterPrice = 550;
 
+    public const string PLAYER_SAVES = "lm_player_saves.json";
+
+    public GameLog log;
+    private const string className = "GameData:";
 
     private void Awake()
     {
@@ -79,7 +85,7 @@ public class GameData : MonoBehaviour
 
             if (worldManager == null)
             {
-                Debug.LogError("WorldManager not found!");
+                log.WriteSysLog($"{className}WorldManager not found!");                
                 return;
             }
         }
@@ -97,27 +103,27 @@ public class GameData : MonoBehaviour
         //check game data and save data
         if (gameData == null || gameData.saveData == null)
         {
-            Debug.LogError("gameData or gameData.saveData is null. Cannot save to file.");
+            log.WriteSysLog($"{className} gameData or gameData.saveData is null. Cannot save to file.");
             return;
         }
 
         try
         {
             string savingData = JsonUtility.ToJson(gameData.saveData, true);
-            string filePath = Path.Combine(Application.persistentDataPath, fileName);
+            string filePath = Path.Combine(Application.persistentDataPath, PLAYER_SAVES);
 
             File.WriteAllText(filePath, savingData);            
         }
         catch (Exception ex)
         {
-            Debug.LogError("Error while saving game data: " + ex.Message);
+            log.WriteSysLog($"{className}Error while saving game data: " + ex.Message);
         }
     }
 
     public void LoadFromFile()
     {
         //check file
-        string filePath = Path.Combine(Application.persistentDataPath, fileName);
+        string filePath = Path.Combine(Application.persistentDataPath, PLAYER_SAVES);
 
         if (File.Exists(filePath))
         {
@@ -131,6 +137,7 @@ public class GameData : MonoBehaviour
         {
             //default values
             AddDefaultData();
+            log.WriteSysLog($"{className}Default data was added");
         }
     }
 
@@ -226,6 +233,8 @@ public class GameData : MonoBehaviour
         saveData.musicToggle = true;
         saveData.soundVolume = 1.0f;
         saveData.musicVolume = 0.5f;
+
+        saveData.currentPlayingClipIndex = 0;
         
         //time for battery
         saveData.lifeRecoveryTime = "";
@@ -293,7 +302,6 @@ public class GameData : MonoBehaviour
             if (saveData.bonusesPrice[i] != boosterData[i].price)
                 saveData.bonusesPrice[i] = boosterData[i].price; // boosterData[i].desc
         }
-
 
         SaveToFile();
     }

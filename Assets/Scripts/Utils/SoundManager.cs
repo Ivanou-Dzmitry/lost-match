@@ -20,8 +20,25 @@ public class SoundManager : MonoBehaviour
 
     [Header("Music")]
     public AudioClip[] musicClips;
-   
-    public GameLog log;
+
+    [Header("Sound Clips")]
+    public AudioClip[] soundClips;
+
+    [Header("Match3 Clips")]
+    public AudioClip[] match3Clips;
+
+    [Header("Match4 Clips")]
+    public AudioClip[] match4Clips;
+
+    [Header("Match5 Clips")]
+    public AudioClip[] match5Clips;
+
+    [Header("Line bomb Clips")]
+    public AudioClip[] lineBombVClips;
+    public AudioClip[] lineBombHClips;
+
+
+    private GameLog logClass;
     private const string className = "SoundManager:";
 
     public static SoundManager Instance;
@@ -42,15 +59,16 @@ public class SoundManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();               
-       
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
+        logClass = GameObject.FindWithTag("Log").GetComponent<GameLog>();
+
         if (gameDataClass != null)
         {
             LoadSoundData();
         }
         else
         {
-            log.WriteSysLog($"{className}ERR: gameDataClass null");
+            logClass.WriteSysLog($"{className}ERR: gameDataClass null");
         }
     }
 
@@ -64,7 +82,7 @@ public class SoundManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            log.WriteSysLog($"{className}Failed to set music clip: {ex.Message}\n{ex.StackTrace}");
+            logClass.WriteSysLog($"{className}Failed to set music clip: {ex.Message}\n{ex.StackTrace}");
         }
 
         MuteSound(gameDataClass.saveData.soundToggle);
@@ -156,7 +174,7 @@ public class SoundManager : MonoBehaviour
             {
                 musicSource.clip = clip;
                 musicSource.volume = originalVolume;
-                musicSource.Play();
+                MusicFader("fadeIn", "play", clip);
             }
         }
     }
@@ -238,7 +256,28 @@ public class SoundManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
             lastPlayedClip = musicClips[scene.buildIndex];
-            PlayMusic(lastPlayedClip);
+
+            //avoid errors
+            if (gameDataClass != null)
+                PlayMusic(lastPlayedClip);
+    }
+
+    public void QuitGame()
+    {
+        AudioClip qClip = musicClips[4];
+
+        musicSource.clip = qClip;
+
+        MusicFader("fadeIn", "play", qClip);
+    }
+
+    public void ReturnToGame()
+    {
+        AudioClip gClip = musicClips[2];
+
+        musicSource.clip = gClip;
+
+        MusicFader("fadeIn", "play", gClip);
     }
 
 
@@ -249,7 +288,8 @@ public class SoundManager : MonoBehaviour
         
         if (aClip == null)
             Debug.LogError("Failed to load audio clip!");
-        
-        effectsSource.PlayOneShot(aClip);
+
+        if (aClip != null)
+            effectsSource.PlayOneShot(aClip);
     }
 }

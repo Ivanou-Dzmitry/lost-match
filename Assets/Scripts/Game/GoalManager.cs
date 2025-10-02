@@ -157,25 +157,19 @@ public class GoalManager : MonoBehaviour
                                 int randomIndex = UnityEngine.Random.Range(0, gameBoardClass.elements.Length);
                                 var randomElement = gameBoardClass.elements[randomIndex];
                                 string randomTag = randomElement.tag;
-
-                                Debug.Log($"Color BOMB! {bombElem.row}, {bombElem.column}, {randomTag}");
                                 
                                 bombElem.isMatched = true;
                                 matchFinderClass.MatchColorPieces(randomTag);
                             }
                                 
-
                             if (bombElem.isWrapBomb)
-                            {
-                                Debug.Log($"Wrap BOMB! {bombElem.row}, {bombElem.column}");
+                            {                                
                                 matchFinderClass.MatchWrapPieces(thisColumn, thisRow);
                                 bombElem.isMatched = true;
                             }
                                 
-
                             if (bombElem.isRowBomb)
                             {                                 
-                                Debug.Log($"Row BOMB! {bombElem.row}");
                                 bombElem.isMatched = true;
                                 matchFinderClass.MatchRowPieces(thisRow);                                
                             }
@@ -183,7 +177,6 @@ public class GoalManager : MonoBehaviour
 
                             if (bombElem.isColumnBomb)
                             {
-                                Debug.Log($"Column BOMB! {bombElem.column}");
                                 bombElem.isMatched = true;
                                 matchFinderClass.MatchColPieces(thisColumn);
                             }
@@ -263,7 +256,7 @@ public class GoalManager : MonoBehaviour
     }
 
     public void CompareGoal(string goalToCompare, int Column = -1, int Row = -1, bool simpleMode=false)
-    {
+    {        
         for (int i = 0; i < levelGoals.Length; i++)
         {
             if (goalToCompare == levelGoals[i].matchValue)
@@ -289,9 +282,9 @@ public class GoalManager : MonoBehaviour
 
 
     public void InstantiateAndMove(int prefabNumber, int Column = -1, int Row = -1)
-    {
-        //Debug.Log(Column + "/" + Row);
-        
+    {               
+        //Debug.Log("InstantiateAndMove: " + prefabNumber + " Col=" + Column + " Row=" + Row);
+
         //get position
         Vector3 startPoint = new Vector3(Column, Row, 0);
         Vector3 endPoint = new Vector3(Column, 16, 0);
@@ -356,8 +349,6 @@ public class GoalManager : MonoBehaviour
 
             yield return null;
         }
-
-        //Debug.Break();
 
         Destroy(particles);
         Destroy(rootObject);        

@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ElementController : MonoBehaviour
 {
@@ -145,12 +143,6 @@ public class ElementController : MonoBehaviour
                 gameBoardClass.ShuffleBoard();
                 uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
                 break;
-/*            case 1:
-                this.isColorBomb = true;
-                GenerateColorBomb();
-                this.isMatched = true;
-                break;*/
-
             case 2:
                 this.isWrapBomb = true;
                 matchFinderClass.MatchWrapPieces(column, row);
@@ -457,8 +449,6 @@ public class ElementController : MonoBehaviour
             comboE2 = processedRowsList.Count > 1 ? processedRowsList[1] : -1; // Default value if empty
 
             gameBoardClass.RunComboParticles(comboE1, comboE2, "row", transform.position);
-
-            //Debug.Log($" GenRowCombo: {gameBoardClass.boosterCombo.comboOnBoard}, {gameBoardClass.boosterCombo.comboElement1}, {gameBoardClass.boosterCombo.comboElement2}, {gameBoardClass.boosterCombo.comboPos}");
         }          
     }
 
@@ -507,8 +497,6 @@ public class ElementController : MonoBehaviour
             comboE2 = processedColumnsList.Count > 1 ? processedColumnsList[1] : -1; // Default value if empty   
 
             gameBoardClass.RunComboParticles(comboE1, comboE2, "column", transform.position);
-
-            //Debug.Log($" GenColCombo: {gameBoardClass.boosterCombo.comboOnBoard}, {gameBoardClass.boosterCombo.comboElement1}, {gameBoardClass.boosterCombo.comboElement2}, {gameBoardClass.boosterCombo.comboPos}");
         }
                        
     }
@@ -773,6 +761,5 @@ public class ElementController : MonoBehaviour
             animatorElement.SetBool("Destroy", true);
         }
     }
-
 
 }

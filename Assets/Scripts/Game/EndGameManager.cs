@@ -1,10 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
+
 
 public enum GameType
 {
@@ -46,7 +44,6 @@ public class EndGameManager : MonoBehaviour
     public int curCounterVal;
     public Image movesAlarm;
     public Animator animatorAlarm; //animator
-    public AudioClip levelMusic;
 
     [Header("Win Panel")]
     public TMP_Text levelNumber;
@@ -121,7 +118,6 @@ public class EndGameManager : MonoBehaviour
             {
                 Debug.LogWarning("Counter Value = 0. Set Counter Value for level!");
             }
-
         }
     }
 
@@ -151,7 +147,6 @@ public class EndGameManager : MonoBehaviour
                 movesCounter.text = "0";
                 AlarmAnimation(curCounterVal, false);
             }                
-            
         }
     }
 
@@ -262,7 +257,7 @@ public class EndGameManager : MonoBehaviour
         //music
         if (soundManagerClass != null)
         {
-            soundManagerClass.PlayMusic(winMusic);
+            soundManagerClass.PlayMusic(soundManagerClass.musicClips[3]); //win music
         }
 
         thisWin = true;
@@ -286,7 +281,7 @@ public class EndGameManager : MonoBehaviour
 
         if (soundManagerClass != null)
         {
-            soundManagerClass.PlayMusic(loseMusic);
+            soundManagerClass.PlayMusic(soundManagerClass.musicClips[4]); //loose music
         }
     }
 
@@ -369,8 +364,7 @@ public class EndGameManager : MonoBehaviour
         curCounterVal = gameDataClass.saveData.bonuses[6];
         movesCounter.text = "" + gameDataClass.saveData.bonuses[6];
         gameBoardClass.currentState = GameState.move;
-        soundManagerClass.PlayMusic(levelMusic);
-
+        
         AlarmAnimation(curCounterVal, true);
 
         thisBuyMoves = true;
@@ -419,6 +413,16 @@ public class EndGameManager : MonoBehaviour
         gameBoardClass.log.levelID = gameBoardClass.levelUID;
 
         gameBoardClass.log.EndSession();
+    }
+
+    public void QuitMusicRun()
+    {
+        soundManagerClass.QuitGame();
+    }
+
+    public void ReturnMusicRun()
+    {
+        soundManagerClass.ReturnToGame();
     }
 
 }

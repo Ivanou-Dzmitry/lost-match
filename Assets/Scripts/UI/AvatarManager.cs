@@ -22,7 +22,7 @@ public class AvatarManager : MonoBehaviour
     {
         avatarImage = avatar.GetComponent<Image>();
 
-        //game
+        //game scene
         if (gameBoard != null)
         {
             gameBoardClass = gameBoard.GetComponent<GameBoard>();

@@ -1,4 +1,3 @@
-
 using System.Xml.Linq;
 using UnityEngine;
 
@@ -37,7 +36,7 @@ public class BackBuilder : MonoBehaviour
         }
         else
         {
-            //Debug.Log($"Loaded {sprites.Length} sprites from {atlas.texture.name}");
+            //Debug
         }
 
         return sprites;
@@ -73,14 +72,12 @@ public class BackBuilder : MonoBehaviour
                     int tileValue = int.Parse(values[index]);
 
                     // Only generate tiles for non-zero values (assuming tileValue 0 means no tile)
-
-                        Vector2 worldPosition = MapToPosition(x, y, row);
-                        GenerateTiles(worldPosition.x, worldPosition.y, tileValue);  // Call GenerateTiles to create the tile
-
+                    Vector2 worldPosition = MapToPosition(x, y, row);
+                    GenerateTiles(worldPosition.x, worldPosition.y, tileValue);  // Call GenerateTiles to create the tile
                 }
                 else
                 {
-                    Debug.LogError("SKIPPED!");
+                    //for debug
                 }
             }
         }
@@ -106,10 +103,7 @@ public class BackBuilder : MonoBehaviour
         }
 
         // Find the index in the tiles array based on tileNumber. 0-15 Elements, 16-... back
-        int tileIndex = tileNumber - 26;
-
-       // Debug.Log("tileIndex: " + tileIndex);
-        
+        int tileIndex = tileNumber - 26;       
 
         if (tileIndex >= 0 && tileIndex < tiles.Length)
         {
@@ -128,7 +122,7 @@ public class BackBuilder : MonoBehaviour
         else
         {
             //for 0 tiles
-            //Debug.Log("BackBuilder: Tile number " + tileNumber + " was loaded!");
+            //Debug
         }
 
         Vector2 gridPosition = new Vector2(column, row);

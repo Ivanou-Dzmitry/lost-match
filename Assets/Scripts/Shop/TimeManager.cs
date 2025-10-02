@@ -78,20 +78,23 @@ public class TimeManager : MonoBehaviour
                 OnComplete = onComplete
             };
 
-            // Save the end time instead of the start time
-            if (timerName == "colorBuster")
-                gameDataClass.saveData.colorBusterRecoveryTime = endTime.ToString();
-            else if (timerName == "lineBuster")
-                gameDataClass.saveData.lineBusterRecoveryTime = endTime.ToString();
-            else if (timerName == "lifeRecovery")
-                gameDataClass.saveData.lifeRecoveryTime = endTime.ToString();
+            //check
+            if (gameDataClass != null)
+            {           
+                // Save the end time instead of the start time
+                if (timerName == "colorBuster")
+                    gameDataClass.saveData.colorBusterRecoveryTime = endTime.ToString();
+                else if (timerName == "lineBuster")
+                    gameDataClass.saveData.lineBusterRecoveryTime = endTime.ToString();
+                else if (timerName == "lifeRecovery")
+                    gameDataClass.saveData.lifeRecoveryTime = endTime.ToString();
 
-            gameDataClass.SaveToFile(); // Persist changes
-            Debug.Log($"Created timer {timerName} with duration {durationInSeconds} seconds.");
+                gameDataClass.SaveToFile(); // Persist changes
+            }
         }
         else
         {
-            Debug.LogWarning($"Timer {timerName} already exists.");
+            //for debug
         }
     }
 
@@ -117,8 +120,7 @@ public class TimeManager : MonoBehaviour
         foreach (string timerName in completedTimers)
         {
             timers.Remove(timerName);
-            ClearTimerStartTime(timerName);
-            Debug.Log($"Timer {timerName} completed and removed.");
+            ClearTimerStartTime(timerName);            
         }
     }
 
@@ -140,7 +142,7 @@ public class TimeManager : MonoBehaviour
         return ""; // Default value if timer doesn't exist
     }
 
-    private void SaveTimerStartTime(string timerName, DateTime startTime)
+/*    private void SaveTimerStartTime(string timerName, DateTime startTime)
     {
         string formattedTime = startTime.ToString("o"); // ISO 8601 format for easy parsing later
 
@@ -153,7 +155,7 @@ public class TimeManager : MonoBehaviour
 
         // Save data to file or persistent storage
         gameDataClass.SaveToFile();
-    }
+    }*/
 
     private void ClearTimerStartTime(string timerName)
     {
@@ -174,7 +176,7 @@ public class TimeManager : MonoBehaviour
         gameDataClass.SaveToFile();
     }
 
-    private string GetSavedTimerTime(string timerName)
+/*    private string GetSavedTimerTime(string timerName)
     {
         if (timerName == "colorBuster")
             return gameDataClass.saveData.colorBusterRecoveryTime;
@@ -184,7 +186,7 @@ public class TimeManager : MonoBehaviour
             return gameDataClass.saveData.lifeRecoveryTime;
 
         return ""; // Default for unknown timer names
-    }
+    }*/
 
     private void RestoreSavedTimers()
     {
@@ -208,15 +210,13 @@ public class TimeManager : MonoBehaviour
                     OnStart = null, // Optional if you don't need OnStart here
                     OnComplete = onComplete
                 };
-
-                Debug.Log($"Restored timer {timerName} with {remainingTime.TotalSeconds} seconds remaining.");
+                
             }
             else
             {
                 // Timer already expired
                 onComplete?.Invoke();
                 ClearTimerStartTime(timerName);
-                Debug.Log($"Timer {timerName} already expired.");
             }
         }
     }

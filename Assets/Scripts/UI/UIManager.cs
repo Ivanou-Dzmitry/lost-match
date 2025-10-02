@@ -236,9 +236,4 @@ public class UIManager : MonoBehaviour
         finalTextPanel.SetActive(false); // Hide the panel
     }
 
-    private void PanelActivator()
-    {
-        finalTextPanel.SetActive(false); // Completely disable the panel
-    }
-
 }

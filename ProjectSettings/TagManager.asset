@@ -44,6 +44,7 @@ TagManager:
   - blocker_03
   - FXManager
   - expandable_01
+  - Log
   layers:
   - Default
   - TransparentFX

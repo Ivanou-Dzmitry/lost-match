@@ -8,7 +8,6 @@ using System.Linq;
 
 public class LevelsSceneManager : MonoBehaviour
 {
-    private UIManager uiManagerClass;
     private GameData gameDataClass;
 
     [Header("WM")]
@@ -21,7 +20,6 @@ public class LevelsSceneManager : MonoBehaviour
 
     [Header("Music")]
     private SoundManager soundManagerClass;
-    public AudioClip thisSceneMusic;
 
     [Header("Load Levels")]    
     public GameObject levelButton3DPrefab; // Assign the prefab in the Inspector
@@ -68,8 +66,10 @@ public class LevelsSceneManager : MonoBehaviour
     public List<GameObject> segmentsList = new List<GameObject>(); // Empty list
     private float[] validAngles = { 0, 45, 90, 135, 180, -90, -45, -135, -180 };
 
+    [Header("Prefabs")]
     [SerializeField] private GameObject[] levelObjPrefabs; // levelObj01, levelObj02, levelObj03
     private const int maxPoints = 16;
+    private const int spawnObjectsCount = 10;
 
     private Coroutine rotationCoroutine = null; // To manage the rotation coroutine
 
@@ -82,7 +82,6 @@ public class LevelsSceneManager : MonoBehaviour
     {
         //class init
         soundManagerClass = GameObject.FindWithTag("SoundManager").GetComponent<SoundManager>();
-        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
 
         int totalLevels = worldManager.GetTotalLevelsCount();
@@ -113,16 +112,6 @@ public class LevelsSceneManager : MonoBehaviour
 
         //important each level - 2 steps
         maxSteps = (activeLevelsCount / levelButtonsOnScreen) * stepsToScrollScreen;
-
-        //music
-        if (soundManagerClass != null)
-        {
-            soundManagerClass.PlayMusic(thisSceneMusic);
-        }
-        else
-        {
-            log.WriteSysLog("ERROR: soundManagerClass null");
-        }
 
         DeleteCurrentLevelButtons();
 
@@ -225,7 +214,7 @@ public class LevelsSceneManager : MonoBehaviour
         }
 
         System.Random rng = new System.Random();
-        List<Transform> chosenPoints = objPoints.OrderBy(_ => rng.Next()).Take(3).ToList();
+        List<Transform> chosenPoints = objPoints.OrderBy(_ => rng.Next()).Take(spawnObjectsCount).ToList();
 
         int counter = 0;
         foreach (Transform spawnPoint in chosenPoints)
@@ -238,7 +227,7 @@ public class LevelsSceneManager : MonoBehaviour
             float randomY = UnityEngine.Random.Range(0f, 360f);
             obj.transform.localRotation = Quaternion.Euler(-90f, randomY, 0f);
 
-            float randomScale = UnityEngine.Random.Range(0.5f, 1.0f);
+            float randomScale = UnityEngine.Random.Range(0.75f, 1.5f);
             obj.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
 
             obj.name = "levelObj_" + prefabIndex +"_" + counter;

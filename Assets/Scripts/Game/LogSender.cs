@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -18,8 +17,6 @@ public class LogSender : MonoBehaviour
         string newFileName = $"{timestamp}_LM_GameSessionLog.csv";
 
         string destinationPath = Path.Combine("/storage/emulated/0/Download", newFileName);
-
-        Debug.Log("Log:" + destinationPath); //to log
 
         #if UNITY_ANDROID
                 // On Android, save to the Downloads folder

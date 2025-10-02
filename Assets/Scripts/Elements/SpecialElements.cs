@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpecialElements : MonoBehaviour
@@ -47,7 +44,8 @@ public class SpecialElements : MonoBehaviour
     private void UseShuffle()
     {
         gameBoardClass.ShuffleBoard();
-        uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); //show panel with text
+        //show panel with text
+        uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]); 
 
         bonusShopClass.bonusSelected = -1;
         bonusShopClass.bonusDescPanel.SetActive(false);
@@ -85,7 +83,8 @@ public class SpecialElements : MonoBehaviour
                     tagForCompare = "blocker_01";
                 }
 
-                goalManagerClass.CompareGoal(tagForCompare, Column, Row);
+                //important
+                goalManagerClass.CompareGoal(tagForCompare, Column, Row, true); //call #7
 
                 goalManagerClass.UpdateGoals();
             }
@@ -101,6 +100,7 @@ public class SpecialElements : MonoBehaviour
         LayerManager();
     }
 
+    //show layers of the element (for visual destruction)
     void LayerManager()
     {
         //hide layers

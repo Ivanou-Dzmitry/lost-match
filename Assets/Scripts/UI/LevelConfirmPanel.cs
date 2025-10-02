@@ -14,7 +14,7 @@ public class LevelConfirmPanel : MonoBehaviour
     public string sceneToLoadName;
     public int level;
     public int levelToLoad;
-    private int activeStars;
+    //private int activeStars; //stars on level select
 
     [Header("UI")]
     public Image[] stars;
@@ -245,43 +245,9 @@ public class LevelConfirmPanel : MonoBehaviour
     }
 
     void LoadData()
-    {
-        activeStars = 0;
-
-        //game data check
-/*        if (gameDataClass != null)
-        {
-            activeStars = gameDataClass.saveData.stars[level - 1];
-            highScore = gameDataClass.saveData.highScore[level - 1];
-        }
-        else
-        {
-            activeStars = 3;
-            highScore = 9999;
-        }*/
-
+    {        
         levelToLoad = level;
-
-        //confirmPanel.SetActive(true);
-
-        //set text
-/*        if(highScore > 0)
-        {
-            highScoreText.text = "Records: " + highScore + " items, " + activeStars + " stars";
-        }
-        else
-        {
-            highScoreText.text = "There are no records set at this level yet";
-        }*/
-        
         headerText.text = "LEVEL " + level;        
-
-        //stars turn on
-/*        for (int i = 0; i < activeStars; i++)
-        {
-            stars[i].sprite = starOnSprite;
-        }*/
-       
     }
 
     //add goals
@@ -294,9 +260,6 @@ public class LevelConfirmPanel : MonoBehaviour
             introGoal.transform.SetParent(goalIntroParent.transform);
             introGoal.transform.localScale = new Vector3(1.5f, 1.5f, 1.0f); //scale
             introGoal.name = "LevelGoal-" + i;
-
-/*            Canvas goalCanvas = introGoal.GetComponentInChildren<Canvas>();
-            goalCanvas.sortingLayerName = "UI";*/
 
             GoalPanel introPanel = introGoal.GetComponent<GoalPanel>();
             introPanel.thisSprite = levelGoalsClass.levelGoals[i].goalSprite;

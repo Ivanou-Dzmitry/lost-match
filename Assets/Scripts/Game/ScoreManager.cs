@@ -96,7 +96,6 @@ public class ScoreManager : MonoBehaviour
 
         }
 
-
         UpdateBar();
     }
 
@@ -134,6 +133,7 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+    //progress bar
     private void UpdateBar()
     {
         //update score bar

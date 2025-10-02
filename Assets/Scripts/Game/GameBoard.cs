@@ -1,11 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Xml.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static Level;
@@ -107,7 +104,6 @@ public class GameBoard : MonoBehaviour
     public int loadedLevel;
     public int totalLevels;
     public TMP_Text levelNumberTxt;
-    public AudioClip levelMusic;
 
     public GameState currentState;
     public MatchState matchState;
@@ -139,7 +135,6 @@ public class GameBoard : MonoBehaviour
     private MatchFinder matchFinderClass;
     private ScoreManager scoreManagerClass;
     private UIManager uiManagerClass;
-    //private BonusShop bonusShopClass;
     private EndGameManager endGameManagerClass;
     private BackBuilder backBuilderClass;
     private FXManager fxManagerClass;
@@ -204,20 +199,11 @@ public class GameBoard : MonoBehaviour
     //for bombs
     public ElementController[,] bombsCells;
 
-    //bombs values    
-    private int minMatchCount = 3;
-    //awoid match bomb bugs
-    private int matchLimit = 81;
-
     private HashSet<GameObject> usedObjects = new HashSet<GameObject>();
 
     private int matchForLineBomb = 4;
-    //private int matchForWrapBomb = 2;
+
     private int matchForColorBomb = 5;
-
-    //private List<List<GameObject>> contiguousGroups;
-
-    private int destroyCall;
 
     //dict
     private Dictionary<TileKind, int> preloadDict;
@@ -238,6 +224,9 @@ public class GameBoard : MonoBehaviour
 
     [Header("LOG")]
     public GameLog log;
+    private const string className = "GameBoard:";
+
+    private const int bigMatch = 20;
 
     public string levelUID;
 
@@ -260,7 +249,7 @@ public class GameBoard : MonoBehaviour
 
             if (level == null)
             {
-                Debug.LogError($"Failed to load level {loadedLevel}");
+                log.WriteSysLog($"{className}Failed to load level {loadedLevel}");
                 return;
             }
 
@@ -274,15 +263,15 @@ public class GameBoard : MonoBehaviour
 
             elements = level.element;
             if (elements == null || elements.Length == 0)
-                Debug.LogError($"No elements added to level {loadedLevel}!");
+                log.WriteSysLog($"{className}No elements added to level {loadedLevel}!");
 
             scoreGoals = level.scoreGoals;
             if (scoreGoals == null || scoreGoals.Length == 0)
-                Debug.LogError($"No score goals added to level {loadedLevel}!");
+                log.WriteSysLog($"{className}No score goals added to level {loadedLevel}!");
 
             goalsDescription = level.goalsDescription;
             if (goalsDescription == null || goalsDescription.Length == 0)
-                Debug.LogError($"No Level Description added to level {loadedLevel}!");
+                log.WriteSysLog($"{className}No Level Description added to level {loadedLevel}!");
 
             boardLayout = level.boardLayout;
             preloadBoardLayout = level.preloadBoardLayout;
@@ -291,7 +280,7 @@ public class GameBoard : MonoBehaviour
         }
         else
         {
-            Debug.LogError("WorldManager not assigned!");
+            log.WriteSysLog($"{className}WorldManager not assigned!");
         }
 
         //for blockers
@@ -368,8 +357,7 @@ public class GameBoard : MonoBehaviour
         matchFinderClass = GameObject.FindWithTag("MatchFinder").GetComponent<MatchFinder>();
         scoreManagerClass = GameObject.FindWithTag("ScoreManager").GetComponent<ScoreManager>();
         goalManagerClass = GameObject.FindWithTag("GoalManager").GetComponent<GoalManager>();
-        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
-        //bonusShopClass = GameObject.FindWithTag("BonusShop").GetComponent<BonusShop>();
+        uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();        
         endGameManagerClass = GameObject.FindWithTag("EndGameManager").GetComponent<EndGameManager>();
         backBuilderClass = GameObject.FindWithTag("BackBuilder").GetComponent<BackBuilder>();
         fxManagerClass = GameObject.FindWithTag("FXManager").GetComponent<FXManager>();
@@ -396,14 +384,6 @@ public class GameBoard : MonoBehaviour
 
         if (xmlDocWithBackTileLayout != null)
             backBuilderClass.LoadDataFromXML(xmlDocWithBackTileLayout, column, row);
-
-        //load back sprite
-        //elementsBackGO.GetComponent<SpriteRenderer>().sprite = gameBoardBack.gameBoardBackSprite;
-
-        if (soundManagerClass != null)
-        {
-            soundManagerClass.PlayMusic(levelMusic);
-        }
 
         //stop 1
         matchState = MatchState.matching_stop;
@@ -432,7 +412,7 @@ public class GameBoard : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"Skipped empty cell: ({x}, {y}) is out of bounds.");
+                    log.WriteSysLog($"{className}Skipped empty cell: ({x}, {y}) is out of bounds.");
                 }
             }
         }
@@ -465,9 +445,6 @@ public class GameBoard : MonoBehaviour
 
                 //set properties
                 blockerElement.transform.parent = gameArea.transform;
-
-                // Add to all
-                //allTypeDotsCoord[boardLayout[i].x, boardLayout[i].y] = tempPos;
             }
         }
     }
@@ -502,10 +479,6 @@ public class GameBoard : MonoBehaviour
 
                 //set properties parent
                 breakableElement.transform.parent = gameArea.transform;
-
-
-                // Add to all
-                //allTypeDotsCoord[boardLayout[i].x, boardLayout[i].y] = tempPos;
             }
         }
     }
@@ -534,6 +507,7 @@ public class GameBoard : MonoBehaviour
                     }
 
                     namingCounter++;
+
                     //naming
                     string elementName = expandingElement.tag + "_c" + boardLayout[i].columnX + "_r" + boardLayout[i].rowY + "_" + namingCounter;
                     expandingElement.name = elementName;
@@ -555,7 +529,6 @@ public class GameBoard : MonoBehaviour
             if (lockersDict.ContainsKey(kind))
             {
                 Vector2 tempPos = new Vector2(boardLayout[i].columnX, boardLayout[i].rowY);
-
                 
                 GameObject lockedPrefab = lockersDict[kind];
 
@@ -658,7 +631,7 @@ public class GameBoard : MonoBehaviour
             if (uiManagerClass != null)
                 uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]);
             else
-                Debug.LogError("uiManagerClass is null! Cannot show info.");
+                log.WriteSysLog($"{className}uiManagerClass is null! Cannot show info.");
         }
     }
 
@@ -706,12 +679,6 @@ public class GameBoard : MonoBehaviour
             ElementController randomElement = validElements[randomIndex];
             
             randomElement.GenerateColorBomb();
-
-            Debug.Log($"Convert {randomElement.gameObject.name} to ColorBomb");
-        }
-        else
-        {
-            Debug.Log("No valid elements found to change tag.");
         }
 
         //for line
@@ -728,14 +695,7 @@ public class GameBoard : MonoBehaviour
             {
                 randomElement.GenerateRowBomb();
             }
-
-            Debug.Log($"Convert {randomElement.gameObject.name} to line bomb");
         }
-        else
-        {
-            Debug.Log("No valid elements found to change tag.");
-        }
-
     }
 
     //check for matching
@@ -768,9 +728,10 @@ public class GameBoard : MonoBehaviour
         return false;
     }
 
+    //when many matches
     private void CongratInfo(int matchCount)
     {
-        if (matchCount > 20)
+        if (matchCount > bigMatch)
         {
             uiManagerClass.ShowInGameInfo("Great!", true, 3, ColorPalette.Colors["VioletMed"]); //show panel with text           
         }                    
@@ -811,7 +772,6 @@ public class GameBoard : MonoBehaviour
         foreach (var group in tagGroups)
         {
             int count = group.Count();
-            //Debug.Log($"Tag: {group.Key}, Count: {count}");
 
             if (count >= minMatchForBomb)
             {
@@ -819,14 +779,6 @@ public class GameBoard : MonoBehaviour
                 genBomb = true;
             }
         }
-
-/*        if(genBomb)
-            Debug.Log("Tags with more than 3 matches: " + bombMatches+ ". Ready to gen bomb: " + genBomb);
-
-        if(filteredList.Count > 0)
-            Debug.Log("Filtered List Count: " + filteredList.Count);*/
-
-        //debug end
 
         // Count elements by tag
         foreach (var obj in matchFinderClass.currentMatch)
@@ -856,11 +808,21 @@ public class GameBoard : MonoBehaviour
 
         CongratInfo(matchFinderClass.currentMatch.Count);
 
-        //run bomb generation
-        if(genBomb && filteredList.Count > 0)
-            CheckToGenerateBombs(filteredList);
+        int matchCount = matchFinderClass.currentMatch.Count;        
 
-        destroyCall = 0;
+        //sound
+        if (matchCount == 3)
+            soundManagerClass.PlaySound(GetRandomClip(soundManagerClass.match3Clips));
+
+        if (matchCount == 4)
+            soundManagerClass.PlaySound(GetRandomClip(soundManagerClass.match4Clips));
+
+        if (matchCount >= 5)
+            soundManagerClass.PlaySound(GetRandomClip(soundManagerClass.match5Clips));
+
+        //run bomb generation
+        if (genBomb && filteredList.Count > 0)
+            CheckToGenerateBombs(filteredList);        
 
         for (int i = 0; i < column; i++)
         {
@@ -873,8 +835,6 @@ public class GameBoard : MonoBehaviour
                 }
             }            
         }
-
-        //Debug.Log($"Out match: {destroyCall}");
 
         //destroy for blockers
         for (int i = 0; i < column; i++)
@@ -898,6 +858,13 @@ public class GameBoard : MonoBehaviour
         // here start refill
         if (condition)
             StartCoroutine(DecreaseRowCo());
+    }
+
+    //for sound
+    private AudioClip GetRandomClip(AudioClip[] clips)
+    {
+        if (clips == null || clips.Length == 0) return null;
+        return clips[UnityEngine.Random.Range(0, clips.Length)];
     }
 
 
@@ -1084,31 +1051,34 @@ public class GameBoard : MonoBehaviour
 
         if (allElements[thisColumn, thisRow].GetComponent<ElementController>().isMatched)
         {
-            ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();
-
-            //Debug.Log($"currentElement {currentElement.name}");
+            ElementController currentElement = allElements[thisColumn, thisRow].GetComponent<ElementController>();            
 
             //for bombs in match
             if (currentElement.isWrapBomb)
             {
+                soundManagerClass.PlaySound(soundManagerClass.soundClips[5]);
                 matchFinderClass.MatchWrapPieces(thisColumn, thisRow);
             }
 
             //colum bomb match
             if (currentElement.isColumnBomb)
             {
+                soundManagerClass.PlaySound(GetRandomClip(soundManagerClass.lineBombVClips));
                 matchFinderClass.MatchColPieces(thisColumn);
             }
 
             //row bomb
             if (currentElement.isRowBomb)
             {
+                soundManagerClass.PlaySound(GetRandomClip(soundManagerClass.lineBombHClips));
                 matchFinderClass.MatchRowPieces(thisRow);
             }
 
             //color
             if (currentElement.isColorBomb)
             {
+                soundManagerClass.PlaySound(soundManagerClass.soundClips[6]);
+
                 int randomIndex = UnityEngine.Random.Range(0, elements.Length);
                 var randomElement = elements[randomIndex];
                 string randomTag = randomElement.tag;
@@ -1123,19 +1093,19 @@ public class GameBoard : MonoBehaviour
             {
                 if (currentElement.isRowBomb || currentElement.isColumnBomb)
                 {
-                    goalManagerClass.CompareGoal("LineBomb", thisColumn, thisRow); //for line bombs
+                    goalManagerClass.CompareGoal("LineBomb", thisColumn, thisRow, true); //for line bombs 1
                 }
                 else if (currentElement.isWrapBomb)
                 {
-                    goalManagerClass.CompareGoal("WrapBomb", thisColumn, thisRow); //for Wrap bombs                    
+                    goalManagerClass.CompareGoal("WrapBomb", thisColumn, thisRow, true); //for Wrap bombs 2                    
                 }
                 else if (currentElement.isColorBomb)
                 {
-                    goalManagerClass.CompareGoal("ColorBomb", thisColumn, thisRow); //for Color bombs                    
+                    goalManagerClass.CompareGoal("ColorBomb", thisColumn, thisRow, true); //for Color bombs  3                  
                 }
                 else
-                {
-                    goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString(), thisColumn, thisRow); //for usual dots
+                {                    
+                    goalManagerClass.CompareGoal(allElements[thisColumn, thisRow].tag.ToString(), thisColumn, thisRow, true); //for usual dots 4
                 }
 
                 goalManagerClass.UpdateGoals();
@@ -1149,12 +1119,6 @@ public class GameBoard : MonoBehaviour
 
             //for expand
             DamageExpandable(thisColumn, thisRow);  
-
-            //sound
-            if (currentElement.elementSound != null)
-            {
-                soundManagerClass.PlaySound(currentElement.elementSound);
-            }
 
             //particles
             if (currentElement != null)
@@ -1175,12 +1139,8 @@ public class GameBoard : MonoBehaviour
 
             //main destroy
             Destroy(allElements[thisColumn, thisRow]); //!Important
-            destroyCall++;
-            
+                        
             allElements[thisColumn, thisRow] = null;
-
-            //clear match list
-            //matchFinderClass.currentMatch.Clear();
 
             //for colorbomb
             if(fxManagerClass.createdLines.Count > 0)
@@ -1222,7 +1182,6 @@ public class GameBoard : MonoBehaviour
 
                     counter++;
 
-                    //element.name = $"{element.tag}_{currentTime}_{counter}";
                     element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;                    
                 }
             }
@@ -1255,9 +1214,7 @@ public class GameBoard : MonoBehaviour
 
     //refill final step
     private IEnumerator FillBoardCo()
-    {
-        //need to avoid bugs
-        //yield return new WaitForSeconds(refillDelay);        
+    {             
         RefillBoard(); //refil board
 
         //delay 02
@@ -1310,8 +1267,7 @@ public class GameBoard : MonoBehaviour
 
     //gen bombs part 3
     private MatchType ColumnOrRow(List<GameObject> matchGroup)
-    {
-        //List<GameObject> matchGroup = new List<GameObject>(matchFinderClass.currentMatch);
+    {        
         matchTypeClass.type = 0;
         matchTypeClass.color = "";
         matchTypeClass.curElem = null;
@@ -1431,7 +1387,6 @@ public class GameBoard : MonoBehaviour
         var groupedCandidates = bombCandidates
             .GroupBy(obj => obj.tag);
 
-        // MatchType typeOfMatch = ColumnOrRow();
         MatchType typeOfMatch = null;
         
         foreach (var group in groupedCandidates)
@@ -1573,7 +1528,6 @@ public class GameBoard : MonoBehaviour
 
                     lockerParticle.name = "locker_part_" + thisColumn + "_" + thisRow + "_" + index;
                     lockerParticle.transform.parent = gameArea.transform;
-                    //Debug.Break();
                     Destroy(lockerParticle, 2.9f); // Particle delay
                 }
 
@@ -1599,7 +1553,7 @@ public class GameBoard : MonoBehaviour
         }
         catch
         {
-            Debug.LogWarning("DamageBlockers: errror!");
+            log.WriteSysLog($"{className}DamageBlockers: errror!");
         }
        
     }
@@ -1619,9 +1573,6 @@ public class GameBoard : MonoBehaviour
                     blockerCells[thisColumn, thisRow].TakeDamage(1);
                     blockerCells[thisColumn, thisRow].wasHitThisFrame = true;
                 }
-               
-                //Debug.Log($"Hit-{blockerCells[thisColumn, thisRow].hitPoints}, name {blockerCells[thisColumn, thisRow].name}");
-                //Debug.Break();
 
                 // Log the current blocker
                 SpecialElements currentBlocker = blockerCells[thisColumn, thisRow];
@@ -1660,12 +1611,11 @@ public class GameBoard : MonoBehaviour
                         blockerCells[thisColumn, thisRow] = null;
                     }
                 }
-
             }
         }
         else
         {
-            Debug.Log("DamageBlockerAt: problems on first step or other generator type.");
+            //optional for debug
         }
     }
 
@@ -1792,9 +1742,6 @@ public class GameBoard : MonoBehaviour
                     Debug.Log($"enPreloadLayout > No preload object at: {valueX} {valueY}");
                 }
 
-                // Create preload
-                //GameObject preloadElements = Instantiate(elements[preloadDict[kind]], tempPos, Quaternion.identity);
-
                 try
                 {
                     int index = preloadDict[kind];
@@ -1897,8 +1844,6 @@ public class GameBoard : MonoBehaviour
         // Prevent switch if either cell is locked
         if (lockedCells[column, row] != null || lockedCells[targetCol, targetRow] != null)
         {
-            // Optional: Debug
-            //Debug.Log($"Switch blocked: locked cell at [{column},{row}] or [{targetCol},{targetRow}]");
             return false;
         }
 

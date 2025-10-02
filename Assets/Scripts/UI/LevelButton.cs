@@ -23,10 +23,6 @@ public class LevelButton : MonoBehaviour
     public int level;
     public GameObject confirmPanel;
 
-/*    [Header("Stars")]
-    public Sprite starOffSprite;
-    public Sprite starOnSprite;*/
-
     [Header("Materials")]
     public Material materialOn;
     public Material materialOff;

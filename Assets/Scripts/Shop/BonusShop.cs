@@ -39,7 +39,6 @@ public class BonusShop : MonoBehaviour
     private GameData gameDataClass;
     private TimeManager timeManagerClass;
     private SoundManager soundManagerClass;
-    private GameBoard gameBoardClass;
 
     [Header("End Game Class")]
     public EndGameManager endGameManagerClass;
@@ -76,7 +75,6 @@ public class BonusShop : MonoBehaviour
     private TMP_Text infoText;    //The store displays boosters that are available in the equipment    
     public float fadeDuration = 2.0f; // Duration of the fade
     private Coroutine fadeOutCoroutine;
-    private int timeLeft;
     
     //update 1 per sec
     private Coroutine updateCoroutine;
@@ -118,6 +116,7 @@ public class BonusShop : MonoBehaviour
     public int colorTime = 600;
     public int lineTime = 500;
 
+    private const int lifeRefill = 3;
 
     private List<string> defInfoText = new List<string>();
     
@@ -184,10 +183,12 @@ public class BonusShop : MonoBehaviour
     {
         //for lives
         string lifeTime = timeManagerClass.GetRemainingTime("lifeRecovery");
+
         if(lifeTime != "")
         {
             int livesCount = gameDataClass.saveData.bonuses[5];
             bool fundsForBooster5 = gameDataClass.saveData.credits < gameDataClass.saveData.bonusesPrice[5];
+
             if (livesCount == 0 && fundsForBooster5)
             {
                 BusterUpdate(5);
@@ -195,6 +196,7 @@ public class BonusShop : MonoBehaviour
         }
 
         string colorTime = timeManagerClass.GetRemainingTime("colorBuster");
+
         if(colorTime == "")
         {
             BusterUpdate(5);
@@ -202,6 +204,7 @@ public class BonusShop : MonoBehaviour
 
 
         string lineTime = timeManagerClass.GetRemainingTime("lineBuster");
+
         if(lineTime == "")
         {
             BusterUpdate(11);
@@ -426,16 +429,6 @@ public class BonusShop : MonoBehaviour
         }       
     }
 
-    public void LivesClick()
-    {
-        if (shopState == BonusShop.ShopState.Levels)
-        {
-            {
-                Debug.Log("!Lives!");
-            }
-        }
-    }
-
     public void CloseShop()
     {
         ZeroBonus();
@@ -466,7 +459,6 @@ public class BonusShop : MonoBehaviour
         ShopType shopType = (ShopType)type;
         OpenShop(shopType);
     }
-
 
     public void OpenShop(ShopType type)
     {       
@@ -647,7 +639,7 @@ public class BonusShop : MonoBehaviour
                 gameDataClass.SaveToFile();
                 break;
             case 5:
-                gameDataClass.saveData.bonuses[busterNumber] = 1;
+                gameDataClass.saveData.bonuses[busterNumber] = lifeRefill; //life
                 gameDataClass.saveData.lifeRecoveryTime = "";
                 gameDataClass.SaveToFile();
                 break;

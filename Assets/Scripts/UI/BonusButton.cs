@@ -2,6 +2,7 @@ using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using static BonusShop;
@@ -205,7 +206,6 @@ public class BonusButton : MonoBehaviour
             HideMinusButton();
         }
 
-
     }
 
 
@@ -358,7 +358,12 @@ public class BonusButton : MonoBehaviour
 
            bonusShopClass.BuyBonus();
            bonusShopClass.CloseShop();
-            
+
+            int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+            //play level music
+            soundManagerClass.PlayMusic(soundManagerClass.musicClips[sceneIndex]);
+
             //open confirm again
             if (bonusShopClass.needToBuyEnergy)
             {

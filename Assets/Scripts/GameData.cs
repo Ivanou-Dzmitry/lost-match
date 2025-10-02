@@ -63,7 +63,7 @@ public class GameData : MonoBehaviour
 
     public const string PLAYER_SAVES = "lm_player_saves.json";
 
-    public GameLog log;
+    private GameLog logClass;
     private const string className = "GameData:";
 
     private void Awake()
@@ -76,7 +76,7 @@ public class GameData : MonoBehaviour
         else
         {
             Destroy(this.gameObject);
-        }
+        }        
 
         //check world manager
         if (worldManager == null)
@@ -85,7 +85,7 @@ public class GameData : MonoBehaviour
 
             if (worldManager == null)
             {
-                log.WriteSysLog($"{className}WorldManager not found!");                
+                logClass.WriteSysLog($"{className}WorldManager not found!");                
                 return;
             }
         }
@@ -97,13 +97,23 @@ public class GameData : MonoBehaviour
         LoadFromFile();
     }
 
+    private void Start()
+    {
+        logClass = GameObject.FindWithTag("Log").GetComponent<GameLog>();
+
+        if (logClass == null)
+        {
+            Debug.LogError($"{className}ERR: logClass null");
+        }
+    }
 
     public void SaveToFile()
-    {
+    {       
         //check game data and save data
         if (gameData == null || gameData.saveData == null)
         {
-            log.WriteSysLog($"{className} gameData or gameData.saveData is null. Cannot save to file.");
+            if(logClass != null)
+                logClass.WriteSysLog($"{className} gameData or gameData.saveData is null. Cannot save to file.");
             return;
         }
 
@@ -116,7 +126,7 @@ public class GameData : MonoBehaviour
         }
         catch (Exception ex)
         {
-            log.WriteSysLog($"{className}Error while saving game data: " + ex.Message);
+            logClass.WriteSysLog($"{className}Error while saving game data: " + ex.Message);
         }
     }
 
@@ -137,7 +147,7 @@ public class GameData : MonoBehaviour
         {
             //default values
             AddDefaultData();
-            log.WriteSysLog($"{className}Default data was added");
+            logClass.WriteSysLog($"{className}Default data was added");
         }
     }
 

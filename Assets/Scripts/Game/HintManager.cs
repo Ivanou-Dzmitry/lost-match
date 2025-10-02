@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class HintManager : MonoBehaviour
 {
@@ -13,14 +12,11 @@ public class HintManager : MonoBehaviour
     private float hintDelaySec;
     public GameObject hintParticle;
     public GameObject currentHint;
-    private int columns, rows;
     private Coroutine hintCoroutine;
 
     void Start()
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
-        columns = gameBoardClass.column;
-        rows = gameBoardClass.row;
         hintCoroutine = StartCoroutine(HintChecker());
     }
 

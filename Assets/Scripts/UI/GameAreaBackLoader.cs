@@ -23,9 +23,9 @@ public class GameAreaBackLoader : MonoBehaviour
             setGameBackAreaSprite(gameBoardClass.levelDifficulty); //set from file           
         }
         else
-        {
-            Debug.LogWarning("GameAreaBackLoader: gameBoardClass=null");            
+        {                    
             setGameBackAreaSprite(0); //set simple     
+            Debug.LogWarning("GameAreaBackLoader: gameBoardClass=null");
         }
             
     }
@@ -46,7 +46,5 @@ public class GameAreaBackLoader : MonoBehaviour
                 spriteRendererGameArea.sprite = spriteHardLevelsBack[randomSpriteNumber];
                 break;
         }
-
     }
-
 }

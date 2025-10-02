@@ -32,7 +32,6 @@ public class MatchFinder : MonoBehaviour
     //list for color
     private List<Vector2> colorBombElements; // Declare a List of Vector2
 
-    // Start is called before the first frame update
     void Start()
     {
         //classes
@@ -59,33 +58,6 @@ public class MatchFinder : MonoBehaviour
 
         //mark as matched
         element.GetComponent<ElementController>().isMatched = true;
-
-        //log
-/*        if (element != null)
-        {
-            switch (element.tag)
-            {
-                case "element_01":
-                    gameBoardClass.log.elem1++;
-                    break;
-                case "element_02":
-                    gameBoardClass.log.elem2++;
-                    break;
-                case "element_03":
-                    gameBoardClass.log.elem3++;
-                    break;
-                case "element_04":
-                    gameBoardClass.log.elem4++;
-                    break;
-                case "element_05":
-                    gameBoardClass.log.elem5++;
-                    break;
-            }
-        }*/
-
-
-        //element.GetComponent<SpriteRenderer>().color = element.GetComponent<ElementController>().elementColor; //tint for debug
-        //element.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1f); //tint for debug
 
         // Remove all null elements
         currentMatch.RemoveAll(item => item == null);
@@ -303,7 +275,6 @@ public class MatchFinder : MonoBehaviour
     public void MatchColPieces(int col)
     {
         currentMatch.AddRange(GetColumnPieces(col));
-        //Debug.Log($"MatchColPieces: {col}");
     }
 
     public void MatchWrapPieces(int col, int row)
@@ -339,7 +310,7 @@ public class MatchFinder : MonoBehaviour
                     if (rowBombCounter > 1)
                     {
                         localElement.isRowBomb = false;
-                        goalManagerClass.CompareGoal("LineBomb", i, row, true); //for line bombs
+                        goalManagerClass.CompareGoal("LineBomb", i, row, true); //for line bombs 5
                     }                        
                 }
 
@@ -357,13 +328,6 @@ public class MatchFinder : MonoBehaviour
                     //Debug.Log("isMatched Row blocker");
                 }
             }
-
-            //add for blockers
-            /*            if (gameBoardClass.blockerCells[i, row] != null)
-                        {
-                            gameBoardClass.DamageBlockerAt(i, row);
-                            Debug.Log("Damage blocker at GetRowPieces");
-                        }*/
         }
 
         return elements;
@@ -423,9 +387,8 @@ public class MatchFinder : MonoBehaviour
                     if (colBombCounter > 1)
                     {
                         localElement.isColumnBomb = false;                        
-                        goalManagerClass.CompareGoal("LineBomb", column, i, true); //for line bombs
-                    }
-                        
+                        goalManagerClass.CompareGoal("LineBomb", column, i, true); //for line bombs 6
+                    }                        
                 }
 
                 elements.Add(gameBoardClass.allElements[column, i]);
@@ -440,17 +403,8 @@ public class MatchFinder : MonoBehaviour
                 {
                     SpecialElements localBlocker = gameBoardClass.blockerCells[column, i].GetComponent<SpecialElements>();
                     localBlocker.isMatched = true;
-                    //Debug.Log("isMatched column blocker");
                 }
             }
-
-
-            //add for blockers
-                /*            if (gameBoardClass.blockerCells[column, i] != null)
-                            {               
-                                gameBoardClass.DamageBlockerAt(column, i);
-                                Debug.Log("Damage at GetColumnPieces");
-                            }*/
         }
 
         return elements;
@@ -531,13 +485,6 @@ public class MatchFinder : MonoBehaviour
                         localElement.isMatched = true;
                         localElement.matchedByBomb = true;
                     }
-
-                    //add for blockers
-/*                    if (gameBoardClass.blockerCells[i, j] != null)
-                    {
-                        gameBoardClass.DamageBlockerAt(i, j);
-                        Debug.Log("Damage at GetWrapPieces");
-                    }*/
                 }
             }
         }
@@ -574,8 +521,6 @@ public class MatchFinder : MonoBehaviour
                 }
             }
         }
-
-        //Debug.Log(colorBombElements.Count);
 
         return colorBombElements; // Return the list
     }

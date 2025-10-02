@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "World", menuName = "Level")]
 
-
-
 public class Level : ScriptableObject
 {
 

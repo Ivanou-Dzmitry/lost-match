@@ -133,4 +133,9 @@ public class GameLog : MonoBehaviour
             WriteSysLog($"Error writing to log file: {ex.Message}");
         }
     }
+
+    public void OpenMyPage()
+    {
+        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSdIqnn9-5ypwkSP-1HSpFLvHcOzFc9TRItgSZZWuaLUMgFd7w/viewform?usp=header");
+    }
 }

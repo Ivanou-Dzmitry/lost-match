@@ -81,7 +81,7 @@ public class GameData : MonoBehaviour
         //check world manager
         if (worldManager == null)
         {
-            worldManager = FindObjectOfType<WorldManager>();
+            worldManager = FindFirstObjectByType<WorldManager>();
 
             if (worldManager == null)
             {

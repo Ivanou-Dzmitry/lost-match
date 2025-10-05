@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour
 
     public GameLog log;
 
+    public GameObject maskPanel;
 
     void Start()
     {
@@ -69,6 +70,39 @@ public class UIManager : MonoBehaviour
         //get color from panel
         if (infoPanel != null)
             infoPanelImage = infoPanel.GetComponent<Image>();
+
+        //mask panel size
+        if (mainCanvas == null || maskPanel == null)
+        {
+            if (SceneManager.GetActiveScene().name == "Levels")
+                Debug.LogWarning("MaskPanelResizer: Assign both mainCanvas and maskPanel in the Inspector.");
+            return;
+        }
+
+        RectTransform panelRect = null;
+
+        // Make the panel visible
+        if (maskPanel != null)
+        {
+            maskPanel.SetActive(true);
+            panelRect = maskPanel.GetComponent<RectTransform>();
+        }
+                   
+        if (canvasRect == null || panelRect == null)
+        {
+            if (SceneManager.GetActiveScene().name == "Levels")
+                Debug.LogWarning("MaskPanelResizer: Missing RectTransform on canvas or panel.");
+            return;
+        }
+        else
+        {
+            float size = canvasRect.rect.height; // square: width = height = canvas height
+            panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
+            panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size);
+        }
+
+
+
     }
 
     void AdjustPanelPosition()

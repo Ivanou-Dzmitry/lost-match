@@ -48,10 +48,6 @@ public class LevelsSceneManager : MonoBehaviour
     private bool swipeDetected = false; // Prevent repeated triggers
     private bool isRotating = false; // Track if rotation is in progress
 
-    [Header("DEbug")]
-    public TMP_Text levelTxt;
-    public TMP_Text debugTxt;
-
     public GameObject levelCylinder; // Reference to your cylinder object
 
     public float rotationAmount = 45f; // Rotation amount in degrees
@@ -119,9 +115,6 @@ public class LevelsSceneManager : MonoBehaviour
         currentScreenNumber = GetRoundedValue(lastLevel, levelButtonsOnScreen);
 
         totalSteps = GetTotalSteps(currentScreenNumber);
-
-        //debug info
-        levelTxt.text = "Map " + currentScreenNumber;
         
         float tRotation = 0;
         
@@ -363,17 +356,7 @@ public class LevelsSceneManager : MonoBehaviour
                     LoadLevelButtons(currentScreenNumber + 1, segmentsList[1].transform, 90.0f);
             }
         }
-
-        if (currentScreenNumber <= levelSegmentsCount)
-        {
-            levelTxt.text = "Map " + currentScreenNumber;
-        }
-        else
-        {
-            levelTxt.text = "";
-        }
             
-
         if (totalSteps <= maxSteps)
         {
             Rotator("next");
@@ -409,9 +392,7 @@ public class LevelsSceneManager : MonoBehaviour
         if (totalSteps >= 1)
         {
             Rotator("prev");
-        }
-            
-        levelTxt.text = "Map " + currentScreenNumber;
+        }            
     }
 
     void Update()

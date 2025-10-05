@@ -57,4 +57,10 @@ public class HelpManager : MonoBehaviour
         }
     }
 
+    public void HelpHide()
+    {
+        helpPage = 0;
+        helpButtonText.text = "Next";
+        helpPanel.SetActive(false);
+    }
 }

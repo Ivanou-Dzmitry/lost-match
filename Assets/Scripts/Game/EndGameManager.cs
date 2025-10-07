@@ -55,14 +55,12 @@ public class EndGameManager : MonoBehaviour
     public Image[] levelStars;
     public Sprite[] levelStarsSpite;
     public ParticleSystem[] starsPart;
-    public AudioClip winMusic;
 
     [Header("Congrat")]
     public ParticleSystem[] congratPart;
 
     [Header("Lose Panel")]
     public Button retryLooseButton;
-    public AudioClip loseMusic;
 
     public int finalLevelNumber; //!Important
 

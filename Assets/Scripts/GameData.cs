@@ -47,19 +47,19 @@ public class GameData : MonoBehaviour
     private const int refreshBoosterPrice = 250;
     private const int colorTimeBoosterPrice = 1500;
     private const int lineTimeBoosterPrice = 1300;
-    private const int wrapBoosterPrice = 350;
-    private const int columnBoosterPrice = 400;
-    private const int rowBoosterPrice = 400;
+    private const int wrapBoosterPrice = 400;
+    private const int columnBoosterPrice = 500;
+    private const int rowBoosterPrice = 500;
 
     //energy
     private const int energy01BoosterPrice = 200;
     private const int energy02BoosterPrice = 350;
-    private const int energy03BoosterPrice = 550;
+    private const int energy03BoosterPrice = 500;
 
     //moves
-    private const int moves01BoosterPrice = 200;
-    private const int moves02BoosterPrice = 350;
-    private const int moves03BoosterPrice = 550;
+    private const int moves01BoosterPrice = 300;
+    private const int moves02BoosterPrice = 450;
+    private const int moves03BoosterPrice = 600;
 
     public const string PLAYER_SAVES = "lm_player_saves.json";
 

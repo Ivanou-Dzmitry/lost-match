@@ -65,15 +65,6 @@ public class MatchType
         }
         return false;
     }
-
-    public override int GetHashCode()
-    {
-        int hashCode = 17;
-        hashCode = hashCode * 23 + type.GetHashCode();
-        hashCode = hashCode * 23 + (color?.GetHashCode() ?? 0);
-        hashCode = hashCode * 23 + (curElem?.GetHashCode() ?? 0);
-        return hashCode;
-    }
 }
 
 //type of tiles
@@ -226,9 +217,11 @@ public class GameBoard : MonoBehaviour
     public GameLog log;
     private const string className = "GameBoard:";
 
-    private const int bigMatch = 20;
+    private int bigMatch;
 
     public string levelUID;
+
+    private ElementController[,] elementControllers;
 
     private void Awake()
     {
@@ -393,6 +386,13 @@ public class GameBoard : MonoBehaviour
         //for time booster
         initialMoves = endGameManagerClass.curCounterVal;
 
+        //set big match depends on level size
+        if (column <= row)
+            bigMatch = column*3;
+        else
+            bigMatch = row * 3;
+
+        CacheElementControllers();
     }
 
     //empty cells
@@ -628,6 +628,7 @@ public class GameBoard : MonoBehaviour
         {
             ShuffleBoard();
 
+            //info mixed up
             if (uiManagerClass != null)
                 uiManagerClass.ShowInGameInfo("Mixed up", true, 0, ColorPalette.Colors["DarkBlue"]);
             else
@@ -1142,8 +1143,10 @@ public class GameBoard : MonoBehaviour
                         
             allElements[thisColumn, thisRow] = null;
 
+            UpdateElementControllerCache(thisColumn, thisRow);
+
             //for colorbomb
-            if(fxManagerClass.createdLines.Count > 0)
+            if (fxManagerClass.createdLines.Count > 0)
                 StartCoroutine(fxManagerClass.DeleteColorBombLines(.3f));
         }       
     }
@@ -1182,7 +1185,9 @@ public class GameBoard : MonoBehaviour
 
                     counter++;
 
-                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;                    
+                    element.name = element.tag + "_c" + i + "_r" + j + "_" + currentTime +"_" + counter;
+
+                    UpdateElementControllerCache(i, j);
                 }
             }
         }
@@ -1785,14 +1790,41 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private bool CheckForMatches()
+    // Initialize once -NEW
+    private void CacheElementControllers()
     {
+        elementControllers = new ElementController[column, row];
+
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
             {
                 if (allElements[i, j] != null)
                 {
+                    elementControllers[i, j] = allElements[i, j].GetComponent<ElementController>();
+                }
+            }
+        }
+    }
+
+    // Update cache when needed -NEW
+    private void UpdateElementControllerCache(int i, int j)
+    {
+        elementControllers[i, j] = allElements[i, j] != null
+            ? allElements[i, j].GetComponent<ElementController>()
+            : null;
+    }
+
+    private bool CheckForMatches()
+    {        
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (allElements[i, j] != null)
+                {
+
+
                     if (i < column - 2)
                     {
                         if (allElements[i + 1, j] != null && allElements[i + 2, j] != null)
@@ -1818,6 +1850,14 @@ public class GameBoard : MonoBehaviour
             }
         }
         return false;
+    }
+
+    // Helper method for bomb checking -NEW
+    private bool HasAnyBomb(ElementController e0, ElementController e1, ElementController e2)
+    {
+        return e0.isColorBomb || e0.isColumnBomb || e0.isRowBomb || e0.isWrapBomb ||
+               e1.isColorBomb || e1.isColumnBomb || e1.isRowBomb || e1.isWrapBomb ||
+               e2.isColorBomb || e2.isColumnBomb || e2.isRowBomb || e2.isWrapBomb;
     }
 
     private void SwitchPieces(int column, int row, Vector2 direction)
@@ -1847,11 +1887,10 @@ public class GameBoard : MonoBehaviour
             return false;
         }
 
-        // Prevent switch if either cell is locked
+        // Prevent switch if either cell is expandable
         if (expandCells[column, row] != null || expandCells[targetCol, targetRow] != null)
         {
-            // Optional: Debug
-            //Debug.Log($"Switch blocked: locked cell at [{column},{row}] or [{targetCol},{targetRow}]");
+            // Optional: Debug            
             return false;
         }
 

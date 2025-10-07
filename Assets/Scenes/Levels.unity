@@ -8951,6 +8951,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: efb379f03daa45549bf842be34d39679, type: 2}
   - {fileID: 2100000, guid: 0a0e9488c91777c42b4f18c7f03651c3, type: 2}
   - {fileID: 2100000, guid: a3fbfee69485c534d98dfa0c7f9f816f, type: 2}
+  - {fileID: 2100000, guid: 7dcf27092430bf74497ef27c9f8af650, type: 2}
   levelCylinder: {fileID: 1713811716}
   rotationAmount: 45
   rotationSpeed: 6

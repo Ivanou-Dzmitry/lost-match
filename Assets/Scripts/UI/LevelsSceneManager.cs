@@ -74,6 +74,8 @@ public class LevelsSceneManager : MonoBehaviour
 
     public GameLog log;
 
+    private bool lastSegment;
+
     void Start()
     {
         //class init
@@ -131,7 +133,7 @@ public class LevelsSceneManager : MonoBehaviour
             currentRotationX = levelCylinder.transform.localEulerAngles.x;
             targetRotationX = levelCylinder.transform.eulerAngles.x;
             levelCylinder.transform.eulerAngles = new Vector3(targetRotationX, 0f, 0f); // Fix initial orientation
-
+            
             if (mod < 3)
             {
                 SegmentInsnaciate(0, currentScreenNumber, 0);   // add first segment         
@@ -140,8 +142,13 @@ public class LevelsSceneManager : MonoBehaviour
             }
             else
             {
-                SegmentInsnaciate(tRotation, currentScreenNumber, 0);   // add first segment         
-                SegmentInsnaciate(45, currentScreenNumber, 1);   // add first segment
+                SegmentInsnaciate(tRotation, currentScreenNumber, 0);   // add 0 segment         
+
+                //detect last segment - on load
+                if (totalSteps == maxSteps - 2)
+                    lastSegment = true;
+
+                SegmentInsnaciate(45, currentScreenNumber, 1);   // add 1 segment
 
                 //load buttons
                 LoadLevelButtons(currentScreenNumber, segmentsList[0].transform, tRotation);         
@@ -325,12 +332,14 @@ public class LevelsSceneManager : MonoBehaviour
         Destroy(obj); // Destroy the object after the delay
     }
 
-
+    //load next levels
     public void  NextLevels()
     {
         targetRotationX -= rotationAmount;
 
         totalSteps++;
+
+        lastSegment = false;
 
         if (totalSteps % 2 == 0)
         {
@@ -349,6 +358,12 @@ public class LevelsSceneManager : MonoBehaviour
             if (totalSteps <= maxSteps - 1)
             {
                 int nextScreen = currentScreenNumber + 1;
+
+                //detect last segment
+                if (totalSteps == maxSteps - 1)
+                {
+                    lastSegment = true;
+                }
 
                 SegmentInsnaciate(90.0f, nextScreen, 1);
                 
@@ -559,7 +574,8 @@ public class LevelsSceneManager : MonoBehaviour
             {
                 if(isRotating)
                     rotationSpeed = 16;
-
+                
+                //previous
                 if (totalSteps > 0)
                     PreviousLevels();  
             }
@@ -568,8 +584,11 @@ public class LevelsSceneManager : MonoBehaviour
                 if (isRotating)
                     rotationSpeed = 16;
 
+                //next
                 if (totalSteps < maxSteps)
+                {
                     NextLevels();
+                }                    
             }
         }
     }
@@ -613,7 +632,7 @@ public class LevelsSceneManager : MonoBehaviour
         try
         {
             int materialIndex;
-
+          
             // Use odd indexes (1, 3, 5, 7, 9) for odd screen numbers
             // and even indexes (0, 2, 4, 6, 8) for even screen numbers
             if (currentScreenNumber % 2 == 0)
@@ -628,6 +647,12 @@ public class LevelsSceneManager : MonoBehaviour
                 materialIndex = Math.Min((currentScreenNumber % 10), 9);
                 if (materialIndex % 2 == 0) materialIndex++; // Force to odd
             }
+
+            //load material with text            
+            if (lastSegment)
+            {
+                materialIndex = 10; // Last segment material                
+            }                            
 
             Material newMaterial = levelMaterials[materialIndex];
 

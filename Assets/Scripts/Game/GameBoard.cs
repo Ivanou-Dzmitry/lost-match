@@ -65,6 +65,14 @@ public class MatchType
         }
         return false;
     }
+    public override int GetHashCode()
+    {
+        int hashCode = 17;
+        hashCode = hashCode * 23 + type.GetHashCode();
+        hashCode = hashCode * 23 + (color?.GetHashCode() ?? 0);
+        hashCode = hashCode * 23 + (curElem?.GetHashCode() ?? 0);
+        return hashCode;
+    }
 }
 
 //type of tiles
@@ -554,6 +562,11 @@ public class GameBoard : MonoBehaviour
 
     private void SetUpBoard()
     {
+        if (elementControllers == null)
+        {
+            elementControllers = new ElementController[column, row];
+        }
+
         GenerateEmptyElements();
         GenerateBlockers();
         GenerateBreakable();
@@ -623,6 +636,8 @@ public class GameBoard : MonoBehaviour
             SetTimlessBuster();
 
         matchState = MatchState.matching_stop;
+
+        CacheElementControllers();
 
         if (IsDeadLock())
         {
@@ -1810,41 +1825,68 @@ public class GameBoard : MonoBehaviour
     // Update cache when needed -NEW
     private void UpdateElementControllerCache(int i, int j)
     {
-        elementControllers[i, j] = allElements[i, j] != null
-            ? allElements[i, j].GetComponent<ElementController>()
-            : null;
+        // Safety check: ensure array is initialized
+        if (elementControllers == null)
+        {
+            elementControllers = new ElementController[column, row];
+        }
+
+        // Update cache
+        if (allElements[i, j] != null)
+        {
+            elementControllers[i, j] = allElements[i, j].GetComponent<ElementController>();
+        }
+        else
+        {
+            elementControllers[i, j] = null;
+        }
     }
 
+    // Ultra-optimized CheckForMatches
     private bool CheckForMatches()
-    {        
+    {
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
             {
-                if (allElements[i, j] != null)
+                ElementController e0 = elementControllers[i, j];
+                if (e0 == null) continue;
+
+                // Check horizontal
+                if (i < column - 2)
                 {
+                    ElementController e1 = elementControllers[i + 1, j];
+                    ElementController e2 = elementControllers[i + 2, j];
 
-
-                    if (i < column - 2)
+                    if (e1 != null && e2 != null)
                     {
-                        if (allElements[i + 1, j] != null && allElements[i + 2, j] != null)
-                        {
-                            if (allElements[i + 1, j].tag == allElements[i, j].tag && allElements[i + 2, j].tag == allElements[i, j].tag)
-                            {
-                                return true;
-                            }
-                        }
+                        // Check bombs first (early exit if found)
+                        if (HasAnyBomb(e0, e1, e2))
+                            return true;
+
+                        // Then check tags
+                        if (allElements[i, j].CompareTag(allElements[i + 1, j].tag) &&
+                            allElements[i, j].CompareTag(allElements[i + 2, j].tag))
+                            return true;
                     }
+                }
 
-                    if (j < row - 2)
+                // Check vertical
+                if (j < row - 2)
+                {
+                    ElementController e1 = elementControllers[i, j + 1];
+                    ElementController e2 = elementControllers[i, j + 2];
+
+                    if (e1 != null && e2 != null)
                     {
-                        if (allElements[i, j + 1] != null && allElements[i, j + 2] != null)
-                        {
-                            if (allElements[i, j + 1].tag == allElements[i, j].tag && allElements[i, j + 2].tag == allElements[i, j].tag)
-                            {
-                                return true;
-                            }
-                        }
+                        // Check bombs first
+                        if (HasAnyBomb(e0, e1, e2))
+                            return true;
+
+                        // Then check tags
+                        if (allElements[i, j].CompareTag(allElements[i, j + 1].tag) &&
+                            allElements[i, j].CompareTag(allElements[i, j + 2].tag))
+                            return true;
                     }
                 }
             }
@@ -1897,10 +1939,16 @@ public class GameBoard : MonoBehaviour
         // Perform switch
         SwitchPieces(column, row, direction);
 
+        UpdateElementControllerCache(column, row);
+
         bool hasMatch = CheckForMatches();
+
+        UpdateElementControllerCache(column, row);
 
         // Revert switch
         SwitchPieces(column, row, direction);
+
+        UpdateElementControllerCache(column, row);
 
         return hasMatch;
     }

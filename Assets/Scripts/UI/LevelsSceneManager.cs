@@ -119,7 +119,9 @@ public class LevelsSceneManager : MonoBehaviour
         totalSteps = GetTotalSteps(currentScreenNumber);
         
         float tRotation = 0;
-        
+
+        lastSegment = false;
+
         //for correct level base rotation
         if (levelCylinder != null)
         {
@@ -380,6 +382,8 @@ public class LevelsSceneManager : MonoBehaviour
 
     public void PreviousLevels()
     {
+        lastSegment = false;
+
         if (totalSteps >= 1)
             targetRotationX += rotationAmount;
 

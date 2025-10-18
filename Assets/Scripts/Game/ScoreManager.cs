@@ -20,6 +20,8 @@ public class ScoreManager : MonoBehaviour
 
     public GameLog log;
 
+    public GameObject tutorPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -123,6 +125,9 @@ public class ScoreManager : MonoBehaviour
 
         //progress bar with stars
         UpdateBar();
+
+        //close tutor panel
+        tutorPanel.SetActive(false);
     }
 
     private void OnApplicationPause()

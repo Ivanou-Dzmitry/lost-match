@@ -11,6 +11,7 @@ public class CameraManager : MonoBehaviour
 
     public GameObject backImage;
     public GameObject elementBack;
+    public GameObject tutorPanel;
 
     public GameLog log;
 
@@ -69,7 +70,10 @@ public class CameraManager : MonoBehaviour
         backImage.transform.position = new Vector3(temPos.x, temPos.y, 0);
         elementBack.transform.position = new Vector3(temPos.x, temPos.y - yOffset, 0);
         
-        if(log!=null)
+        //tutorial panel
+        tutorPanel.transform.position = new Vector3(temPos.x, temPos.y - yOffset, 0);
+
+        if (log!=null)
             log.WriteSysLog($"{newOrthoSize}, {scaleFactor}");
     }
 }

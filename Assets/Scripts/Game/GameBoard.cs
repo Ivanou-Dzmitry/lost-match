@@ -398,7 +398,7 @@ public class GameBoard : MonoBehaviour
         if (column <= row)
             bigMatch = column*3;
         else
-            bigMatch = row * 3;
+            bigMatch = row * 3;        
 
         CacheElementControllers();
     }

@@ -1,12 +1,12 @@
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
+using LM.UI;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -36,7 +36,9 @@ public class SettingsManager : MonoBehaviour
     public Sprite[] musicButtonSprites;
 
     public GameLog log;
-    
+    private bool eventsInitialized = false;
+    public MenuManager menuManager;
+
 
     public static class SystemInformation
     {
@@ -72,6 +74,101 @@ public class SettingsManager : MonoBehaviour
                 // Fallback to screen height if failed
                 return Screen.currentResolution.height;
             }
+        }
+    }
+
+    private void Awake()
+    {
+        //StartClientService();
+    }
+
+    public async void StartClientService()
+    {
+        Debug.Log("Starting Unity Services...");
+        try
+        {
+            if(UnityServices.State != ServicesInitializationState.Initialized)
+            {
+                var options = new InitializationOptions();
+                options.SetProfile("default_profile");
+                await UnityServices.InitializeAsync();
+            }
+
+            if (eventsInitialized)
+            {
+                SetupEvents();
+            }
+
+            if(AuthenticationService.Instance.SessionTokenExists)
+            {
+                SignInAnonymouslyAsync();
+            }
+            else
+            {
+                PanelManager.Open("auth");
+            }
+
+        }
+        catch (Exception e)
+        {            
+            //ShowError(ErrorMenu.Action.StartService, "Failed to connect to the network.", "Retry");
+            Debug.LogError("Error initializing System Information: " + e.Message);
+        }
+    }
+
+    public async void SignInAnonymouslyAsync()
+    {
+        try
+        {
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+        catch (AuthenticationException exeption)
+        {
+            //Wrong authentication
+            Debug.LogError("Error signing in anonymously: " + exeption);
+        }
+        catch (RequestFailedException exeption)
+        {
+            //Wrong connection
+            Debug.LogError("Error signing in anonymously: " + exeption);
+        }
+
+    }
+    private void SetupEvents()
+    {
+        eventsInitialized = true;
+        
+        AuthenticationService.Instance.SignedIn += () =>
+        {
+            SignInConfirmAsync();
+        };
+
+        AuthenticationService.Instance.SignedOut += () =>
+        {
+            PanelManager.CloseAll();
+            PanelManager.Open("auth");
+        };
+
+        AuthenticationService.Instance.Expired += () =>
+        {
+            SignInAnonymouslyAsync();
+        };
+    }
+
+    private async void SignInConfirmAsync()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName))
+            {
+                await AuthenticationService.Instance.UpdatePlayerNameAsync("Player");
+            }
+            PanelManager.CloseAll();
+            PanelManager.Open("login");
+        }
+        catch
+        {
+
         }
     }
 

@@ -1,8 +1,12 @@
+using System;
 using TMPro;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+using Unity.Services.Leaderboards;
+using System.Threading.Tasks;
 
 public enum GameType
 {
@@ -69,8 +73,12 @@ public class EndGameManager : MonoBehaviour
     private bool thisWin = false;
     private bool thisBuyMoves = false;
 
+    //for leaderboard
+    private bool isInitializedLB = false;
+    private bool highScoreUpdated = false;
+
     // Start is called before the first frame update
-    void Start()
+    private async void Start()
     {
         gameBoardClass = GameObject.FindWithTag("GameBoard").GetComponent<GameBoard>();
         gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
@@ -102,7 +110,12 @@ public class EndGameManager : MonoBehaviour
         {
             nextButton.SetActive(true);  // Show button
         }
+
+        //leaderboard init
+        await InitializeServices();
     }
+
+
 
     public void SetGameType()
     {
@@ -188,7 +201,7 @@ public class EndGameManager : MonoBehaviour
         //level number
         levelNumber.text = "LEVEL " + (gameBoardClass.loadedLevel);
 
-        //show stars binus
+        //show stars bonus
         // Show star bonus if 1-3 stars are earned
         int stars = scoreManagerClass.numberStars;
 
@@ -216,7 +229,7 @@ public class EndGameManager : MonoBehaviour
             scoreManagerClass.score += bonus;            
         }
 
-        //credits. saved if close, but not save if retry
+        //credits. saved if close, but not save if retry see SaveCredits()
         int currentCreditsCount = scoreManagerClass.score - bonus;
 
         //show earned credits
@@ -228,11 +241,14 @@ public class EndGameManager : MonoBehaviour
             totalCredits.text = $"{scoreManagerClass.score}";
 
         //get current hi score
-        int hiScore = gameDataClass.saveData.highScore[levelInList];
+        int currentHighScore = gameDataClass.saveData.highScore[levelInList];
+
+        highScoreUpdated = false;
 
         //set hi score
-        if (scoreManagerClass.score > hiScore)
+        if (scoreManagerClass.score > currentHighScore)
         {
+            highScoreUpdated = true;
             gameDataClass.saveData.highScore[levelInList] = scoreManagerClass.score;
 
             if (gameDataClass != null)
@@ -350,12 +366,17 @@ public class EndGameManager : MonoBehaviour
     }
 
     //save credit only if press Next or go to levels screen
-    public void SaveCredits()
+    public async void SaveCredits()
     {
         //add colected credits if Close or Next
         gameDataClass.saveData.credits += scoreManagerClass.score;
         gameDataClass.SaveToFile();
+
+        if (isInitializedLB)       
+            await AddScoreLB(scoreManagerClass.score);           
     }
+
+
 
     public void BuyMoves()
     {
@@ -421,6 +442,48 @@ public class EndGameManager : MonoBehaviour
     public void ReturnMusicRun()
     {
         soundManagerClass.ReturnToGame();
+    }
+
+    private async Task InitializeServices()
+    {
+        try
+        {
+            if (UnityServices.State != ServicesInitializationState.Initialized)
+            {
+                await UnityServices.InitializeAsync();
+            }
+
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            }
+
+            isInitializedLB = true;
+            Debug.Log("Unity Services initialized successfully in Game.");
+        }
+        catch (Exception e)
+        {
+            isInitializedLB =false;
+            Debug.LogError($"Unity Services initialization failed: {e.Message}");
+        }
+    }
+
+    public async Task AddScoreLB(int score)
+    {
+        try
+        {
+            //important set ID of your leaderboard
+            if (highScoreUpdated)
+            {
+                var playerEntry = await LeaderboardsService.Instance.AddPlayerScoreAsync(leaderboardId: "LMLBoard", score);
+            }
+
+            highScoreUpdated= false;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError(exception.Message);
+        }
     }
 
 }

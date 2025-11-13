@@ -100,10 +100,18 @@ public class LeaderboardManager : MonoBehaviour
 
             ClearPlayersList();
 
+            //add players to the list
             for (int i = 0; i < score.Results.Count; i++)
             {
                 LeaderboardPlayerItem playerItem = Instantiate(playerItemPrefab, playersContainer);
                 playerItem.Inialize(score.Results[i]);
+
+                //select player name
+                if(playerItem.nameText.text == gameDataClass.saveData.playerName)
+                {
+                    playerItem.nameText.fontStyle = FontStyles.Bold;
+                    playerItem.nameText.color = new Color32(0x5F, 0x77, 0x91, 0xFF);
+                }
             }
 
             totalPages = Mathf.CeilToInt((float)score.Total / (float)score.Limit);

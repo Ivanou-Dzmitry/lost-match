@@ -166,6 +166,7 @@ MonoBehaviour:
     lifeRecoveryTime: 
     colorBusterRecoveryTime: 
     lineBusterRecoveryTime: 
+    playerName: 
 --- !u!4 &6181241
 Transform:
   m_ObjectHideFlags: 0
@@ -1343,7 +1344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You are logged in and will play under the name:'
+  m_text: 'You are logged in, and will play under the name:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2376,7 +2377,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Retry
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
   m_sharedMaterial: {fileID: 4117882282613613248, guid: 718b78069e2fe934e9e67ae25f42d31f, type: 2}
@@ -3675,7 +3676,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5719664585843339976, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 700
+      value: 622.2
       objectReference: {fileID: 0}
     - target: {fileID: 6386237203433514511, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3703,11 +3704,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7072378420109936998, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_text
-      value: Log In
+      value: HELLO
       objectReference: {fileID: 0}
     - target: {fileID: 7361748109647263090, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 800
+      value: 750
       objectReference: {fileID: 0}
     - target: {fileID: 8309890156108707475, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_Spacing
@@ -3974,7 +3975,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425, y: -612}
+  m_AnchoredPosition: {x: 425, y: -560}
   m_SizeDelta: {x: 700, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &889906279
@@ -4075,8 +4076,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 425, y: -390}
-  m_SizeDelta: {x: 700, y: 252}
+  m_AnchoredPosition: {x: 425, y: -364}
+  m_SizeDelta: {x: 700, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &890466656
 MonoBehaviour:
@@ -4511,7 +4512,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 425, y: -423}
-  m_SizeDelta: {x: 700, y: 600}
+  m_SizeDelta: {x: 800, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &987384675
 MonoBehaviour:
@@ -4533,7 +4534,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Failed to connect to the network.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5235,7 +5236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7072378420109936998, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_text
-      value: Error
+      value: PROBLEM
       objectReference: {fileID: 0}
     - target: {fileID: 8309890156108707475, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       propertyPath: m_Spacing
@@ -7502,6 +7503,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915142431}
   m_CullTransparentMesh: 1
+--- !u!1 &1962261394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1962261396}
+  - component: {fileID: 1962261395}
+  m_Layer: 0
+  m_Name: PanelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1962261395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962261394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb5888c69d82754a95c3daaae4d238a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1962261396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962261394}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1963509391 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 40953629338735307, guid: 9dead62fd44649840ac401d836e80504, type: 3}
@@ -8296,3 +8341,4 @@ SceneRoots:
   - {fileID: 1381146099}
   - {fileID: 5002736970264995588}
   - {fileID: 399397223}
+  - {fileID: 1962261396}

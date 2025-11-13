@@ -58,7 +58,7 @@ public class UIManager : MonoBehaviour
 
     public GameLog log;
 
-    public GameObject maskPanel;
+    public GameObject maskPanel;    
 
     void Start()
     {
@@ -101,8 +101,6 @@ public class UIManager : MonoBehaviour
             panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
             panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size);
         }
-
-
 
     }
 

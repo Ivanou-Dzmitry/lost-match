@@ -39,7 +39,6 @@ public class SettingsManager : MonoBehaviour
     private bool eventsInitialized = false;
     public MenuManager menuManager;
 
-
     public static class SystemInformation
     {
         [DllImport("user32.dll")]

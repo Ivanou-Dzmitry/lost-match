@@ -32,6 +32,9 @@ public class SaveData
     public string lifeRecoveryTime;
     public string colorBusterRecoveryTime;
     public string lineBusterRecoveryTime;
+
+    [Header("Player")]
+    public string playerName;
 }
 
 public class GameData : MonoBehaviour
@@ -250,6 +253,8 @@ public class GameData : MonoBehaviour
         saveData.lifeRecoveryTime = "";
         saveData.colorBusterRecoveryTime = "";
         saveData.lineBusterRecoveryTime = "";
+
+        saveData.playerName = "Player";
     }
 
     private void OnDisable()
@@ -312,6 +317,9 @@ public class GameData : MonoBehaviour
             if (saveData.bonusesPrice[i] != boosterData[i].price)
                 saveData.bonusesPrice[i] = boosterData[i].price; // boosterData[i].desc
         }
+
+        if(saveData.playerName == null)
+            saveData.playerName = "Player";
 
         SaveToFile();
     }

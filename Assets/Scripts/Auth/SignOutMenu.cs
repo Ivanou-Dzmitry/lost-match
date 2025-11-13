@@ -11,6 +11,7 @@ public class SignOutMenu : Panel
     [SerializeField] private Button logoutButton = null;
     [SerializeField] private TMP_Text nameText = null;
 
+    private GameData gameDataClass;
 
     public override void Initialize()
     {
@@ -36,8 +37,18 @@ public class SignOutMenu : Panel
     }
 
     private void UpdatePlayerNameUI()
-    {
-        nameText.text = AuthenticationService.Instance.PlayerName;
+    {        
+        string playerName = AuthenticationService.Instance.PlayerName;
+
+        nameText.text = playerName;
+
+        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
+
+        if (gameDataClass != null)
+        {
+            gameDataClass.saveData.playerName = playerName;
+            gameDataClass.SaveToFile();
+        }
     }
 
 }

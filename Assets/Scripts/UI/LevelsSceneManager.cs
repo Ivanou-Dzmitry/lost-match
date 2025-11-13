@@ -74,6 +74,11 @@ public class LevelsSceneManager : MonoBehaviour
 
     public GameLog log;
 
+    [Header("Player")]
+    [SerializeField] public string currentPlayerName = "";
+    
+    public TMP_Text userNameText;
+
     private bool lastSegment;
 
     void Start()
@@ -164,7 +169,13 @@ public class LevelsSceneManager : MonoBehaviour
         else
         {
             log.WriteSysLog("ERROR: levelCylinder null");
-        }             
+        }
+
+        //set name
+        currentPlayerName = gameDataClass.saveData.playerName;
+
+        if(userNameText != null)
+            userNameText.text = "Player: " + currentPlayerName;
     }
 
 

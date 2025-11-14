@@ -175,7 +175,7 @@ public class LevelsSceneManager : MonoBehaviour
         currentPlayerName = gameDataClass.saveData.playerName;
 
         if(userNameText != null)
-            userNameText.text = "Player: " + currentPlayerName;
+            userNameText.text = "Name: " + currentPlayerName;
     }
 
 

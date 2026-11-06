@@ -21,12 +21,12 @@ public static class LevelTableExport
     private const float WrapBombMoves = 3f;
     private const float ColorBombMoves = 4f;
 
-    // ----- target curve: the base rises from world to world, the same wave repeats inside every world -----
-    private const float TargetBaseFirstWorld = 0.55f;
-    private const float TargetBaseStep = 0.05f;
-    private const float TargetBaseMax = 1.2f;
-    // position in the world 1..10: easy start, a small peak at 5, the biggest peak at the world finale (10)
-    private static readonly float[] WaveInWorld = { 0.70f, 0.85f, 1.00f, 0.80f, 1.20f, 0.75f, 0.95f, 1.05f, 0.85f, 1.35f };
+    // ----- target curve: the wave of levels 1-10 (made after Candy Crush) repeats in every world, the base grows -----
+    private const float TargetBaseFirstWorld = 0.99f;   // median pressure of levels 1-10
+    private const float TargetBaseGrowth = 0.04f;       // the base grows by 4% of the first world per world
+    private const float TargetBaseMax = 1.6f;
+    // pressure of levels 1-10 divided by their median: the shape of the wave, by position in the world
+    private static readonly float[] WaveInWorld = { 0.72f, 0.46f, 0.56f, 0.40f, 1.41f, 1.26f, 1.69f, 0.82f, 1.18f, 1.19f };
     public const float ReviewDelta = 0.3f;        // |pressure - target| above this = "Review"
     public const float PeakFactor = 1.25f;        // Role: Peak if pressure > local median x this
     public const float BreatherFactor = 0.7f;     // Role: Breather if pressure < local median x this
@@ -316,7 +316,7 @@ public static class LevelTableExport
     {
         int world = (level - 1) / 10;           // 0-based
         int position = (level - 1) % 10;        // 0-based
-        float baseValue = Mathf.Min(TargetBaseMax, TargetBaseFirstWorld + TargetBaseStep * world);
+        float baseValue = Mathf.Min(TargetBaseMax, TargetBaseFirstWorld * (1f + TargetBaseGrowth * world));
         return baseValue * WaveInWorld[position];
     }
 

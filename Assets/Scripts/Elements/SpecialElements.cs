@@ -33,7 +33,7 @@ public class SpecialElements : MonoBehaviour
         uiManagerClass = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
     }
 
-    private void OnMouseDown()
+    public void PointerDown()
     {
         if(bonusShopClass.bonusSelected == 0)
         {

@@ -1,10 +1,12 @@
-using System.Collections;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-using System.Collections.Generic;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+using Unity.Services.Leaderboards;
+using UnityEngine;
+using System.Threading.Tasks;
+using UnityEngine.UI;
 
 
 public class BonusShop : MonoBehaviour
@@ -301,7 +303,7 @@ public class BonusShop : MonoBehaviour
             }                
         }
 
-        //set credits
+        //set credits REDUCE
         gameDataClass.saveData.credits = tempCreditsCount;
 
         //update text on panel

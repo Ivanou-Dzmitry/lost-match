@@ -56,8 +56,6 @@ public class AuthentificationMenu : Panel
         string username = usernameInput.text.Trim();
         string password = passwordInput.text.Trim();
 
-        Debug.Log($"SignUp attempt with username: {username} and password: {password}");
-
         if (string.IsNullOrEmpty(username) == false && string.IsNullOrEmpty(password) == false)
         {
             if(IsPasswordValid(password))

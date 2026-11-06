@@ -74,7 +74,7 @@ public class AvatarManager : MonoBehaviour
 
     private void ChangeAvaOnClick()
     {
-        if (Input.GetMouseButtonDown(0))  // Left click or touch
+        if (PointerInput.PressedThisFrame)  // Left click or touch
         {
             if (avatarImage.sprite == avatarSprite[3])
             {

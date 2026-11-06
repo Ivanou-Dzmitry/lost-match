@@ -105,7 +105,7 @@ public class ElementController : MonoBehaviour
     }
 
     //step 1
-    private void OnMouseDown()
+    public void PointerDown()
     {
        //destroy hint
         if (hintManagerClass != null)
@@ -122,8 +122,8 @@ public class ElementController : MonoBehaviour
         //first mouse position
         if (gameBoardClass.currentState == GameState.move)
         {
-            firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //first touch
-            //firstTouchPos = Input.mousePosition; // Don't convert yet
+            firstTouchPos = Camera.main.ScreenToWorldPoint((Vector3)PointerInput.Position); //first touch
+            //firstTouchPos = (Vector3)PointerInput.Position; // Don't convert yet
         }
 
         //run using bonus
@@ -182,7 +182,7 @@ public class ElementController : MonoBehaviour
 
 
     //step 2
-    private void OnMouseUp()
+    public void PointerUp()
     {
         //animation
         if (animatorElement != null)
@@ -193,7 +193,7 @@ public class ElementController : MonoBehaviour
         //mose final position
         if (gameBoardClass.currentState == GameState.move)
         {
-            finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition); //mouse 2 position
+            finalTouchPos = Camera.main.ScreenToWorldPoint((Vector3)PointerInput.Position); //mouse 2 position
             CalculateAngle(); //step 3
         }
     }

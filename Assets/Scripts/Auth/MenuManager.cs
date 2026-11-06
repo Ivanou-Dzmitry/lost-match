@@ -79,7 +79,7 @@ public class MenuManager : MonoBehaviour
                 PanelManager.Open("auth");
             }
         }
-        catch (Exception exception)
+        catch (Exception)
         {
             ShowError(ErrorMenu.Action.StartService, "Failed to connect to the network.", "Retry");
         }
@@ -92,11 +92,11 @@ public class MenuManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
-        catch (AuthenticationException exception)
+        catch (AuthenticationException)
         {
             ShowError(ErrorMenu.Action.OpenAuthMenu, "Failed to sign in.", "OK");
         }
-        catch (RequestFailedException exception)
+        catch (RequestFailedException)
         {
             ShowError(ErrorMenu.Action.SignIn, "Failed to connect to the network.", "Retry");
         }
@@ -109,11 +109,11 @@ public class MenuManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
         }
-        catch (AuthenticationException exception)
+        catch (AuthenticationException)
         {
             ShowError(ErrorMenu.Action.OpenAuthMenu, "Username or password is wrong.", "OK");
         }
-        catch (RequestFailedException exception)
+        catch (RequestFailedException)
         {
             ShowError(ErrorMenu.Action.OpenAuthMenu, "Failed to connect to the network.", "OK");
         }
@@ -126,11 +126,11 @@ public class MenuManager : MonoBehaviour
         {
             await AuthenticationService.Instance.SignUpWithUsernamePasswordAsync(username, password);
         }
-        catch (AuthenticationException exception)
+        catch (AuthenticationException)
         {
             ShowError(ErrorMenu.Action.OpenAuthMenu, "Failed to sign you up.", "OK");
         }
-        catch (RequestFailedException exception)
+        catch (RequestFailedException)
         {
             ShowError(ErrorMenu.Action.OpenAuthMenu, "Failed to connect to the network.", "OK");
         }

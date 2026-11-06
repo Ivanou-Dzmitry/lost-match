@@ -124,12 +124,22 @@ public class GameData : MonoBehaviour
         {
             string savingData = JsonUtility.ToJson(gameData.saveData, true);
             string filePath = Path.Combine(Application.persistentDataPath, PLAYER_SAVES);
+            string tmpPath = filePath + ".tmp";
+            string bakPath = filePath + ".bak";
 
-            File.WriteAllText(filePath, savingData);            
+            // Write to a temp file first: a crash mid-write can no longer break the real save.
+            File.WriteAllText(tmpPath, savingData);
+
+            if (File.Exists(filePath))
+            {
+                File.Copy(filePath, bakPath, true); // keep the last good save
+                File.Delete(filePath);
+            }
+            File.Move(tmpPath, filePath);
         }
         catch (Exception ex)
         {
-            logClass.WriteSysLog($"{className}Error while saving game data: " + ex.Message);
+            logClass?.WriteSysLog($"{className}Error while saving game data: " + ex.Message);
         }
     }
 
@@ -138,19 +148,47 @@ public class GameData : MonoBehaviour
         //check file
         string filePath = Path.Combine(Application.persistentDataPath, PLAYER_SAVES);
 
-        if (File.Exists(filePath))
+        // main save first, then the backup written by SaveToFile
+        SaveData loaded = TryReadSave(filePath) ?? TryReadSave(filePath + ".bak");
+
+        if (loaded != null)
         {
-            string loadedData = File.ReadAllText(filePath);
-            saveData = JsonUtility.FromJson<SaveData>(loadedData);
+            saveData = loaded;
 
             // Fix any size mismatch
             PatchSavedData();
         }
         else
         {
-            //default values
+            //default values (no save yet, or both files are unreadable)
             AddDefaultData();
-            logClass.WriteSysLog($"{className}Default data was added");
+            logClass?.WriteSysLog($"{className}Default data was added");
+        }
+    }
+
+    private SaveData TryReadSave(string path)
+    {
+        try
+        {
+            if (!File.Exists(path))
+                return null;
+
+            SaveData data = JsonUtility.FromJson<SaveData>(File.ReadAllText(path));
+
+            bool valid = data != null
+                && data.isActive != null && data.stars != null && data.highScore != null
+                && data.bonuses != null && data.maxBonusCount != null
+                && data.bonusesPrice != null && data.bonusesPrice.Length >= 12;
+
+            if (!valid)
+                logClass?.WriteSysLog($"{className}Save file is incomplete: {path}");
+
+            return valid ? data : null;
+        }
+        catch (Exception ex)
+        {
+            logClass?.WriteSysLog($"{className}Cannot read save file {path}: {ex.Message}");
+            return null;
         }
     }
 

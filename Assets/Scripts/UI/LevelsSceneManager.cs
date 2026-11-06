@@ -443,10 +443,10 @@ public class LevelsSceneManager : MonoBehaviour
         }
 
         // Detect left mouse button click
-        if (Input.GetMouseButtonDown(0)) 
+        if (PointerInput.PressedThisFrame) 
         {
             // Create a ray from the camera through the mouse position
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(PointerInput.Position);
             RaycastHit hit;
 
             // Perform the raycast
@@ -506,46 +506,16 @@ public class LevelsSceneManager : MonoBehaviour
 
     private void SwipeDetector()
     {
-        if (Input.touchCount > 0) // Ensure at least one touch
+        // Mouse and touch go through the same pointer (Input System)
+        if (PointerInput.PressedThisFrame)
         {
-            Touch touch = Input.GetTouch(0); // Only process the first touch
-
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    startTouchPosition = touch.position;
-                    touchStartTime = Time.time;
-                    swipeDetected = false; // Reset swipe detection
-                    break;
-
-                case TouchPhase.Moved:
-                    endTouchPosition = touch.position; // Continuously update the end position                    
-                    break;
-
-                case TouchPhase.Ended:
-                    endTouchPosition = touch.position;
-                    float swipeTime = Time.time - touchStartTime;
-
-                    if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)
-                    {                        
-                        HandleSwipe();
-                        swipeDetected = true;
-                    }
-                    break;
-            }
-        }
-
-        
-       // Mouse Input (for testing on PC)
-        if (Input.GetMouseButtonDown(0))
-        {
-            startTouchPosition = Input.mousePosition;
+            startTouchPosition = PointerInput.Position;
             touchStartTime = Time.time;
             swipeDetected = false;
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (PointerInput.ReleasedThisFrame)
         {
-            endTouchPosition = Input.mousePosition;
+            endTouchPosition = PointerInput.Position;
             float swipeTime = Time.time - touchStartTime;
 
             if (!swipeDetected && IsValidSwipe() && swipeTime < timeThreshold)

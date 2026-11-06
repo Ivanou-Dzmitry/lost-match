@@ -239,6 +239,13 @@ public class GameBoard : MonoBehaviour
         {
             gameDataClass.LoadFromFile();
             loadedLevel = gameDataClass.saveData.levelToLoad;
+
+#if UNITY_EDITOR
+            // Level Editor, "Play level": test any level without the menu
+            int testLevel = UnityEditor.EditorPrefs.GetInt("LM_TestLevel", 0);
+            if (testLevel > 0)
+                loadedLevel = testLevel;
+#endif
         }
 
         if (worldManager != null)

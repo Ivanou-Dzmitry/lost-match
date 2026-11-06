@@ -172,7 +172,8 @@ public class LevelsSceneManager : MonoBehaviour
         }
 
         //set name
-        currentPlayerName = gameDataClass.saveData.playerName;
+        // Google Play Games name if signed in, otherwise the last saved one
+        currentPlayerName = PlayServices.IsSignedIn ? PlayServices.PlayerName : gameDataClass.saveData.playerName;
 
         if(userNameText != null)
             userNameText.text = "Name: " + currentPlayerName;

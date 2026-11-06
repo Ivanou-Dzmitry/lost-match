@@ -63,9 +63,26 @@ public class MenuManager : MonoBehaviour
         // Signed in: nothing to show, Google shows its own welcome message.
         // Not signed in: the panel explains it and offers the "Sign in" button.
         PanelManager.CloseAll();
-        if (!PlayServices.IsSignedIn)
+        if (PlayServices.IsSignedIn)
+        {
+            SavePlayerName();
+        }
+        else
         {
             PanelManager.Open("login");
+        }
+    }
+
+    // Keeps the Google name in the save, so it is shown even when the next start is offline
+    private void SavePlayerName()
+    {
+        GameObject gameDataObject = GameObject.FindWithTag("GameData");
+        GameData gameData = gameDataObject != null ? gameDataObject.GetComponent<GameData>() : null;
+
+        if (gameData != null && gameData.saveData != null)
+        {
+            gameData.saveData.playerName = PlayServices.PlayerName;
+            gameData.SaveToFile();
         }
     }
 }

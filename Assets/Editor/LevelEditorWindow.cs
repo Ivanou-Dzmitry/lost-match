@@ -72,6 +72,7 @@ public class LevelEditorWindow : EditorWindow
     private readonly Dictionary<TileKind, Sprite> kindSprites = new Dictionary<TileKind, Sprite>();
     private Dictionary<string, Sprite> goalSprites = new Dictionary<string, Sprite>();
     private string[] goalValues = DefaultGoalValues;
+    private List<float> curve = new List<float>();   // pressure of every saved level, index = level number - 1
 
     [MenuItem("Lost Match/Level Editor", priority = 10)]
     private static void Open()
@@ -494,10 +495,12 @@ public class LevelEditorWindow : EditorWindow
         FindWorldManager();
         if (worldManager == null) return;
 
+        curve = new List<float>();
         int total = worldManager.GetTotalLevelsCount();
         for (int n = 1; n <= total; n++)
         {
             Level l = worldManager.GetLevel(n, out World _);
+            curve.Add(l != null ? LevelTableExport.PressureOfAsset(l) : 0f);
             if (l == null || l.levelGoals == null) continue;
 
             foreach (BlankGoalClass g in l.levelGoals)
@@ -568,6 +571,9 @@ public class LevelEditorWindow : EditorWindow
         if (GUILayout.Button("New level", EditorStyles.toolbarButton, GUILayout.Width(70))) NewLevel();
 
         GUILayout.FlexibleSpace();
+
+        if (GUILayout.Button("Export table", EditorStyles.toolbarButton, GUILayout.Width(85)))
+            LevelTableExport.Export();
 
         if (!isDraft && GUILayout.Button("Select asset", EditorStyles.toolbarButton, GUILayout.Width(80)))
             Selection.activeObject = level;
@@ -727,17 +733,75 @@ public class LevelEditorWindow : EditorWindow
         }
     }
 
+    private bool showWhatIf = true;
+
+    // input of the pressure estimate for the level that is painted now (not saved yet)
+    private LevelTableExport.PressureInput BuildPressureInput()
+    {
+        var count = new Dictionary<TileKind, int>();
+        foreach (int v in obj)
+            if (v >= 0) count[(TileKind)v] = count.TryGetValue((TileKind)v, out int c) ? c + 1 : 1;
+
+        var goals = new List<(string match, int need)>();
+        if (level.levelGoals != null)
+            foreach (BlankGoalClass g in level.levelGoals)
+                goals.Add((g.matchValue, g.numberGoalsNeeded));
+
+        return new LevelTableExport.PressureInput
+        {
+            Colours = level.element != null ? level.element.Length : 0,
+            Moves = level.endGameRequrimentsForLevel != null ? level.endGameRequrimentsForLevel.counterValue : 0,
+            Goals = goals,
+            Count = count,
+            ElementTags = (level.element ?? new GameObject[0]).Where(e => e != null).Select(e => e.tag).ToList(),
+        };
+    }
+
     private void DrawStats()
     {
         int area = back.Count(v => (v >= 26 && v <= 33) || v == 38);
         int objects = obj.Count(v => v >= 0);
         int preloaded = pre.Count(v => v >= 0);
-        EditorGUILayout.LabelField($"Playable cells: {area}   Objects: {objects}   Preloaded: {preloaded}", EditorStyles.miniLabel);
+        int empty = obj.Count(v => v == (int)TileKind.Empty);
+        EditorGUILayout.LabelField($"Playable cells: {area - empty}   (background {area}, empty {empty})   Objects: {objects}   Preloaded: {preloaded}", EditorStyles.miniLabel);
+
+        // ----- live difficulty -----
+        LevelTableExport.PressureInput input = BuildPressureInput();
+        var notes = new List<string>();
+        LevelTableExport.PressureResult result = LevelTableExport.EstimateDetailed(input, notes);
+
+        float pressure = result.Pressure;
+        float target = LevelTableExport.TargetPressure(levelNumber);
+        float delta = pressure - target;
+
+        // neighbours are the saved levels, this level is the one in the editor
+        var around = new List<float>(curve);
+        while (around.Count < levelNumber) around.Add(0f);
+        around[levelNumber - 1] = pressure;
+        float local = LevelTableExport.LocalMedian(around, levelNumber - 1);
+
+        string role = pressure <= 0f ? "-"
+            : pressure > local * LevelTableExport.PeakFactor ? "Peak"
+            : pressure < local * LevelTableExport.BreatherFactor ? "Breather" : "Normal";
+
+        var big = new GUIStyle(EditorStyles.boldLabel);
+        big.normal.textColor = RatingColor(pressure);
+        EditorGUILayout.LabelField($"Pressure {pressure:0.00} ({LevelTableExport.Rate(pressure)})   Role: {role}   Neighbours: {local:0.00}", big);
+
+        string finale = levelNumber % 10 == 0 ? "   (world finale: aim for a peak)" : "";
+        string check = Mathf.Abs(delta) > LevelTableExport.ReviewDelta ? (delta > 0 ? "  too hard for its place" : "  too easy for its place") : "  ok";
+        EditorGUILayout.LabelField($"Target {target:0.00}   Delta {delta:+0.00;-0.00}{check}{finale}", EditorStyles.miniLabel);
+
+        DrawLoadBar(result, input.Moves);
+        DrawCurveChart(pressure);
+
+        showWhatIf = EditorGUILayout.Foldout(showWhatIf, "What changes the difficulty (this level)", true);
+        if (showWhatIf) DrawWhatIf(input, pressure);
+
+        foreach (string note in notes)
+            EditorGUILayout.HelpBox(note, MessageType.Warning);
 
         int elementCount = level.element != null ? level.element.Length : 0;
-        if (elementCount < 3)
-            EditorGUILayout.HelpBox("Add at least 3 element types.", MessageType.Warning);
-
         if (pre.Any(v => v >= elementCount))
             EditorGUILayout.HelpBox("A preloaded element uses a type that is not in the element list.", MessageType.Warning);
 
@@ -749,12 +813,135 @@ public class LevelEditorWindow : EditorWindow
                 break;
             }
         }
+    }
 
-        if (level.levelGoals == null || level.levelGoals.Length == 0)
+    // moves needed for the goals against the moves available: blue = colour goals, orange = obstacles, purple = bombs
+    private void DrawLoadBar(LevelTableExport.PressureResult result, int moves)
+    {
+        Rect r = GUILayoutUtility.GetRect(Mathf.Max(cols * CellSize, 400), 18);
+        EditorGUI.DrawRect(r, new Color(0.14f, 0.14f, 0.14f));
+        if (moves <= 0) return;
+
+        float scale = r.width / (moves * 2f);     // the full bar = 200% of the moves
+        float x = r.x;
+        void Segment(float needed, Color c)
         {
-            SerializedProperty g = so.FindProperty("levelGoals");
-            if (g.arraySize == 0)
-                EditorGUILayout.HelpBox("No level goals yet.", MessageType.Info);
+            float w = needed * scale;
+            if (w <= 0f) return;
+            EditorGUI.DrawRect(new Rect(x, r.y, Mathf.Min(w, r.xMax - x), r.height), c);
+            x += w;
+        }
+
+        Segment(result.ElementMoves, new Color(0.3f, 0.55f, 0.9f));
+        Segment(result.ObstacleMoves, new Color(0.95f, 0.6f, 0.2f));
+        Segment(result.BombMoves, new Color(0.7f, 0.4f, 0.85f));
+
+        // 100% = all the moves
+        EditorGUI.DrawRect(new Rect(r.x + moves * scale, r.y - 1, 2, r.height + 2), Color.white);
+
+        var small = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
+        small.normal.textColor = Color.white;
+        GUI.Label(r, $" colours {result.ElementMoves:0.0}  obstacles {result.ObstacleMoves:0.0}  bombs {result.BombMoves:0.0}  of {moves} moves", small);
+    }
+
+    // changes the level a little and shows how the pressure moves: this is what really affects the difficulty
+    private void DrawWhatIf(LevelTableExport.PressureInput input, float pressure)
+    {
+        if (input.Moves <= 0)
+        {
+            EditorGUILayout.HelpBox("Set the number of moves to see the effects.", MessageType.Info);
+            return;
+        }
+
+        void Row(string label, LevelTableExport.PressureInput changed)
+        {
+            float p = LevelTableExport.EstimateDetailed(changed, null).Pressure;
+            float d = p - pressure;
+            var style = new GUIStyle(EditorStyles.miniLabel);
+            style.normal.textColor = d > 0.005f ? new Color(0.95f, 0.5f, 0.4f) : d < -0.005f ? new Color(0.5f, 0.85f, 0.5f) : Color.gray;
+            EditorGUILayout.LabelField($"{label}:  {d:+0.00;-0.00;0.00}  ->  {p:0.00}", style);
+        }
+
+        LevelTableExport.PressureInput With(int moves, int colours, IList<(string match, int need)> goals)
+        {
+            var copy = input;
+            copy.Moves = moves;
+            copy.Colours = colours;
+            copy.Goals = goals;
+            return copy;
+        }
+
+        Row("+1 move", With(input.Moves + 1, input.Colours, input.Goals));
+        Row("-1 move", With(Mathf.Max(1, input.Moves - 1), input.Colours, input.Goals));
+        Row("+1 colour", With(input.Moves, input.Colours + 1, input.Goals));
+        Row("-1 colour", With(input.Moves, Mathf.Max(1, input.Colours - 1), input.Goals));
+
+        for (int i = 0; i < input.Goals.Count; i++)
+        {
+            var more = new List<(string match, int need)>(input.Goals);
+            more[i] = (more[i].match, more[i].need + 5);
+            Row($"goal {more[i].match} +5", With(input.Moves, input.Colours, more));
+        }
+    }
+
+    private static Color RatingColor(float p)
+    {
+        if (p <= 0f) return Color.gray;
+        if (p < 0.55f) return new Color(0.4f, 0.8f, 0.4f);
+        if (p < 0.8f) return new Color(0.9f, 0.85f, 0.3f);
+        if (p < 1.0f) return new Color(0.95f, 0.6f, 0.2f);
+        return new Color(0.9f, 0.3f, 0.3f);
+    }
+
+    // bars = pressure of the levels around this one (this level is live), white dashes = the target curve
+    private void DrawCurveChart(float livePressure)
+    {
+        const float height = 90f;
+        const float maxValue = 2.5f;
+        const int radius = 14;
+
+        Rect r = GUILayoutUtility.GetRect(Mathf.Max(cols * CellSize, 400), height);
+        EditorGUI.DrawRect(r, new Color(0.14f, 0.14f, 0.14f));
+
+        int total = Mathf.Max(curve.Count, levelNumber);
+        int first = Mathf.Max(1, levelNumber - radius);
+        int last = Mathf.Min(total, levelNumber + radius);
+        int count = last - first + 1;
+        if (count <= 0) return;
+
+        float barW = r.width / count;
+        float usable = r.height - 12;
+
+        // the line of 1.0
+        float oneY = r.yMax - Mathf.Clamp01(1f / maxValue) * usable;
+        EditorGUI.DrawRect(new Rect(r.x, oneY, r.width, 1), new Color(1f, 1f, 1f, 0.2f));
+
+        var small = new GUIStyle(EditorStyles.miniLabel) { fontSize = 8, alignment = TextAnchor.UpperCenter };
+        small.normal.textColor = new Color(1f, 1f, 1f, 0.6f);
+
+        for (int n = first; n <= last; n++)
+        {
+            int i = n - first;
+            float value = n == levelNumber ? livePressure : (n - 1 < curve.Count ? curve[n - 1] : 0f);
+            float h = Mathf.Clamp01(value / maxValue) * usable;
+            var bar = new Rect(r.x + i * barW + 1, r.yMax - h, barW - 2, h);
+
+            EditorGUI.DrawRect(bar, RatingColor(value));
+
+            if (n == levelNumber)
+            {
+                EditorGUI.DrawRect(new Rect(bar.x - 1, r.y, bar.width + 2, 1), Color.white);
+                EditorGUI.DrawRect(new Rect(bar.x - 1, r.yMax - 1, bar.width + 2, 1), Color.white);
+                EditorGUI.DrawRect(new Rect(bar.x - 1, r.y, 1, r.height), Color.white);
+                EditorGUI.DrawRect(new Rect(bar.xMax, r.y, 1, r.height), Color.white);
+            }
+
+            // the target of this level
+            float ty = r.yMax - Mathf.Clamp01(LevelTableExport.TargetPressure(n) / maxValue) * usable;
+            EditorGUI.DrawRect(new Rect(r.x + i * barW, ty, barW, 2), Color.white);
+
+            if (n % 5 == 0 || n == levelNumber)
+                GUI.Label(new Rect(r.x + i * barW - 6, r.y, barW + 12, 12), n.ToString(), small);
         }
     }
 

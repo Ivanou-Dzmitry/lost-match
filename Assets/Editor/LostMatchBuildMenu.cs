@@ -91,6 +91,41 @@ public static class LostMatchBuildMenu
         EditorUtility.DisplayDialog("Lost Match", $"EventSystems fixed in {fixedCount} scene(s).", "OK");
     }
 
+    [MenuItem(Root + "Tools/Remove Missing Scripts (all build scenes)", priority = 41)]
+    static void RemoveMissingScripts()
+    {
+        if (!CanTouchScenes()) return;
+
+        string previous = SceneManager.GetActiveScene().path;
+        int removed = 0;
+        try
+        {
+            foreach (string path in BuildScenePaths())
+            {
+                var scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+                int inScene = 0;
+
+                foreach (var root in scene.GetRootGameObjects())
+                    foreach (var t in root.GetComponentsInChildren<Transform>(true))
+                        inScene += GameObjectUtility.RemoveMonoBehavioursWithMissingScript(t.gameObject);
+
+                if (inScene > 0)
+                {
+                    EditorSceneManager.MarkSceneDirty(scene);
+                    EditorSceneManager.SaveScene(scene);
+                    removed += inScene;
+                    Debug.Log($"[LostMatch] {path}: removed {inScene} missing script(s).");
+                }
+            }
+        }
+        finally
+        {
+            ReopenScene(previous);
+        }
+
+        EditorUtility.DisplayDialog("Lost Match", $"Removed {removed} missing script(s).", "OK");
+    }
+
     // ───────────────────────── main flow ─────────────────────────
 
     static void Run(bool bump, bool build)

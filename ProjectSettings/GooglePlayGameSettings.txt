@@ -1,0 +1,9 @@
+lastUpgrade=20100
+proj.pluginVersion=2.1.0
+proj.AppId=303449502389
+and.BundleId=com.frosofco.com.LostMatch
+proj.classDir=Assets
+proj.ConstantsClassName=GPGSIds
+and.ResourceData=%3c%3fxml+version%3d%221.0%22+encoding%3d%22utf-8%22%3f%3e%0d%0a%3cresources%3e%0d%0a++%3cstring+name%3d%22app_id%22+translatable%3d%22false%22%3e303449502389%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22package_name%22+translatable%3d%22false%22%3ecom.frosofco.com.LostMatch%3c%2fstring%3e%0d%0a++%3cstring+name%3d%22leaderboard_lostmatch_total_score%22+translatable%3d%22false%22%3eCgkIteX_t-oIEAIQAg%3c%2fstring%3e%0d%0a%3c%2fresources%3e
+and.ClientId=
+android.SetupDone=true

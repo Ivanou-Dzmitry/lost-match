@@ -1,11 +1,9 @@
 using System;
 using TMPro;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Unity.Services.Leaderboards;
 using System.Threading.Tasks;
 
 public enum GameType
@@ -372,8 +370,8 @@ public class EndGameManager : MonoBehaviour
         gameDataClass.saveData.credits += scoreManagerClass.score;
         gameDataClass.SaveToFile();
 
-        if (isInitializedLB)       
-            await AddScoreLB(scoreManagerClass.score);           
+        if (isInitializedLB || PlayServices.IsSignedIn)
+            await AddScoreLB();
     }
 
 
@@ -446,39 +444,21 @@ public class EndGameManager : MonoBehaviour
 
     private async Task InitializeServices()
     {
-        try
-        {
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-            {
-                await UnityServices.InitializeAsync();
-            }
-
-            if (!AuthenticationService.Instance.IsSignedIn)
-            {
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            }
-
-            isInitializedLB = true;
-            Debug.Log("Unity Services initialized successfully in Game.");
-        }
-        catch (Exception e)
-        {
-            isInitializedLB =false;
-            Debug.LogError($"Unity Services initialization failed: {e.Message}");
-        }
+        isInitializedLB = await PlayServices.SignInAsync();
     }
 
-    public async Task AddScoreLB(int score)
+    //leaderboard "Total score": sum of the best scores of all levels
+    public async Task AddScoreLB()
     {
         try
         {
-            //important set ID of your leaderboard
             if (highScoreUpdated)
             {
-                var playerEntry = await LeaderboardsService.Instance.AddPlayerScoreAsync(leaderboardId: "LMLBoard", score);
+                long totalScore = gameDataClass.saveData.highScore.Sum(x => (long)x);
+                await PlayServices.ReportScoreAsync(totalScore);
             }
 
-            highScoreUpdated= false;
+            highScoreUpdated = false;
         }
         catch (Exception exception)
         {

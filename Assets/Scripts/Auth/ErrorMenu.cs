@@ -55,14 +55,12 @@ public class ErrorMenu : Panel
         switch (action)
         {
             case Action.StartService:
+            case Action.SignIn:
                 MenuManager.Singleton.StartClientService();
                 break;
-            case Action.SignIn:
-                MenuManager.Singleton.SignInAnonymouslyAsync();
-                break;
             case Action.OpenAuthMenu:
+                // there is no login screen any more
                 PanelManager.CloseAll();
-                PanelManager.Open("auth");
                 break;
         }
     }

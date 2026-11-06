@@ -1,15 +1,16 @@
-using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
-using Unity.Services.Leaderboards;  
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
 
+/// <summary>
+/// Leaderboard screen. Google Play Games gives the top 25 players in one request,
+/// the pages are made on the client.
+/// </summary>
 public class LeaderboardManager : MonoBehaviour
 {
-    private GameData gameDataClass;
+    private const int MaxRows = 25;
 
     [SerializeField] private int playersPerPage = 5; 
     [SerializeField] private LeaderboardPlayerItem playerItemPrefab = null; 
@@ -18,20 +19,12 @@ public class LeaderboardManager : MonoBehaviour
     [SerializeField] private Button nextButton = null; 
     [SerializeField] private Button prevButton = null; 
 
+    private readonly List<LeaderboardRow> rows = new List<LeaderboardRow>();
+
     private int currentPage = 1;
     private int totalPages = 0;
 
-    private bool isInitialized = false;
-
     private async void Start()
-    {
-        gameDataClass = GameObject.FindWithTag("GameData").GetComponent<GameData>();
-
-        await InitializeServices();
-        await LoadPlayers(1); // Load first page after initialization
-    }
-
-    private async Task InitializeServices()
     {
         ClearPlayersList();
 
@@ -41,115 +34,113 @@ public class LeaderboardManager : MonoBehaviour
         if (prevButton != null)
             prevButton.onClick.AddListener(PrevPage);
 
-        try
-        {
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-            {
-                await UnityServices.InitializeAsync();
-            }
+        await PlayServices.SignInAsync();
+        await SyncLocalScore();
+        await Reload();
+    }
 
-            if (!AuthenticationService.Instance.IsSignedIn)
-            {
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            }
+    /// <summary>
+    /// Sends the total of the saved best scores. Players who already have progress
+    /// (it was made before Google Play Games or without a new record) get on the board too.
+    /// Google keeps the best value, so sending it again is safe.
+    /// </summary>
+    private async Task SyncLocalScore()
+    {
+        if (!PlayServices.IsSignedIn)
+            return;
 
-            isInitialized = true;
-            //Debug.Log("Unity Services initialized successfully.");
-        }
-        catch (Exception e)
+        GameObject gameDataObject = GameObject.FindWithTag("GameData");
+        GameData gameData = gameDataObject != null ? gameDataObject.GetComponent<GameData>() : null;
+
+        if (gameData == null || gameData.saveData == null || gameData.saveData.highScore == null)
+            return;
+
+        long total = 0;
+        foreach (int score in gameData.saveData.highScore)
+            total += score;
+
+        if (total > 0 && await PlayServices.ReportScoreAsync(total))
         {
-            Debug.LogError($"Unity Services initialization failed: {e.Message}");
+            // the server needs a moment before the new score shows in the list
+            await Task.Delay(1500);
         }
     }
 
+    /// <summary>Opens the Google leaderboard screen (can be wired to a button).</summary>
+    public void ShowGoogleLeaderboard()
+    {
+        PlayServices.ShowLeaderboardUI();
+    }
+
+    /// <summary>Sends a new score and refreshes the list.</summary>
     public async Task AddScoreLeaderboard(int score)
     {
-        try
+        if (await PlayServices.ReportScoreAsync(score))
         {
-            //important set ID of your leaderboard
-            var playerEntry = await LeaderboardsService.Instance.AddPlayerScoreAsync(leaderboardId: "LMLBoard", score);
-
-            await LoadPlayers(currentPage); // await the async method properly
-        }
-        catch (Exception exception)
-        {
-            Debug.LogError(exception.Message);
+            await Reload();
         }
     }
 
-    private async Task LoadPlayers(int page)
+    private async Task Reload()
     {
-        if (!isInitialized)
-        {
-            Debug.LogWarning("Services not initialized yet!");
+        List<LeaderboardRow> loaded = await PlayServices.LoadTopScoresAsync(MaxRows);
+
+        // the screen can be closed while the request is running
+        if (this == null)
             return;
-        }
 
-        try
-        {
-            nextButton.interactable = false;
-            prevButton.interactable = false;
+        rows.Clear();
+        rows.AddRange(loaded);
 
-            GetScoresOptions options = new GetScoresOptions
-            {
-                Offset = (page - 1) * playersPerPage,
-                Limit = playersPerPage
-            };
-
-            var score = await LeaderboardsService.Instance.GetScoresAsync("LMLBoard", options);
-
-            ClearPlayersList();
-
-            //add players to the list
-            for (int i = 0; i < score.Results.Count; i++)
-            {
-                LeaderboardPlayerItem playerItem = Instantiate(playerItemPrefab, playersContainer);
-                playerItem.Inialize(score.Results[i]);
-
-                //select player name
-                if(playerItem.nameText.text == gameDataClass.saveData.playerName)
-                {
-                    playerItem.nameText.fontStyle = FontStyles.Bold;
-                    playerItem.nameText.color = new Color32(0x5F, 0x77, 0x91, 0xFF);
-                }
-            }
-
-            totalPages = Mathf.CeilToInt((float)score.Total / (float)score.Limit);
-            currentPage = page;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.Message);
-        }
-
-        pageText.text = $"{currentPage}/{totalPages}";
-        nextButton.interactable = currentPage < totalPages && totalPages > 1;
-        prevButton.interactable = currentPage > 1 && totalPages > 1;
+        totalPages = Mathf.Max(1, Mathf.CeilToInt(rows.Count / (float)playersPerPage));
+        ShowPage(1);
     }
 
-    private async void NextPage()
+    private void ShowPage(int page)
     {
-        // Go forward unless we're already on the last page
+        currentPage = Mathf.Clamp(page, 1, totalPages);
+
+        ClearPlayersList();
+
+        int first = (currentPage - 1) * playersPerPage;
+        int last = Mathf.Min(first + playersPerPage, rows.Count);
+
+        for (int i = first; i < last; i++)
+        {
+            LeaderboardPlayerItem playerItem = Instantiate(playerItemPrefab, playersContainer);
+            playerItem.Inialize(rows[i]);
+
+            // highlight the player
+            if (rows[i].IsLocalPlayer)
+            {
+                playerItem.nameText.fontStyle = FontStyles.Bold;
+                playerItem.nameText.color = new Color32(0x5F, 0x77, 0x91, 0xFF);
+            }
+        }
+
+        if (pageText != null)
+            pageText.text = rows.Count > 0 ? $"{currentPage}/{totalPages}" : "-";
+
+        if (nextButton != null)
+            nextButton.interactable = currentPage < totalPages;
+
+        if (prevButton != null)
+            prevButton.interactable = currentPage > 1;
+    }
+
+    private void NextPage()
+    {
         if (currentPage < totalPages)
         {
-            await LoadPlayers(currentPage + 1);
-        }
-        else
-        {
-            Debug.Log("Already on the last page.");
+            ShowPage(currentPage + 1);
         }
     }
 
-    private async void PrevPage()
+    private void PrevPage()
     {
-        // Go back unless we're already on the first page
         if (currentPage > 1)
         {
-            await LoadPlayers(currentPage - 1);
-        }
-        else
-        {
-            Debug.Log("Already on the first page.");
+            ShowPage(currentPage - 1);
         }
     }
 

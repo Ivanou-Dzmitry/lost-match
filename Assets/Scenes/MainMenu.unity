@@ -1079,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5872060456181460923, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_text
-      value: Close alpha test. Version 0.0.18
+      value: Close alpha test. Version 0.0.19
       objectReference: {fileID: 0}
     - target: {fileID: 6504366364407694968, guid: 9dead62fd44649840ac401d836e80504, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5006,7 +5006,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\xA9 frosofco.com, 2025 Version 0.0.18\n"
+  m_text: "\xA9 frosofco.com, 2025 Version 0.0.19\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8331,10 +8331,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5719664585843339976, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1398707356}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6560906105423148455, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7652007580046389913}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
 --- !u!224 &7652007580046389910 stripped
 RectTransform:
@@ -8351,25 +8348,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6560906105423148455, guid: 956bedf8bf80ea54299d6c152fcda9c2, type: 3}
   m_PrefabInstance: {fileID: 7652007580046389909}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7652007580046389913
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7652007580046389912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec74dc3ed724e834c958b464cd574685, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: auth
-  container: {fileID: 7652007580046389910}
-  usernameInput: {fileID: 414369594}
-  passwordInput: {fileID: 625400079}
-  signinButton: {fileID: 1762244495}
-  signupButton: {fileID: 626331707}
-  anonymousButton: {fileID: 1398707357}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

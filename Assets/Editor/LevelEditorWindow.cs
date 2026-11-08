@@ -651,6 +651,7 @@ public class LevelEditorWindow : EditorWindow
 
         propsScroll = EditorGUILayout.BeginScrollView(propsScroll);
         DrawProperties();
+        DrawAnalysis();
         EditorGUILayout.EndScrollView();
 
         EditorGUILayout.EndHorizontal();
@@ -945,14 +946,28 @@ public class LevelEditorWindow : EditorWindow
         DrawLoadBar(result, input.Moves);
         DrawCurveChart(pressure);
 
-        DrawRecommendation(input);
+        // the rest of the analysis is drawn in the right column (DrawAnalysis) from these values
+        statsInput = input;
+        statsPressure = pressure;
+        statsNotes = notes;
+        statsReady = true;
+    }
 
-        showWhatIf = EditorGUILayout.Foldout(showWhatIf, "What changes the difficulty (this level)", true);
-        if (showWhatIf) DrawWhatIf(input, pressure);
+    // values of DrawStats for the right column
+    private LevelTableExport.PressureInput statsInput;
+    private float statsPressure;
+    private List<string> statsNotes = new List<string>();
+    private bool statsReady;
 
-        DrawSimilar(input);
+    // the analysis of the level under its properties: warnings, moves and stars, what changes the difficulty, similar levels
+    private void DrawAnalysis()
+    {
+        if (!statsReady) return;
 
-        foreach (string note in notes)
+        GUILayout.Space(10);
+        EditorGUILayout.LabelField("Analysis", EditorStyles.boldLabel);
+
+        foreach (string note in statsNotes)
             EditorGUILayout.HelpBox(note, MessageType.Warning);
 
         int elementCount = level.element != null ? level.element.Length : 0;
@@ -967,6 +982,13 @@ public class LevelEditorWindow : EditorWindow
                 break;
             }
         }
+
+        DrawRecommendation(statsInput);
+
+        showWhatIf = EditorGUILayout.Foldout(showWhatIf, "What changes the difficulty (this level)", true);
+        if (showWhatIf) DrawWhatIf(statsInput, statsPressure);
+
+        DrawSimilar(statsInput);
     }
 
     // moves needed for the goals against the moves available: blue = colour goals, orange = obstacles, purple = bombs

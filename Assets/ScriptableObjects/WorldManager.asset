@@ -23,4 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 44c3144687a76d748a775717ef61f707, type: 2}
   - {fileID: 11400000, guid: 9c77aa811ad898d46ad8b94a4c1c837b, type: 2}
   - {fileID: 11400000, guid: 965a4c2e2c9234c40adb1ca871d23f73, type: 2}
+  - {fileID: 11400000, guid: 00cd3ae3aad2683448e3fd34ece356b8, type: 2}
   levelPerWorld: 10

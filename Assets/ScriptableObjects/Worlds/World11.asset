@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec35d33c4fbfa5f41bf172df8416c890, type: 3}
+  m_Name: World11
+  m_EditorClassIdentifier: Assembly-CSharp::World
+  worldNumber: 11
+  levels:
+  - {fileID: 11400000, guid: 1561ec416ff513b4fac48fa537a9aa71, type: 2}
+  - {fileID: 11400000, guid: 4e7e7feb7f7b30440b04f2df233612d7, type: 2}
+  - {fileID: 11400000, guid: 62f4a56323feda44da3d4065fe8c53a7, type: 2}
+  - {fileID: 11400000, guid: fa2c363fccee9fd4d83a981232611233, type: 2}
+  - {fileID: 11400000, guid: bd7d41db8603fa34498eebffc9b7010c, type: 2}

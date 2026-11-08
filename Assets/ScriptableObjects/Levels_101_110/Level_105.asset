@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea1e8d8a78c81b8488eba268b29c8148, type: 3}
+  m_Name: Level_105
+  m_EditorClassIdentifier: Assembly-CSharp::Level
+  uID: lvl105
+  columns: 7
+  rows: 9
+  levelDifficulty: 2
+  xmlLayoutFile: {fileID: 4900000, guid: ac31bb398d56442498f71dc1001a7fb4, type: 3}
+  boardLayout:
+  - columnX: 0
+    rowY: 0
+    tileKind: 18
+  - columnX: 6
+    rowY: 0
+    tileKind: 18
+  - columnX: 1
+    rowY: 1
+    tileKind: 18
+  - columnX: 5
+    rowY: 1
+    tileKind: 18
+  - columnX: 2
+    rowY: 2
+    tileKind: 18
+  - columnX: 4
+    rowY: 2
+    tileKind: 18
+  - columnX: 3
+    rowY: 3
+    tileKind: 14
+  - columnX: 3
+    rowY: 4
+    tileKind: 14
+  - columnX: 3
+    rowY: 5
+    tileKind: 14
+  - columnX: 3
+    rowY: 6
+    tileKind: 14
+  - columnX: 3
+    rowY: 7
+    tileKind: 14
+  - columnX: 3
+    rowY: 8
+    tileKind: 18
+  preloadBoardLayout: []
+  element:
+  - {fileID: 6196800066225916189, guid: 752d50ad8c81e6e438ab43bc54dd6a18, type: 3}
+  - {fileID: 6196800066225916189, guid: b31ac4dc2c4ee2540896f61377c9eabe, type: 3}
+  - {fileID: 6196800066225916189, guid: e6467a01cd4b5264da9e597769b51eeb, type: 3}
+  - {fileID: 6196800066225916189, guid: f9404595de301a749ab722969dae68d5, type: 3}
+  scoreGoals: 4b000000b400000013010000
+  goalsDescription: Collect the mittens, and break the ice floes
+  endGameRequrimentsForLevel:
+    gameType: 0
+    counterValue: 16
+  levelGoals:
+  - numberGoalsNeeded: 20
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 712e42154519aea44921eb5619f6b2fe, type: 3}
+    matchValue: element_03
+  - numberGoalsNeeded: 12
+    numberCollectedGoals: 0
+    goalSprite: {fileID: 21300000, guid: 2f0bcb87ff7ee024cb892298203c707a, type: 3}
+    matchValue: locker_01

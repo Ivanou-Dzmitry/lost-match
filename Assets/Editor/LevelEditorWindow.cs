@@ -23,6 +23,7 @@ public class LevelEditorWindow : EditorWindow
     private const string ElementPrefabsDir = "Assets/Prefabs/Elements";
     private const string GameScene = "Assets/Scenes/GameBoard.unity";
     public const string TestLevelKey = "LM_TestLevel";
+    private const string LastLevelKey = "LM_EditorLastLevel";
     private const string ReturnSceneKey = "LM_TestReturnScene";
     private const int BackFirstId = 26;      // background tile id = 26 + sprite index (as in the old TMX files)
     private const int DefaultBackId = 38;    // the plain tile
@@ -69,7 +70,9 @@ public class LevelEditorWindow : EditorWindow
     private int newCols, newRows;
     private Vector2 propsScroll;
     private Sprite[] backSprites;
+    private int goToNumber;   // the number typed in the "Go" field
     private readonly Dictionary<TileKind, Sprite> kindSprites = new Dictionary<TileKind, Sprite>();
+    private readonly Dictionary<TileKind, List<IconLayer>> kindLayers = new Dictionary<TileKind, List<IconLayer>>();
     private Dictionary<string, Sprite> goalSprites = new Dictionary<string, Sprite>();
     private string[] goalValues = DefaultGoalValues;
     private List<float> curve = new List<float>();   // pressure of every saved level, index = level number - 1
@@ -106,7 +109,13 @@ public class LevelEditorWindow : EditorWindow
         backSprites = Resources.LoadAll<Sprite>("BackTiles/back_tile01");
         FindWorldManager();
         RefreshGoalCatalog();
-        if (worldManager != null && level == null) LoadLevel(Mathf.Max(1, levelNumber));
+        if (worldManager != null && level == null)
+        {
+            // the last level that was open (a field of the window does not survive a script reload)
+            int last = EditorPrefs.GetInt(LastLevelKey, 1);
+            if (last < 1 || last > TotalLevels) last = 1;
+            LoadLevel(last);
+        }
     }
 
     private void FindWorldManager()
@@ -143,6 +152,8 @@ public class LevelEditorWindow : EditorWindow
         }
 
         levelNumber = number;
+        goToNumber = number;
+        EditorPrefs.SetInt(LastLevelKey, number);
         SetLevel(found, false);
 
         // background from the xml csv
@@ -230,6 +241,7 @@ public class LevelEditorWindow : EditorWindow
         draft.levelGoals = new BlankGoalClass[0];
 
         levelNumber = n;
+        goToNumber = n;
         SetLevel(draft, true);
         back = Enumerable.Repeat(DefaultBackId, cols * rows).ToArray();
         obj = Enumerable.Repeat(-1, cols * rows).ToArray();
@@ -432,6 +444,81 @@ public class LevelEditorWindow : EditorWindow
         return sr != null ? sr.sprite : null;
     }
 
+    // one sprite of an obstacle prefab; centre and size are in units of the root sprite width, y up
+    private class IconLayer
+    {
+        public Sprite Sprite;
+        public Color Color;
+        public Vector2 Center;
+        public Vector2 Size;
+    }
+
+    // sprite.bounds follows the trimmed (tight) mesh, but the texture rect that is drawn is the whole sprite,
+    // so the size and the centre come from the full rect and the pivot
+    private static Vector2 FullSize(Sprite s)
+    {
+        return s.rect.size / s.pixelsPerUnit;
+    }
+
+    private static Vector2 FullCentre(Sprite s)
+    {
+        return (s.rect.size * 0.5f - s.pivot) / s.pixelsPerUnit;
+    }
+
+    // obstacle prefabs of level 2 and 3 are the level 1 sprite plus child layers (cracks, clouds, locks),
+    // so the icon is every sprite of the prefab in the order of the game (sorting order), each at its own size and place
+    private static List<IconLayer> LayersOfPrefab(GameObject prefab)
+    {
+        var result = new List<IconLayer>();
+        if (prefab == null) return result;
+
+        SpriteRenderer rootRenderer = prefab.GetComponent<SpriteRenderer>();
+        if (rootRenderer == null || rootRenderer.sprite == null) rootRenderer = prefab.GetComponentInChildren<SpriteRenderer>(true);
+        if (rootRenderer == null || rootRenderer.sprite == null) return result;
+
+        float reference = Mathf.Max(0.0001f, FullSize(rootRenderer.sprite).x * rootRenderer.transform.lossyScale.x);
+
+        foreach (SpriteRenderer sr in prefab.GetComponentsInChildren<SpriteRenderer>(true)
+                     .Where(x => x.sprite != null && x.enabled && x.gameObject.activeSelf)
+                     .OrderBy(x => x.sortingOrder))
+        {
+            Vector3 scale = sr.transform.lossyScale;
+            Vector2 size = FullSize(sr.sprite);
+            Vector2 offset = FullCentre(sr.sprite);
+            Vector3 centre = sr.transform.position - prefab.transform.position
+                             + new Vector3(offset.x * scale.x, offset.y * scale.y, 0f);
+            result.Add(new IconLayer
+            {
+                Sprite = sr.sprite,
+                Color = sr.color,
+                Center = new Vector2(centre.x, centre.y) / reference,
+                Size = new Vector2(size.x * scale.x, size.y * scale.y) / reference,
+            });
+        }
+        return result;
+    }
+
+    private void DrawKind(Rect r, TileKind kind)
+    {
+        SpriteOfKind(kind);
+        if (!kindLayers.TryGetValue(kind, out var layers)) return;
+
+        Color old = GUI.color;
+        GUI.BeginClip(r);      // a layer bigger than the cell must not leak into the neighbours
+        float w = r.width;
+        foreach (IconLayer l in layers)
+        {
+            GUI.color = new Color(l.Color.r, l.Color.g, l.Color.b, l.Color.a * old.a);
+            var local = new Rect(
+                w * 0.5f + l.Center.x * w - l.Size.x * w * 0.5f,
+                r.height * 0.5f - l.Center.y * w - l.Size.y * w * 0.5f,
+                l.Size.x * w, l.Size.y * w);
+            DrawSprite(local, l.Sprite);
+        }
+        GUI.EndClip();
+        GUI.color = old;
+    }
+
     private Sprite SpriteOfKind(TileKind kind)
     {
         if (kindSprites.TryGetValue(kind, out Sprite cached)) return cached;
@@ -453,8 +540,10 @@ public class LevelEditorWindow : EditorWindow
             case TileKind.Expanding03: path = "Assets/Prefabs/Expandable/expandable_03.prefab"; break;
         }
 
-        Sprite sprite = path != null ? SpriteOfPrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path)) : null;
+        GameObject prefab = path != null ? AssetDatabase.LoadAssetAtPath<GameObject>(path) : null;
+        Sprite sprite = SpriteOfPrefab(prefab);
         kindSprites[kind] = sprite;
+        if (prefab != null) kindLayers[kind] = LayersOfPrefab(prefab);
         return sprite;
     }
 
@@ -512,6 +601,9 @@ public class LevelEditorWindow : EditorWindow
         }
 
         goalValues = DefaultGoalValues.Concat(goalSprites.Keys).Distinct().ToArray();
+
+        prints = LevelSimilarity.BuildAll(worldManager);
+        similarHash = int.MinValue;
     }
 
     // ───────────────────────── GUI ─────────────────────────
@@ -563,9 +655,20 @@ public class LevelEditorWindow : EditorWindow
         if (GUILayout.Button("▶", EditorStyles.toolbarButton, GUILayout.Width(26)) && !isDraft && levelNumber < TotalLevels && ConfirmDiscard())
             LoadLevel(levelNumber + 1);
 
-        int go = EditorGUILayout.IntField(levelNumber, GUILayout.Width(40));
-        if (GUILayout.Button("Go", EditorStyles.toolbarButton, GUILayout.Width(30)) && go >= 1 && go <= TotalLevels && go != levelNumber && ConfirmDiscard())
-            LoadLevel(go);
+        // the typed number is kept in its own field: passing levelNumber here would reset it on every repaint
+        if (goToNumber <= 0) goToNumber = levelNumber;
+        GUI.SetNextControlName("GoToField");
+        goToNumber = EditorGUILayout.IntField(goToNumber, GUILayout.Width(40));
+        bool enter = Event.current.type == EventType.KeyDown
+                     && (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter)
+                     && GUI.GetNameOfFocusedControl() == "GoToField";
+        if ((GUILayout.Button("Go", EditorStyles.toolbarButton, GUILayout.Width(30)) || enter)
+            && goToNumber >= 1 && goToNumber <= TotalLevels && goToNumber != levelNumber)
+        {
+            if (enter) Event.current.Use();
+            if (ConfirmDiscard()) LoadLevel(goToNumber);
+            GUIUtility.ExitGUI();   // the layout changed, stop drawing this pass
+        }
 
         GUILayout.Space(10);
         if (GUILayout.Button("New level", EditorStyles.toolbarButton, GUILayout.Width(70))) NewLevel();
@@ -574,6 +677,9 @@ public class LevelEditorWindow : EditorWindow
 
         if (GUILayout.Button("Export table", EditorStyles.toolbarButton, GUILayout.Width(85)))
             LevelTableExport.Export();
+
+        if (GUILayout.Button("Repetition", EditorStyles.toolbarButton, GUILayout.Width(70)))
+            LevelSimilarity.WriteReport();
 
         if (!isDraft && GUILayout.Button("Select asset", EditorStyles.toolbarButton, GUILayout.Width(80)))
             Selection.activeObject = level;
@@ -589,10 +695,15 @@ public class LevelEditorWindow : EditorWindow
 
     private bool IconButton(Rect r, bool selected, Sprite sprite, string label, Color bg)
     {
+        return IconButton(r, selected, sprite != null, rect => DrawSprite(rect, sprite), label, bg);
+    }
+
+    private bool IconButton(Rect r, bool selected, bool hasIcon, Action<Rect> draw, string label, Color bg)
+    {
         if (selected) EditorGUI.DrawRect(new Rect(r.x - 2, r.y - 2, r.width + 4, r.height + 4), new Color(1f, 0.8f, 0.1f));
         EditorGUI.DrawRect(r, bg);
-        DrawSprite(r, sprite);
-        if (sprite == null && !string.IsNullOrEmpty(label))
+        draw(r);
+        if (!hasIcon && !string.IsNullOrEmpty(label))
         {
             var style = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleCenter, fontSize = 9 };
             style.normal.textColor = Color.white;
@@ -644,7 +755,7 @@ public class LevelEditorWindow : EditorWindow
             else if (layer == Layer.Objects)
             {
                 TileKind k = ObjectKinds[i];
-                if (IconButton(r, selKind == k, SpriteOfKind(k), KindLabel(k), KindColor(k)))
+                if (IconButton(r, selKind == k, SpriteOfKind(k) != null, rect => DrawKind(rect, k), KindLabel(k), KindColor(k)))
                     selKind = k;
             }
             else
@@ -681,7 +792,7 @@ public class LevelEditorWindow : EditorWindow
                 {
                     var kind = (TileKind)obj[i];
                     Sprite s = SpriteOfKind(kind);
-                    if (s != null) DrawSprite(r, s);
+                    if (s != null) DrawKind(r, kind);
                     else
                     {
                         EditorGUI.DrawRect(new Rect(r.x + 3, r.y + 3, r.width - 6, r.height - 6), KindColor(kind));
@@ -734,6 +845,14 @@ public class LevelEditorWindow : EditorWindow
     }
 
     private bool showWhatIf = true;
+    private bool showReco = true;
+
+    // levels that look alike (see LevelSimilarity)
+    private bool showSimilar = true;
+    private List<LevelSimilarity.LevelPrint> prints = new List<LevelSimilarity.LevelPrint>();   // fingerprints of the saved levels
+    private int similarHash = int.MinValue;
+    private List<(LevelSimilarity.LevelPrint print, LevelSimilarity.Match match)> similarTop = new List<(LevelSimilarity.LevelPrint, LevelSimilarity.Match)>();
+    private List<string> similarWarnings = new List<string>();
 
     // input of the pressure estimate for the level that is painted now (not saved yet)
     private LevelTableExport.PressureInput BuildPressureInput()
@@ -754,7 +873,19 @@ public class LevelEditorWindow : EditorWindow
             Goals = goals,
             Count = count,
             ElementTags = (level.element ?? new GameObject[0]).Where(e => e != null).Select(e => e.tag).ToList(),
+            Playable = PlayableMask(),
+            Columns = cols,
+            Rows = rows,
         };
+    }
+
+    // cells that can hold elements: a background tile and no Empty object (the arrays are stored top row first)
+    private bool[] PlayableMask()
+    {
+        var mask = new bool[cols * rows];
+        for (int i = 0; i < mask.Length; i++)
+            mask[i] = ((back[i] >= 26 && back[i] <= 33) || back[i] == 38) && obj[i] != (int)TileKind.Empty;
+        return mask;
     }
 
     private void DrawStats()
@@ -788,6 +919,11 @@ public class LevelEditorWindow : EditorWindow
         big.normal.textColor = RatingColor(pressure);
         EditorGUILayout.LabelField($"Pressure {pressure:0.00} ({LevelTableExport.Rate(pressure)})   Role: {role}   Neighbours: {local:0.00}", big);
 
+        LevelTableExport.ShapeResult shape = result.Shape;
+        EditorGUILayout.LabelField(
+            $"Board shape x{shape.Multiplier:0.00}   voids {shape.VoidShare * 100f:0}%   cells without a match of 3: {shape.DeadCells}   necks/parts: {shape.Necks}   box {shape.Width}x{shape.Height}",
+            EditorStyles.miniLabel);
+
         string finale = levelNumber % 10 == 0 ? "   (world finale: aim for a peak)" : "";
         string check = Mathf.Abs(delta) > LevelTableExport.ReviewDelta ? (delta > 0 ? "  too hard for its place" : "  too easy for its place") : "  ok";
         EditorGUILayout.LabelField($"Target {target:0.00}   Delta {delta:+0.00;-0.00}{check}{finale}", EditorStyles.miniLabel);
@@ -795,8 +931,12 @@ public class LevelEditorWindow : EditorWindow
         DrawLoadBar(result, input.Moves);
         DrawCurveChart(pressure);
 
+        DrawRecommendation(input);
+
         showWhatIf = EditorGUILayout.Foldout(showWhatIf, "What changes the difficulty (this level)", true);
         if (showWhatIf) DrawWhatIf(input, pressure);
+
+        DrawSimilar(input);
 
         foreach (string note in notes)
             EditorGUILayout.HelpBox(note, MessageType.Warning);
@@ -832,16 +972,123 @@ public class LevelEditorWindow : EditorWindow
             x += w;
         }
 
-        Segment(result.ElementMoves, new Color(0.3f, 0.55f, 0.9f));
-        Segment(result.ObstacleMoves, new Color(0.95f, 0.6f, 0.2f));
-        Segment(result.BombMoves, new Color(0.7f, 0.4f, 0.85f));
+        float shapeMul = result.Shape.Multiplier;
+        Segment(result.ElementMoves * shapeMul, new Color(0.3f, 0.55f, 0.9f));
+        Segment(result.ObstacleMoves * shapeMul, new Color(0.95f, 0.6f, 0.2f));
+        Segment(result.BombMoves * shapeMul, new Color(0.7f, 0.4f, 0.85f));
 
         // 100% = all the moves
         EditorGUI.DrawRect(new Rect(r.x + moves * scale, r.y - 1, 2, r.height + 2), Color.white);
 
         var small = new GUIStyle(EditorStyles.miniLabel) { fontSize = 9 };
         small.normal.textColor = Color.white;
-        GUI.Label(r, $" colours {result.ElementMoves:0.0}  obstacles {result.ObstacleMoves:0.0}  bombs {result.BombMoves:0.0}  of {moves} moves", small);
+        GUI.Label(r, $" colours {result.ElementMoves * shapeMul:0.0}  obstacles {result.ObstacleMoves * shapeMul:0.0}  bombs {result.BombMoves * shapeMul:0.0}  of {moves} moves", small);
+    }
+
+    // the levels that look most like this one, and the rules about the distance
+    private void DrawSimilar(LevelTableExport.PressureInput input)
+    {
+        showSimilar = EditorGUILayout.Foldout(showSimilar, "Similar levels", true);
+        if (!showSimilar) return;
+
+        LevelSimilarity.LevelPrint live = LevelSimilarity.Build(levelNumber, cols, rows, input.Playable, obj,
+            input.Goals != null ? input.Goals.Select(g => g.match) : null, input.Colours, input.Moves);
+
+        // recount only when the level changed
+        int hash = prints.Count;
+        unchecked
+        {
+            for (int i = 0; i < live.Playable.Length; i++) hash = hash * 31 + (live.Playable[i] ? 1 : 0);
+            for (int i = 0; i < live.Obstacles.Length; i++) hash = hash * 31 + live.Obstacles[i];
+            foreach (string g in live.Goals.OrderBy(x => x)) hash = hash * 31 + g.GetHashCode();
+            hash = hash * 31 + live.Colours + 1000 * levelNumber + 1000003 * cols + 7919 * rows;
+        }
+
+        if (hash != similarHash)
+        {
+            similarHash = hash;
+            similarTop = LevelSimilarity.MostSimilar(live, prints, 3);
+            similarWarnings = LevelSimilarity.RuleWarnings(live, prints);
+        }
+
+        foreach (string w in similarWarnings)
+            EditorGUILayout.HelpBox(w, MessageType.Warning);
+
+        if (similarTop.Count == 0)
+        {
+            EditorGUILayout.LabelField("No other levels to compare with.", EditorStyles.miniLabel);
+            return;
+        }
+
+        foreach (var item in similarTop)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(
+                $"Level {item.print.Number}   {item.match.Score * 100f:0}%   {item.match.Reason}   ({Mathf.Abs(item.print.Number - levelNumber)} apart)",
+                EditorStyles.miniLabel);
+            if (GUILayout.Button("Open", GUILayout.Width(50)) && ConfirmDiscard())
+            {
+                LoadLevel(item.print.Number);
+                GUIUtility.ExitGUI();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    // moves and stars to start from, made from the play log (see LevelTableExport.Recommend)
+    private void DrawRecommendation(LevelTableExport.PressureInput input)
+    {
+        showReco = EditorGUILayout.Foldout(showReco, "Recommended moves and stars (from the play log)", true);
+        if (!showReco) return;
+
+        if (input.Goals == null || input.Goals.Count == 0)
+        {
+            EditorGUILayout.HelpBox("Add the goals to get the recommendation.", MessageType.Info);
+            return;
+        }
+
+        LevelTableExport.Recommendation r = LevelTableExport.Recommend(input);
+        EditorGUILayout.LabelField(
+            $"A typical player needs about {r.NeededMoves:0.0} moves" + (r.HitsOnObstacles > 0 ? $" ({r.HitsOnObstacles} hits on obstacles)" : ""),
+            EditorStyles.miniLabel);
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button($"Easy {r.EasyMoves} moves")) ApplyMoves(r.EasyMoves);
+        if (GUILayout.Button($"Normal {r.NormalMoves} moves")) ApplyMoves(r.NormalMoves);
+        if (GUILayout.Button($"Hard {r.HardMoves} moves")) ApplyMoves(r.HardMoves);
+        EditorGUILayout.EndHorizontal();
+
+        if (input.Moves > 0)
+        {
+            int cells = input.Playable != null ? input.Playable.Count(v => v) : 0;
+            LevelTableExport.ScoreGuide g = LevelTableExport.ScoreFor(input.Moves, cells);
+            EditorGUILayout.LabelField($"A won game with {input.Moves} moves scores about {g.Typical} (a quarter of the wins less than {g.Low}, a quarter more than {g.High})", EditorStyles.miniLabel);
+
+            if (GUILayout.Button($"Set stars: {g.Star1} / {g.Star2} / {g.Star3}"))
+                ApplyStars(g);
+        }
+
+        EditorGUILayout.LabelField("A guess from about 120 games. Moves: what a typical player needs, divided by 0.65 / 0.85 / 0.95. Score: about 9 points per move, less on a board under 55 cells. Stars: about 4, 6 and 9 points per move.", EditorStyles.wordWrappedMiniLabel);
+    }
+
+    private void ApplyMoves(int moves)
+    {
+        so.Update();
+        so.FindProperty("endGameRequrimentsForLevel").FindPropertyRelative("counterValue").intValue = moves;
+        so.ApplyModifiedProperties();
+        dirty = true;
+    }
+
+    private void ApplyStars(LevelTableExport.ScoreGuide guide)
+    {
+        so.Update();
+        SerializedProperty score = so.FindProperty("scoreGoals");
+        if (score.arraySize < 3) score.arraySize = 3;
+        score.GetArrayElementAtIndex(0).intValue = guide.Star1;
+        score.GetArrayElementAtIndex(1).intValue = guide.Star2;
+        score.GetArrayElementAtIndex(2).intValue = guide.Star3;
+        so.ApplyModifiedProperties();
+        dirty = true;
     }
 
     // changes the level a little and shows how the pressure moves: this is what really affects the difficulty
@@ -986,6 +1233,16 @@ public class LevelEditorWindow : EditorWindow
         SerializedProperty desc = so.FindProperty("goalsDescription");
         desc.stringValue = EditorGUILayout.TextArea(desc.stringValue, GUILayout.MinHeight(40));
 
+        string suggested = BuildDescription();
+        using (new EditorGUI.DisabledScope(string.IsNullOrEmpty(suggested) || suggested == desc.stringValue))
+        {
+            if (GUILayout.Button(string.IsNullOrEmpty(suggested) ? "Fill from goals (add goals first)" : $"Fill from goals: {suggested}"))
+            {
+                desc.stringValue = suggested;
+                GUI.FocusControl(null);
+            }
+        }
+
         DrawGoals();
         DrawElementTypes();
 
@@ -1039,6 +1296,112 @@ public class LevelEditorWindow : EditorWindow
             g.FindPropertyRelative("goalSprite").objectReferenceValue =
                 goalSprites.TryGetValue(goalValues[0], out Sprite s0) ? s0 : null;
         }
+
+        DrawBoardCounts(goals);
+    }
+
+    // names used in the goals text, taken from the descriptions of the existing levels
+    private static readonly Dictionary<string, string> GoalNames = new Dictionary<string, string>
+    {
+        { "blocker_01", "gum blocks" },
+        { "breakable_01", "little shoppers" },
+        { "locker_01", "ice floes" },
+        { "expandable_01", "expanding goo" },
+        { "element_01", "baby booties" },
+        { "element_02", "binkies" },
+        { "element_03", "mittens" },
+        { "element_04", "socks" },
+        { "element_05", "pom-pom beanies" },
+        { "LineBomb", "snuggly scarves" },
+        { "WrapBomb", "wrap caps" },
+        { "ColorBomb", "color gloveys" },
+    };
+
+    // "Smash the gum blocks, and collect wrap caps" from the goals of the level
+    private string BuildDescription()
+    {
+        SerializedProperty goals = so.FindProperty("levelGoals");
+        var phrases = new List<string>();
+        for (int i = 0; i < goals.arraySize; i++)
+        {
+            string match = goals.GetArrayElementAtIndex(i).FindPropertyRelative("matchValue").stringValue;
+            if (!GoalNames.TryGetValue(match, out string name)) continue;
+
+            string phrase;
+            if (match == "blocker_01") phrase = $"smash the {name}";
+            else if (match == "locker_01") phrase = $"break the {name}";
+            else if (match.StartsWith("element_") || match == "breakable_01") phrase = $"collect the {name}";
+            else phrase = $"collect {name}";
+
+            if (!phrases.Contains(phrase)) phrases.Add(phrase);
+        }
+
+        if (phrases.Count == 0) return "";
+
+        string text = char.ToUpper(phrases[0][0]) + phrases[0].Substring(1);
+        for (int i = 1; i < phrases.Count; i++)
+            text += (i == phrases.Count - 1 ? ", and " : ", ") + phrases[i];
+        return text;
+    }
+
+    // what is on the board, by goal family: copy the number into a goal, or press "Set goal"
+    private void DrawBoardCounts(SerializedProperty goals)
+    {
+        var families = new[]
+        {
+            ("blocker_01", new[] { TileKind.Blocker01, TileKind.Blocker02, TileKind.Blocker03 }, true),
+            ("breakable_01", new[] { TileKind.Breakable01, TileKind.Breakable02, TileKind.Breakable03 }, true),
+            ("locker_01", new[] { TileKind.Locked01, TileKind.Locked02, TileKind.Locked03 }, true),
+            ("expandable_01", new[] { TileKind.Expanding01, TileKind.Expanding02, TileKind.Expanding03 }, false),
+        };
+
+        bool header = false;
+        var small = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleLeft };
+
+        foreach (var (key, kinds, isGoal) in families)
+        {
+            int[] byHits = kinds.Select(k => obj.Count(v => v == (int)k)).ToArray();
+            int total = byHits.Sum();
+            if (total == 0) continue;
+
+            if (!header)
+            {
+                GUILayout.Space(6);
+                EditorGUILayout.LabelField("On the board (select and copy)", EditorStyles.boldLabel);
+                header = true;
+            }
+
+            string detail = GoalNames[key];
+            if (byHits.Count(c => c > 0) > 1)
+                detail += $"   by hits: 1 = {byHits[0]}, 2 = {byHits[1]}, 3 = {byHits[2]}";
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.SelectableLabel($"{key} = {total}", EditorStyles.textField, GUILayout.Width(150), GUILayout.Height(18));
+            EditorGUILayout.LabelField(detail, small);
+            if (isGoal && GUILayout.Button("Set goal", GUILayout.Width(70)))
+                SetGoalCount(goals, key, total);
+            EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    // changes the goal with this value to the number, or adds it
+    private void SetGoalCount(SerializedProperty goals, string match, int count)
+    {
+        for (int i = 0; i < goals.arraySize; i++)
+        {
+            SerializedProperty g = goals.GetArrayElementAtIndex(i);
+            if (g.FindPropertyRelative("matchValue").stringValue != match) continue;
+            g.FindPropertyRelative("numberGoalsNeeded").intValue = count;
+            return;
+        }
+
+        goals.arraySize++;
+        SerializedProperty added = goals.GetArrayElementAtIndex(goals.arraySize - 1);
+        added.FindPropertyRelative("numberGoalsNeeded").intValue = count;
+        added.FindPropertyRelative("numberCollectedGoals").intValue = 0;
+        added.FindPropertyRelative("matchValue").stringValue = match;
+        added.FindPropertyRelative("goalSprite").objectReferenceValue =
+            goalSprites.TryGetValue(match, out Sprite sprite) ? sprite : null;
     }
 
     private void DrawElementTypes()

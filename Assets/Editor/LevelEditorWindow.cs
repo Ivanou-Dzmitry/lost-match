@@ -74,6 +74,7 @@ public class LevelEditorWindow : EditorWindow
     private const int MaxBoardColumns = 8;
     private const int MaxBoardRows = 10;
     private const int HardMinBoardSize = 3;       // a smaller board is not accepted
+    private const float BoardMargin = 16f;        // the space to the left of the palette and the grid
     private Vector2 propsScroll;
     private Sprite[] backSprites;
     private int goToNumber;   // the number typed in the "Go" field
@@ -635,8 +636,11 @@ public class LevelEditorWindow : EditorWindow
 
         DrawToolbar();
 
+        GUILayout.Space(6);
         EditorGUILayout.BeginHorizontal();
 
+        // a margin, so the palette and the grid do not stick to the edge of the window
+        GUILayout.Space(BoardMargin);
         EditorGUILayout.BeginVertical(GUILayout.Width(Mathf.Max(cols * CellSize, 400) + 10));
         DrawPalette();
         GUILayout.Space(6);

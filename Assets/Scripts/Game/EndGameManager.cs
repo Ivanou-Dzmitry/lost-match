@@ -218,6 +218,17 @@ public class EndGameManager : MonoBehaviour
                 gameDataClass.SaveToFile();
         }
 
+        // open the next level at once: with "Next level" the player goes on without the map and the button that calls
+        // WinConfirm, so the level was played and had stars, but stayed closed on the map
+        bool[] openedLevels = gameDataClass.saveData.isActive;
+        int nextInList = gameBoardClass.loadedLevel;   // the next level in the list = this level number
+
+        if (gameBoardClass.loadedLevel < gameBoardClass.totalLevels && nextInList < openedLevels.Length && !openedLevels[nextInList])
+        {
+            openedLevels[nextInList] = true;
+            gameDataClass.SaveToFile();
+        }
+
         int bonus = 0;
 
         //collect star bonus

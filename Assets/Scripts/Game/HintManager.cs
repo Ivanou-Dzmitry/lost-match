@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class HintManager : MonoBehaviour
@@ -11,8 +12,18 @@ public class HintManager : MonoBehaviour
     public float hintDelay;
     private float hintDelaySec;
     public GameObject hintParticle;
-    public GameObject currentHint;
+    public GameObject currentHint;          // 1st step: the piece to move
+    private GameObject partnerHint;         // 2nd step: the piece to swap it with
     private Coroutine hintCoroutine;
+
+    private bool hasMove;
+    private GameBoard.HintMove shownMove;
+    private float partnerDelaySec;
+    private Vector2Int lastHintCell = new Vector2Int(-1, -1);
+
+    // a hint is taken from the moves whose score is not far from the best one
+    private const float GoodMoveShare = 0.85f;
+    private const int MaxChoices = 3;
 
     void Start()
     {
@@ -20,74 +31,75 @@ public class HintManager : MonoBehaviour
         hintCoroutine = StartCoroutine(HintChecker());
     }
 
-
-    //all posible matches
-    List<GameObject> FindAllMatches()
+    private bool BoardIsQuiet()
     {
-        List<GameObject> possibleMatches = new List<GameObject>();
-
-        for (int i = 0; i < gameBoardClass.column; i++)
-        {
-            for (int j = 0; j < gameBoardClass.row; j++)
-            {
-                if (gameBoardClass.allElements[i, j] != null)
-                {
-                    if (i < gameBoardClass.column - 1)
-                    {
-                        if (gameBoardClass.SwithAndCheck(i, j, Vector2.right))
-                        {
-                            possibleMatches.Add(gameBoardClass.allElements[i, j]);
-                        }
-
-                    }
-
-                    if (j < gameBoardClass.row - 1)
-                    {
-                        if (gameBoardClass.SwithAndCheck(i, j, Vector2.up))
-                        {
-                            possibleMatches.Add(gameBoardClass.allElements[i, j]);
-                        }
-                    }
-                }
-            }
-        }
-
-        return possibleMatches;
-
+        return gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop;
     }
 
-    //pick match
-    GameObject PickRandomMatch()
+    //pick a good move: the best ones for the goals of the level, not always the same one
+    private bool PickMove(out GameBoard.HintMove move)
     {
-        if (gameBoardClass.currentState != GameState.move || gameBoardClass.matchState != MatchState.matching_stop)
+        move = default;
+
+        if (!BoardIsQuiet())
+            return false;
+
+        List<GameBoard.HintMove> moves = gameBoardClass.FindHintMoves();
+        if (moves.Count == 0)
+            return false;
+
+        moves.Sort((a, b) => b.score.CompareTo(a.score));
+
+        float limit = moves[0].score * GoodMoveShare;
+        List<GameBoard.HintMove> choices = moves.Where(m => m.score >= limit).Take(MaxChoices).ToList();
+
+        // not the same piece as the last hint, if there is a choice
+        List<GameBoard.HintMove> fresh = choices.Where(m => m.column != lastHintCell.x || m.row != lastHintCell.y).ToList();
+        if (fresh.Count > 0)
+            choices = fresh;
+
+        move = choices[UnityEngine.Random.Range(0, choices.Count)];
+        return true;
+    }
+
+    private GameObject ShowAt(int column, int row, string label)
+    {
+        GameObject element = gameBoardClass.allElements[column, row];
+        if (element == null || hintParticle == null)
             return null;
 
-        List<GameObject> possibleMoves = FindAllMatches();
-
-        if (possibleMoves.Count > 0)
-        {
-            return possibleMoves[UnityEngine.Random.Range(0, possibleMoves.Count)];
-        }
-
-        return null;
+        GameObject hint = Instantiate(hintParticle, element.transform.position, Quaternion.identity);
+        hint.name = "hint_" + label + "_" + DateTime.Now.ToString("mmss");
+        hint.transform.parent = gameBoardClass.gameArea.transform;
+        return hint;
     }
 
-    //create hint
+    //create hint: first the piece to move, a little later the piece to swap it with
     private void MarkHint()
     {
-        GameObject move = PickRandomMatch();
+        if (!PickMove(out GameBoard.HintMove move))
+            return;
 
-        string currentTime = DateTime.Now.ToString("mmss");
+        currentHint = ShowAt(move.column, move.row, "a");
+        if (currentHint == null)
+            return;
 
-        if (move != null && gameBoardClass.currentState == GameState.move && gameBoardClass.matchState == MatchState.matching_stop)
-        {
-            currentHint = Instantiate(hintParticle, move.transform.position, Quaternion.identity);
+        shownMove = move;
+        hasMove = true;
+        lastHintCell = new Vector2Int(move.column, move.row);
+        partnerDelaySec = hintDelay;
+    }
 
-            currentHint.name = "hint_" + currentTime;
+    private void ShowPartner()
+    {
+        if (!hasMove || partnerHint != null)
+            return;
 
-            //set properties
-            currentHint.transform.parent = gameBoardClass.gameArea.transform;
-        }
+        int column = shownMove.column + shownMove.direction.x;
+        int row = shownMove.row + shownMove.direction.y;
+
+        if (column < gameBoardClass.column && row < gameBoardClass.row)
+            partnerHint = ShowAt(column, row, "b");
     }
 
     public void DestroyHint()
@@ -98,6 +110,14 @@ public class HintManager : MonoBehaviour
             currentHint = null;
             hintDelaySec = hintDelay;
         }
+
+        if (partnerHint != null)
+        {
+            Destroy(partnerHint);
+            partnerHint = null;
+        }
+
+        hasMove = false;
     }
 
 
@@ -107,14 +127,31 @@ public class HintManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.25f); // check every 250ms instead of every frame
 
-            if (currentHint == null && hintDelaySec > 0)
+            // a hint that is on the screen: the board must stay quiet, and after a while the second piece is shown
+            if (currentHint != null)
+            {
+                if (!BoardIsQuiet())
+                {
+                    DestroyHint();
+                }
+                else if (partnerHint == null)
+                {
+                    partnerDelaySec -= 0.25f;
+                    if (partnerDelaySec <= 0)
+                        ShowPartner();
+                }
+
+                continue;
+            }
+
+            if (hintDelaySec > 0)
             {
                 hintDelaySec -= 0.25f;
             }
 
-            if (hintDelaySec <= 0 && currentHint == null)
+            if (hintDelaySec <= 0)
             {
-                if (gameBoardClass.matchState == MatchState.matching_stop && gameBoardClass.currentState == GameState.move)
+                if (BoardIsQuiet())
                 {
                     MarkHint();
                 }

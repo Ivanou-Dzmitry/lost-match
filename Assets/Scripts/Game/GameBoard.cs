@@ -1849,66 +1849,6 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    // Ultra-optimized CheckForMatches
-    private bool CheckForMatches()
-    {
-        for (int i = 0; i < column; i++)
-        {
-            for (int j = 0; j < row; j++)
-            {
-                ElementController e0 = elementControllers[i, j];
-                if (e0 == null) continue;
-
-                // Check horizontal
-                if (i < column - 2)
-                {
-                    ElementController e1 = elementControllers[i + 1, j];
-                    ElementController e2 = elementControllers[i + 2, j];
-
-                    if (e1 != null && e2 != null)
-                    {
-                        // Check bombs first (early exit if found)
-                        if (HasAnyBomb(e0, e1, e2))
-                            return true;
-
-                        // Then check tags
-                        if (allElements[i, j].CompareTag(allElements[i + 1, j].tag) &&
-                            allElements[i, j].CompareTag(allElements[i + 2, j].tag))
-                            return true;
-                    }
-                }
-
-                // Check vertical
-                if (j < row - 2)
-                {
-                    ElementController e1 = elementControllers[i, j + 1];
-                    ElementController e2 = elementControllers[i, j + 2];
-
-                    if (e1 != null && e2 != null)
-                    {
-                        // Check bombs first
-                        if (HasAnyBomb(e0, e1, e2))
-                            return true;
-
-                        // Then check tags
-                        if (allElements[i, j].CompareTag(allElements[i, j + 1].tag) &&
-                            allElements[i, j].CompareTag(allElements[i, j + 2].tag))
-                            return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    // Helper method for bomb checking -NEW
-    private bool HasAnyBomb(ElementController e0, ElementController e1, ElementController e2)
-    {
-        return e0.isColorBomb || e0.isColumnBomb || e0.isRowBomb || e0.isWrapBomb ||
-               e1.isColorBomb || e1.isColumnBomb || e1.isRowBomb || e1.isWrapBomb ||
-               e2.isColorBomb || e2.isColumnBomb || e2.isRowBomb || e2.isWrapBomb;
-    }
-
     private void SwitchPieces(int column, int row, Vector2 direction)
     {
         if (allElements[column + (int)direction.x, row + (int)direction.y] != null)
@@ -1921,43 +1861,172 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    // ───────────────────────── possible moves and the hint ─────────────────────────
+
+    /// <summary>A swap of two neighbours that the hint can show. The element at (column, row) moves in the direction.</summary>
+    public struct HintMove
+    {
+        public int column;
+        public int row;
+        public Vector2Int direction;   // right or up
+        public float score;            // how useful the move is for the goals of the level
+    }
+
+    private static bool IsBomb(ElementController e)
+    {
+        return e != null && (e.isColorBomb || e.isColumnBomb || e.isRowBomb || e.isWrapBomb);
+    }
+
+    // the same colour (tag) at the cell: empty cells, blockers and expanding blocks hold no element, so they break a line
+    private bool SameTagAt(int c, int r, string tag)
+    {
+        return c >= 0 && c < column && r >= 0 && r < row && allElements[c, r] != null && allElements[c, r].CompareTag(tag);
+    }
+
+    // cells of the line of the same colour through (c, r); only a line of 3 or more counts
+    private int CollectLine(int c, int r, int dx, int dy, HashSet<int> cells)
+    {
+        string tag = allElements[c, r].tag;
+
+        int fromC = c, fromR = r;
+        while (SameTagAt(fromC - dx, fromR - dy, tag)) { fromC -= dx; fromR -= dy; }
+
+        int length = 0;
+        for (int x = fromC, y = fromR; SameTagAt(x, y, tag); x += dx, y += dy) length++;
+
+        if (length >= 3)
+        {
+            for (int i = 0, x = fromC, y = fromR; i < length; i++, x += dx, y += dy)
+                cells.Add(x * row + y);
+        }
+        return length;
+    }
+
+    // is the goal with this value still open
+    private bool GoalOpen(string match)
+    {
+        if (goalManagerClass == null || goalManagerClass.levelGoals == null) return false;
+
+        foreach (BlankGoalClass g in goalManagerClass.levelGoals)
+            if (g.matchValue == match && g.numberCollectedGoals < g.numberGoalsNeeded)
+                return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Can the element at (c, r) be swapped with its neighbour, and does the swap do something:
+    /// a bomb is part of the swap, or a line of 3 or more is made through one of the two cells.
+    /// Only the two cells are checked, not the whole board. The score tells how useful the move is for the goals.
+    /// </summary>
+    public bool TryEvaluateSwap(int c, int r, Vector2Int direction, out float score)
+    {
+        score = 0f;
+
+        int tc = c + direction.x, tr = r + direction.y;
+        if (c < 0 || c >= column || r < 0 || r >= row || tc < 0 || tc >= column || tr < 0 || tr >= row) return false;
+        if (allElements[c, r] == null || allElements[tc, tr] == null) return false;
+
+        // locked and expanding cells cannot be swapped
+        if (lockedCells[c, r] != null || lockedCells[tc, tr] != null) return false;
+        if (expandCells[c, r] != null || expandCells[tc, tr] != null) return false;
+
+        ElementController first = allElements[c, r].GetComponent<ElementController>();
+        ElementController second = allElements[tc, tr].GetComponent<ElementController>();
+        bool bombInvolved = IsBomb(first) || IsBomb(second);
+
+        var matched = new HashSet<int>();
+        float bonus = 0f;
+        float colourScore = 0f;
+
+        // swap, look at the two cells, swap back
+        SwitchPieces(c, r, new Vector2(direction.x, direction.y));
+        try
+        {
+            foreach (Vector2Int cell in new[] { new Vector2Int(c, r), new Vector2Int(tc, tr) })
+            {
+                int horizontal = CollectLine(cell.x, cell.y, 1, 0, matched);
+                int vertical = CollectLine(cell.x, cell.y, 0, 1, matched);
+
+                int longest = Mathf.Max(horizontal, vertical);
+                if (longest >= 5) bonus += 4f;          // five in a line: colour bomb
+                else if (longest == 4) bonus += 2f;     // four: line bomb
+                if (horizontal >= 3 && vertical >= 3) bonus += 3f;   // L or T: wrap bomb
+            }
+
+            // the colours are read while the pieces are swapped: the two moved cells hold the colour of the line
+            foreach (int key in matched)
+            {
+                GameObject piece = allElements[key / row, key % row];
+                if (piece != null && GoalOpen(piece.tag)) colourScore += 1f;
+            }
+        }
+        finally
+        {
+            SwitchPieces(c, r, new Vector2(direction.x, direction.y));
+        }
+
+        if (!bombInvolved && matched.Count == 0) return false;
+
+        // how useful it is: the pieces, the bombs, the goals and the obstacles that are hit
+        score = matched.Count + bonus + colourScore;
+
+        if (bombInvolved)
+            score += (first != null && first.isColorBomb) || (second != null && second.isColorBomb) ? 6f : 4f;
+
+        var neighbours = new HashSet<int>();
+        foreach (int key in matched)
+        {
+            int x = key / row, y = key % row;
+
+            if (breakableCells[x, y] != null) score += GoalOpen("breakable_01") ? 3f : 2f;
+            if (lockedCells[x, y] != null) score += GoalOpen("locker_01") ? 2.5f : 1.5f;
+
+            neighbours.Add(key);
+        }
+
+        // blockers and expanding blocks next to a match are hit by it
+        foreach (int key in new List<int>(neighbours))
+        {
+            int x = key / row, y = key % row;
+            foreach (Vector2Int d in new[] { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down })
+            {
+                int nx = x + d.x, ny = y + d.y;
+                if (nx < 0 || nx >= column || ny < 0 || ny >= row) continue;
+                int nkey = nx * row + ny;
+                if (!neighbours.Add(nkey)) continue;
+
+                if (blockerCells[nx, ny] != null) score += GoalOpen("blocker_01") ? 2.5f : 1.5f;
+                if (expandCells[nx, ny] != null) score += GoalOpen("expandable_01") ? 2.5f : 1.5f;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>All moves of the board that do something, with their scores.</summary>
+    public List<HintMove> FindHintMoves()
+    {
+        var moves = new List<HintMove>();
+
+        for (int i = 0; i < column; i++)
+        {
+            for (int j = 0; j < row; j++)
+            {
+                if (allElements[i, j] == null) continue;
+
+                foreach (Vector2Int d in new[] { Vector2Int.right, Vector2Int.up })
+                {
+                    if (TryEvaluateSwap(i, j, d, out float score))
+                        moves.Add(new HintMove { column = i, row = j, direction = d, score = score });
+                }
+            }
+        }
+        return moves;
+    }
+
     public bool SwithAndCheck(int column, int row, Vector2 direction)
     {
-        int targetCol = column + (int)direction.x;
-        int targetRow = row + (int)direction.y;
-
-        // Prevent out-of-bounds
-        if (targetCol < 0 || targetCol >= this.column || targetRow < 0 || targetRow >= this.row)
-            return false;
-
-        // Prevent switch if either cell is locked
-        if (lockedCells[column, row] != null || lockedCells[targetCol, targetRow] != null)
-        {
-            return false;
-        }
-
-        // Prevent switch if either cell is expandable
-        if (expandCells[column, row] != null || expandCells[targetCol, targetRow] != null)
-        {
-            // Optional: Debug            
-            return false;
-        }
-
-        // Perform switch
-        SwitchPieces(column, row, direction);
-
-        UpdateElementControllerCache(column, row);
-
-        bool hasMatch = CheckForMatches();
-
-        UpdateElementControllerCache(column, row);
-
-        // Revert switch
-        SwitchPieces(column, row, direction);
-
-        UpdateElementControllerCache(column, row);
-
-        return hasMatch;
+        return TryEvaluateSwap(column, row, new Vector2Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.y)), out float _);
     }
 
     private bool IsDeadLock()

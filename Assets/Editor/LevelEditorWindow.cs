@@ -45,7 +45,7 @@ public class LevelEditorWindow : EditorWindow
     private static readonly string[] DefaultGoalValues =
     {
         "element_01", "element_02", "element_03", "element_04", "element_05",
-        "blocker_01", "locker_01", "breakable_01", "LineBomb", "WrapBomb", "ColorBomb",
+        "blocker_01", "locker_01", "breakable_01", "expandable_01", "LineBomb", "WrapBomb", "ColorBomb",
     };
 
     // ----- state -----
@@ -68,6 +68,11 @@ public class LevelEditorWindow : EditorWindow
     private bool erase;
 
     private int newCols, newRows;
+
+    // limits of the board: the camera (CameraManager) has a fixed size, the biggest level of the game is 8 x 10
+    private const int MinBoardSize = 5;
+    private const int MaxBoardColumns = 8;
+    private const int MaxBoardRows = 10;
     private Vector2 propsScroll;
     private Sprite[] backSprites;
     private int goToNumber;   // the number typed in the "Go" field
@@ -599,6 +604,10 @@ public class LevelEditorWindow : EditorWindow
                     goalSprites[g.matchValue] = g.goalSprite;
             }
         }
+
+        // no level has a goal on the growing blocks yet, so there is no icon to copy: take the sprite of the block
+        if (!goalSprites.TryGetValue("expandable_01", out Sprite expandIcon) || expandIcon == null)
+            goalSprites["expandable_01"] = SpriteOfKind(TileKind.Expanding01);
 
         goalValues = DefaultGoalValues.Concat(goalSprites.Keys).Distinct().ToArray();
 
@@ -1203,8 +1212,10 @@ public class LevelEditorWindow : EditorWindow
 
         // size
         EditorGUILayout.BeginHorizontal();
-        newCols = EditorGUILayout.IntField("Columns", newCols);
-        newRows = EditorGUILayout.IntField("Rows", newRows);
+        // the camera of the game does not change with the board, so the size has limits (the 100 levels are 5x5 ... 8x10)
+        // a delayed field takes the number on Enter, so "10" can be typed without the first digit being cut to the minimum
+        newCols = Mathf.Clamp(EditorGUILayout.DelayedIntField($"Columns ({MinBoardSize}-{MaxBoardColumns})", newCols), MinBoardSize, MaxBoardColumns);
+        newRows = Mathf.Clamp(EditorGUILayout.DelayedIntField($"Rows ({MinBoardSize}-{MaxBoardRows})", newRows), MinBoardSize, MaxBoardRows);
         using (new EditorGUI.DisabledScope(newCols == cols && newRows == rows))
         {
             if (GUILayout.Button("Resize", GUILayout.Width(60))) Resize(newCols, newRows);
@@ -1306,7 +1317,7 @@ public class LevelEditorWindow : EditorWindow
         { "blocker_01", "gum blocks" },
         { "breakable_01", "little shoppers" },
         { "locker_01", "ice floes" },
-        { "expandable_01", "expanding goo" },
+        { "expandable_01", "concrete blocks" },
         { "element_01", "baby booties" },
         { "element_02", "binkies" },
         { "element_03", "mittens" },
@@ -1328,7 +1339,7 @@ public class LevelEditorWindow : EditorWindow
             if (!GoalNames.TryGetValue(match, out string name)) continue;
 
             string phrase;
-            if (match == "blocker_01") phrase = $"smash the {name}";
+            if (match == "blocker_01" || match == "expandable_01") phrase = $"smash the {name}";
             else if (match == "locker_01") phrase = $"break the {name}";
             else if (match.StartsWith("element_") || match == "breakable_01") phrase = $"collect the {name}";
             else phrase = $"collect {name}";
@@ -1352,7 +1363,7 @@ public class LevelEditorWindow : EditorWindow
             ("blocker_01", new[] { TileKind.Blocker01, TileKind.Blocker02, TileKind.Blocker03 }, true),
             ("breakable_01", new[] { TileKind.Breakable01, TileKind.Breakable02, TileKind.Breakable03 }, true),
             ("locker_01", new[] { TileKind.Locked01, TileKind.Locked02, TileKind.Locked03 }, true),
-            ("expandable_01", new[] { TileKind.Expanding01, TileKind.Expanding02, TileKind.Expanding03 }, false),
+            ("expandable_01", new[] { TileKind.Expanding01, TileKind.Expanding02, TileKind.Expanding03 }, true),
         };
 
         bool header = false;

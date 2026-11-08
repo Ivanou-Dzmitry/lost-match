@@ -25,6 +25,7 @@ public static class LevelTableExport
     private const float BlockerHitsPerMoveLog = 1.8f;     // hits on obstacles per move that players really make (median of wins 1.9, losses pull it down)
     private const float BreakableHitsPerMoveLog = 1.5f;   // median of wins 1.6
     private const float LockerHitsPerMoveLog = 1.1f;      // median of wins 1.1: ice is the slowest to clear
+    private const float ExpandableHitsPerMoveLog = 1.2f;  // no level in the log has this goal: a guess, slower than breakables because the blocks grow
     private const float EasyMoveUse = 0.65f;              // share of the moves a player uses to win: the less, the easier
     private const float NormalMoveUse = 0.85f;            // what the log shows for wins
     private const float HardMoveUse = 0.95f;
@@ -412,6 +413,7 @@ public static class LevelTableExport
         {
             case "blocker_01": return BlockerHitsPerMoveLog;
             case "breakable_01": return BreakableHitsPerMoveLog;
+            case "expandable_01": return ExpandableHitsPerMoveLog;
             default: return LockerHitsPerMoveLog;
         }
     }
@@ -541,6 +543,7 @@ public static class LevelTableExport
             case "blocker_01": family = new[] { TileKind.Blocker01, TileKind.Blocker02, TileKind.Blocker03 }; return true;
             case "breakable_01": family = new[] { TileKind.Breakable01, TileKind.Breakable02, TileKind.Breakable03 }; return true;
             case "locker_01": family = new[] { TileKind.Locked01, TileKind.Locked02, TileKind.Locked03 }; return true;
+            case "expandable_01": family = new[] { TileKind.Expanding01, TileKind.Expanding02, TileKind.Expanding03 }; return true;
         }
         family = null;
         return false;

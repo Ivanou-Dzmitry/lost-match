@@ -69,13 +69,11 @@ public class LevelEditorWindow : EditorWindow
 
     private int newCols, newRows;
 
-    // sizes of the existing levels (5x5 ... 8x10): outside of them the editor shows a warning, the camera (CameraManager) is fixed
-    private const int MinBoardSize = 5;
+    // the camera of the game (CameraManager) is fixed: 8 columns fit the screen, 12 are cut off at the edges; the biggest level is 8 x 10
+    private const int MinBoardSize = 5;           // the smallest level of the game, a smaller board gets a warning
     private const int MaxBoardColumns = 8;
     private const int MaxBoardRows = 10;
-    // a size that cannot be right is not accepted at all
-    private const int HardMinBoardSize = 3;
-    private const int HardMaxBoardSize = 12;
+    private const int HardMinBoardSize = 3;       // a smaller board is not accepted
     private Vector2 propsScroll;
     private Sprite[] backSprites;
     private int goToNumber;   // the number typed in the "Go" field
@@ -1216,19 +1214,23 @@ public class LevelEditorWindow : EditorWindow
         // size
         EditorGUILayout.BeginHorizontal();
         // a delayed field takes the number on Enter, so "10" can be typed without the first digit being cut to the minimum
-        newCols = Mathf.Clamp(EditorGUILayout.DelayedIntField("Columns", newCols), HardMinBoardSize, HardMaxBoardSize);
-        newRows = Mathf.Clamp(EditorGUILayout.DelayedIntField("Rows", newRows), HardMinBoardSize, HardMaxBoardSize);
+        newCols = Mathf.Clamp(EditorGUILayout.DelayedIntField($"Columns (max {MaxBoardColumns})", newCols), HardMinBoardSize, MaxBoardColumns);
+        newRows = Mathf.Clamp(EditorGUILayout.DelayedIntField($"Rows (max {MaxBoardRows})", newRows), HardMinBoardSize, MaxBoardRows);
         using (new EditorGUI.DisabledScope(newCols == cols && newRows == rows))
         {
             if (GUILayout.Button("Resize", GUILayout.Width(60))) Resize(newCols, newRows);
         }
         EditorGUILayout.EndHorizontal();
 
-        // the camera of the game has a fixed size, so a board outside the sizes of the existing levels may not fit the screen
-        if (cols > MaxBoardColumns || rows > MaxBoardRows || cols < MinBoardSize || rows < MinBoardSize)
+        // a level that is already bigger than the screen fits (made before the limit) and a very small board get a warning
+        if (cols > MaxBoardColumns || rows > MaxBoardRows)
             EditorGUILayout.HelpBox(
-                $"The board is {cols} x {rows}. The levels of the game are {MinBoardSize}-{MaxBoardColumns} columns and {MinBoardSize}-{MaxBoardRows} rows; " +
-                "the camera does not change with the board, so a bigger one may not fit the screen of a narrow phone.",
+                $"The board is {cols} x {rows}, but the camera of the game is fixed and shows {MaxBoardColumns} columns and {MaxBoardRows} rows at most: " +
+                "the rest is cut off at the screen edges. Resize it.",
+                MessageType.Error);
+        else if (cols < MinBoardSize || rows < MinBoardSize)
+            EditorGUILayout.HelpBox(
+                $"The board is {cols} x {rows}. The levels of the game are at least {MinBoardSize} x {MinBoardSize}.",
                 MessageType.Warning);
 
         // end game

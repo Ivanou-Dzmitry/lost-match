@@ -9,6 +9,22 @@ dependencies {
     implementation 'com.google.android.gms:play-services-games-v2:22.1.0' // Packages/com.google.play.games/Editor/GooglePlayGamesPluginDependencies.xml:9
     implementation 'com.google.android.gms:play-services-nearby:18.5.0' // Packages/com.google.play.games/Editor/GooglePlayGamesPluginDependencies.xml:14
 // Android Resolver Dependencies End
+
+    // Google Play reported androidx.activity 1.0.0 (brought by another library) as outdated: ask for a newer one,
+    // Gradle takes the highest version. Outside the resolver markers on purpose, the resolver rewrites what is inside.
+    implementation 'androidx.activity:activity:1.9.3'
+
+    // activity 1.9.3 brings kotlin-stdlib 1.8.22, another library brings kotlin-stdlib-jdk7/jdk8 1.6.21. Since Kotlin 1.8 these two
+    // are part of kotlin-stdlib, so both versions together give "Duplicate class kotlin..." (checkReleaseDuplicateClasses).
+    // With the same version the old modules are empty and only point to kotlin-stdlib.
+    constraints {
+        implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22') {
+            because 'kotlin-stdlib 1.8 already contains jdk7'
+        }
+        implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22') {
+            because 'kotlin-stdlib 1.8 already contains jdk8'
+        }
+    }
 **DEPS**}
 
 // Android Resolver Exclusions Start
